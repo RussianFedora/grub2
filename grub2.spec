@@ -778,7 +778,7 @@ fi
 * Sun Nov 18 2007 Lubomir Kundrak <lkundrak@redhat.com> 1.95.cvs20071119-1
 - Synchronized with CVS, major specfile cleanup
 
-* Mon Jan 30 2007 Lubomir Kundrak <lkundrak@skosi.org> 1.95-lkundrak1
+* Tue Jan 30 2007 Lubomir Kundrak <lkundrak@skosi.org> 1.95-lkundrak1
 - Removed redundant filelist entries
 
 * Mon Jan 29 2007 Lubomir Kundrak <lkundrak@skosi.org> 1.95-lkundrak0
