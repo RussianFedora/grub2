@@ -1,0 +1,27 @@
+From 9436d0324b98e71c8ab55b09b4248a617cd463a8 Mon Sep 17 00:00:00 2001
+From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
+Date: Wed, 7 Nov 2012 16:22:33 -0200
+Subject: [PATCH] Follow the symbolic link (ieee1275)
+
+If the device used is a symlink, the file command must "follow
+the link" in order to check the real device.
+---
+ util/grub-install.in |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/util/grub-install.in b/util/grub-install.in
+index 69a97ad..19dc3b4 100644
+--- a/util/grub-install.in
++++ b/util/grub-install.in
+@@ -750,7 +750,7 @@ elif [ "${grub_modinfo_target_cpu}-${grub_modinfo_platform}" = "i386-ieee1275" ]
+ 	       exit 1
+         fi
+ 
+-        if [ "$(file -s "${install_device}" -b | awk '{ print $1 }')" = ELF ] || [ x$("${grub_probe}" -m "${device_map}" -d "${install_device}" -t zero_check) = xtrue ]; then
++        if [ "$(file -s -b -L "${install_device}" | awk '{ print $1 }')" = ELF ] || [ x$("${grub_probe}" -m "${device_map}" -d "${install_device}" -t zero_check) = xtrue ]; then
+ 	        dd if="${grubdir}/${grub_modinfo_target_cpu}-$grub_modinfo_platform/core.${imgext}" of="${install_device}" status=noxfer || {
+ 	        gettext "Failed to copy Grub to the PReP partition." 1>&2
+ 	            echo 1>&2
+-- 
+1.7.10.4
+
