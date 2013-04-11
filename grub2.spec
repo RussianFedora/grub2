@@ -80,6 +80,7 @@ Patch36:	grub-2.00-search-for-specific-config-file-for-netboot.patch
 Patch37:	grub2-add-bootpath-device-to-the-list.patch
 Patch38:	grub-2.00-add-GRUB-DISABLE-SUBMENU-option.patch
 Patch39:	grub-2.00-support-bls-config.patch
+Patch40:	grub-2.00-fix-docs.patch
 
 # RFRemix
 Source99:	grub-1.99-just-say-linux-rfremix.patch
@@ -441,6 +442,7 @@ fi
 * Thu Apr 11 2013 Arkady L. Shane <ashejn@russianfedora.ru> - 2.00-16.R
 - check /etc/rfremix-release before system-release
   fix Fedora patch
+- fix doc generation
 
 * Thu Feb 14 2013 Peter Jones <pjones@redhat.com> - 2.00-16
 - Allow the user to disable submenu generation
