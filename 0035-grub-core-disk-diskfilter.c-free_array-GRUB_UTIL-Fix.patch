@@ -1,7 +1,7 @@
 From 56348e90bcc1076de7b2aba73b52fa1bafee4478 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Tue, 11 Sep 2012 07:53:26 +0200
-Subject: [PATCH 035/364] 	* grub-core/disk/diskfilter.c (free_array)
+Subject: [PATCH 035/482] 	* grub-core/disk/diskfilter.c (free_array)
  [GRUB_UTIL]: Fix memory leak. 	* util/getroot.c (grub_find_device): Likewise.
  	(get_mdadm_uuid): Likewise. 	(grub_util_is_imsm): Likewise. 
  (grub_util_pull_device): Likewise. 	* util/grub-probe.c (probe): Likewise.
@@ -102,5 +102,5 @@ index 6dd1073..c2a0f62 100644
      }
  
 -- 
-1.8.1.4
+1.8.2.1
 

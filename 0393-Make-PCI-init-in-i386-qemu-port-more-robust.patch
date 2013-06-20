@@ -1,0 +1,517 @@
+From d164941306b06f408c3b2fb6a3176d1b8e2412d1 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Mon, 29 Apr 2013 15:09:39 +0200
+Subject: [PATCH 393/482] 	Make PCI init in i386-qemu port more robust.
+
+---
+ ChangeLog                           |   6 +-
+ grub-core/Makefile.core.def         |   4 +-
+ grub-core/bus/usb/uhci.c            |  10 +-
+ grub-core/disk/ahci.c               |   3 -
+ grub-core/kern/i386/coreboot/init.c |  22 +--
+ grub-core/kern/i386/qemu/init.c     | 284 ++++++++++++++++++++++++++++++++++++
+ grub-core/kern/mips/loongson/init.c |   3 +-
+ grub-core/kern/vga_init.c           |  35 -----
+ include/grub/pci.h                  |   1 +
+ 9 files changed, 299 insertions(+), 69 deletions(-)
+ create mode 100644 grub-core/kern/i386/qemu/init.c
+
+diff --git a/ChangeLog b/ChangeLog
+index 86effa0..ece8586 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,4 +1,8 @@
+-2013-04-29 Vladimir Testov <vladimir.testov@rosalab.ru>
++2013-04-29  Vladimir Serbinenko  <phcoder@gmail.com>
++
++	Make PCI init in i386-qemu port more robust.
++
++2013-04-29  Vladimir Testov <vladimir.testov@rosalab.ru>
+ 
+ 	* grub-core/gfxmenu/gui_list.c: Refresh first_shown_entry value when
+ 	cached view is reused.
+diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
+index ebcd01d..7e19acb 100644
+--- a/grub-core/Makefile.core.def
++++ b/grub-core/Makefile.core.def
+@@ -134,7 +134,9 @@ kernel = {
+ 
+   i386 = kern/i386/dl.c;
+ 
+-  i386_coreboot_multiboot_qemu = kern/i386/coreboot/init.c;
++  i386_coreboot = kern/i386/coreboot/init.c;
++  i386_multiboot = kern/i386/coreboot/init.c;
++  i386_qemu = kern/i386/qemu/init.c;
+   i386_coreboot_multiboot_qemu = term/i386/pc/vga_text.c;
+ 
+   efi = disk/efi/efidisk.c;
+diff --git a/grub-core/bus/usb/uhci.c b/grub-core/bus/usb/uhci.c
+index c2e2e7e..0fca1a1 100644
+--- a/grub-core/bus/usb/uhci.c
++++ b/grub-core/bus/usb/uhci.c
+@@ -236,15 +236,7 @@ grub_uhci_pci_iter (grub_pci_device_t dev,
+     return 0;
+ 
+   if ((base & GRUB_UHCI_IOMASK) == 0)
+-    {
+-#if defined (GRUB_MACHINE_MIPS_LOONGSON) || defined (GRUB_MACHINE_QEMU)
+-      static int ndevs = 0;
+-      base = 0x1800 + ndevs++ * 0x100;
+-      grub_pci_write (addr, base | GRUB_PCI_ADDR_SPACE_IO);
+-#else
+-      return 0;
+-#endif
+-    }
++    return 0;
+ 
+   grub_dprintf ("uhci", "base = %x\n", base);
+ 
+diff --git a/grub-core/disk/ahci.c b/grub-core/disk/ahci.c
+index 554fcc5..58bc190 100644
+--- a/grub-core/disk/ahci.c
++++ b/grub-core/disk/ahci.c
+@@ -185,9 +185,6 @@ grub_ahci_pciinit (grub_pci_device_t dev,
+ 
+   addr = grub_pci_make_address (dev, GRUB_PCI_REG_ADDRESS_REG5);
+ 
+-#ifdef GRUB_MACHINE_QEMU
+-  grub_pci_write (addr, 0xf4000000);
+-#endif
+   bar = grub_pci_read (addr);
+ 
+   if ((bar & (GRUB_PCI_ADDR_SPACE_MASK | GRUB_PCI_ADDR_MEM_TYPE_MASK
+diff --git a/grub-core/kern/i386/coreboot/init.c b/grub-core/kern/i386/coreboot/init.c
+index bfc8f3f..7cd530d 100644
+--- a/grub-core/kern/i386/coreboot/init.c
++++ b/grub-core/kern/i386/coreboot/init.c
+@@ -1,6 +1,6 @@
+ /*
+  *  GRUB  --  GRand Unified Bootloader
+- *  Copyright (C) 2002,2003,2004,2005,2006,2007,2008,2009  Free Software Foundation, Inc.
++ *  Copyright (C) 2002,2003,2004,2005,2006,2007,2008,2009,2013  Free Software Foundation, Inc.
+  *
+  *  GRUB is free software: you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+@@ -34,9 +34,6 @@
+ #include <grub/cpu/io.h>
+ #include <grub/cpu/floppy.h>
+ #include <grub/cpu/tsc.h>
+-#ifdef GRUB_MACHINE_QEMU
+-#include <grub/machine/kernel.h>
+-#endif
+ 
+ extern grub_uint8_t _start[];
+ extern grub_uint8_t _end[];
+@@ -51,12 +48,8 @@ grub_exit (void)
+     grub_cpu_idle ();
+ }
+ 
+-#ifdef GRUB_MACHINE_QEMU
+-grub_addr_t grub_modbase;
+-#else
+ grub_addr_t grub_modbase = GRUB_KERNEL_I386_COREBOOT_MODULES_ADDR;
+ static grub_uint64_t modend;
+-#endif
+ 
+ /* Helper for grub_machine_init.  */
+ static int
+@@ -80,10 +73,8 @@ heap_init (grub_uint64_t addr, grub_uint64_t size, grub_memory_type_t type,
+   if (begin < GRUB_MEMORY_MACHINE_LOWER_SIZE)
+     begin = GRUB_MEMORY_MACHINE_LOWER_SIZE;
+ 
+-#ifndef GRUB_MACHINE_QEMU
+   if (modend && begin < modend)
+     begin = modend;
+-#endif
+   
+   if (end <= begin)
+     return 0;
+@@ -96,18 +87,11 @@ heap_init (grub_uint64_t addr, grub_uint64_t size, grub_memory_type_t type,
+ void
+ grub_machine_init (void)
+ {
+-#ifdef GRUB_MACHINE_QEMU
+-  grub_modbase = grub_core_entry_addr + (_edata - _start);
+-
+-  grub_qemu_init_cirrus ();
+-#endif
+-#ifndef GRUB_MACHINE_QEMU
+   modend = grub_modules_get_end ();
+-#endif
+-  /* Initialize the console as early as possible.  */
++
+   grub_vga_text_init ();
+ 
+-#if defined (GRUB_MACHINE_MULTIBOOT) || defined (GRUB_MACHINE_QEMU)
++#ifdef GRUB_MACHINE_MULTIBOOT
+   grub_machine_mmap_init ();
+ #endif
+   grub_machine_mmap_iterate (heap_init, NULL);
+diff --git a/grub-core/kern/i386/qemu/init.c b/grub-core/kern/i386/qemu/init.c
+new file mode 100644
+index 0000000..cad6c40
+--- /dev/null
++++ b/grub-core/kern/i386/qemu/init.c
+@@ -0,0 +1,284 @@
++/*
++ *  GRUB  --  GRand Unified Bootloader
++ *  Copyright (C) 2002,2003,2004,2005,2006,2007,2008,2009,2013  Free Software Foundation, Inc.
++ *
++ *  GRUB is free software: you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation, either version 3 of the License, or
++ *  (at your option) any later version.
++ *
++ *  GRUB is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <grub/kernel.h>
++#include <grub/mm.h>
++#include <grub/machine/time.h>
++#include <grub/machine/memory.h>
++#include <grub/machine/console.h>
++#include <grub/offsets.h>
++#include <grub/types.h>
++#include <grub/err.h>
++#include <grub/dl.h>
++#include <grub/misc.h>
++#include <grub/loader.h>
++#include <grub/env.h>
++#include <grub/cache.h>
++#include <grub/time.h>
++#include <grub/symbol.h>
++#include <grub/cpu/io.h>
++#include <grub/cpu/floppy.h>
++#include <grub/cpu/tsc.h>
++#include <grub/machine/kernel.h>
++#include <grub/pci.h>
++
++extern grub_uint8_t _start[];
++extern grub_uint8_t _end[];
++extern grub_uint8_t _edata[];
++
++void  __attribute__ ((noreturn))
++grub_exit (void)
++{
++  /* We can't use grub_fatal() in this function.  This would create an infinite
++     loop, since grub_fatal() calls grub_abort() which in turn calls grub_exit().  */
++  while (1)
++    grub_cpu_idle ();
++}
++
++grub_addr_t grub_modbase;
++
++/* Helper for grub_machine_init.  */
++static int
++heap_init (grub_uint64_t addr, grub_uint64_t size, grub_memory_type_t type,
++	   void *data __attribute__ ((unused)))
++{
++  grub_uint64_t begin = addr, end = addr + size;
++
++#if GRUB_CPU_SIZEOF_VOID_P == 4
++  /* Restrict ourselves to 32-bit memory space.  */
++  if (begin > GRUB_ULONG_MAX)
++    return 0;
++  if (end > GRUB_ULONG_MAX)
++    end = GRUB_ULONG_MAX;
++#endif
++
++  if (type != GRUB_MEMORY_AVAILABLE)
++    return 0;
++
++  /* Avoid the lower memory.  */
++  if (begin < GRUB_MEMORY_MACHINE_LOWER_SIZE)
++    begin = GRUB_MEMORY_MACHINE_LOWER_SIZE;
++
++  if (end <= begin)
++    return 0;
++
++  grub_mm_init_region ((void *) (grub_addr_t) begin, (grub_size_t) (end - begin));
++
++  return 0;
++}
++
++struct resource
++{
++  grub_pci_device_t dev;
++  int type;
++  grub_size_t size;
++  int bar;
++};
++
++struct iterator_ctx
++{
++  struct resource *resources;
++  grub_size_t nresources;
++};
++
++static int
++count_cards (grub_pci_device_t dev __attribute__ ((unused)),
++	     grub_pci_id_t pciid __attribute__ ((unused)),
++	     void *data)
++{
++  int *cnt = data;
++
++  (*cnt)++;
++
++  return 0;
++}
++
++static int
++find_resources (grub_pci_device_t dev,
++		grub_pci_id_t pciid __attribute__ ((unused)),
++		void *data)
++{
++  struct iterator_ctx *ctx = data;
++  int bar;
++
++  for (bar = 0; bar < 6; bar++)
++    {
++      grub_pci_address_t addr;
++      grub_uint32_t ones, zeros, mask;
++      struct resource *res;
++      addr = grub_pci_make_address (dev, GRUB_PCI_REG_ADDRESS_REG0
++				    + 4 * bar);
++      grub_pci_write (addr, 0xffffffff);
++      grub_pci_read (addr);
++      ones = grub_pci_read (addr);
++      grub_pci_write (addr, 0);
++      grub_pci_read (addr);
++      zeros = grub_pci_read (addr);
++      if (ones == zeros)
++	continue;
++      res = &ctx->resources[ctx->nresources++];
++      if ((zeros & GRUB_PCI_ADDR_SPACE_MASK) == GRUB_PCI_ADDR_SPACE_IO)
++	mask = GRUB_PCI_ADDR_SPACE_MASK;
++      else
++	mask = (GRUB_PCI_ADDR_MEM_TYPE_MASK | GRUB_PCI_ADDR_SPACE_MASK | GRUB_PCI_ADDR_MEM_PREFETCH);
++
++      res->type = ones & mask;
++      res->dev = dev;
++      res->bar = bar;
++      res->size = (~((zeros ^ ones)) | mask) + 1;
++      if ((zeros & (GRUB_PCI_ADDR_MEM_TYPE_MASK | GRUB_PCI_ADDR_SPACE_MASK))
++	  == (GRUB_PCI_ADDR_SPACE_MEMORY | GRUB_PCI_ADDR_MEM_TYPE_64))
++	bar++;
++    }
++  return 0;
++}
++
++static int
++enable_cards (grub_pci_device_t dev,
++	      grub_pci_id_t pciid __attribute__ ((unused)),
++	      void *data __attribute__ ((unused)))
++{
++  grub_uint16_t cmd = 0;
++  grub_pci_address_t addr;
++  grub_uint32_t class;
++  int bar;
++
++  for (bar = 0; bar < 6; bar++)
++    {
++      grub_uint32_t val;
++      addr = grub_pci_make_address (dev, GRUB_PCI_REG_ADDRESS_REG0
++				    + 4 * bar);
++      val = grub_pci_read (addr);
++      if (!val)
++	continue;
++      if ((val & GRUB_PCI_ADDR_SPACE_MASK) == GRUB_PCI_ADDR_SPACE_IO)
++	cmd |= GRUB_PCI_COMMAND_IO_ENABLED;
++      else
++	cmd |= GRUB_PCI_COMMAND_MEM_ENABLED;
++    }
++
++  class = (grub_pci_read (addr) >> 16) & 0xffff;
++
++  if (class == GRUB_PCI_CLASS_SUBCLASS_VGA)
++    cmd |= GRUB_PCI_COMMAND_IO_ENABLED
++      | GRUB_PCI_COMMAND_MEM_ENABLED;
++
++  if (class == GRUB_PCI_CLASS_SUBCLASS_USB)
++    return 0;
++  
++  addr = grub_pci_make_address (dev, GRUB_PCI_REG_COMMAND);
++  grub_pci_write (addr, cmd);
++
++  return 0;
++}
++
++static void
++grub_pci_assign_addresses (void)
++{
++  int ncards = 0;
++  struct iterator_ctx ctx;
++
++  grub_pci_iterate (count_cards, &ncards);
++
++  {
++    struct resource resources[ncards * 6];
++    int done;
++    unsigned i;
++    ctx.nresources = 0;
++    ctx.resources = resources;
++    grub_uint32_t memptr = 0xf0000000;
++    grub_uint16_t ioptr = 0x1000;
++
++    grub_pci_iterate (find_resources, &ctx);
++    /* FIXME: do we need a better sort here?  */
++    do
++      {
++	done = 0;
++	for (i = 0; i + 1 < ctx.nresources; i++)
++	  if (resources[i].size < resources[i+1].size)
++	    {
++	      struct resource t;
++	      t = resources[i];
++	      resources[i] = resources[i+1];
++	      resources[i+1] = t;
++	      done = 1;
++	    }
++      }
++    while (done);
++
++    for (i = 0; i < ctx.nresources; i++)
++      {
++	grub_pci_address_t addr;
++	addr = grub_pci_make_address (resources[i].dev,
++				      GRUB_PCI_REG_ADDRESS_REG0
++				      + 4 * resources[i].bar);
++	if ((resources[i].type & GRUB_PCI_ADDR_SPACE_MASK)
++	    == GRUB_PCI_ADDR_SPACE_IO)
++	  {
++	    grub_pci_write (addr, ioptr | resources[i].type);
++	    ioptr += resources[i].size;
++	  }
++	else
++	  {
++	    grub_pci_write (addr, memptr | resources[i].type);
++	    memptr += resources[i].size;
++	    if ((resources[i].type & (GRUB_PCI_ADDR_MEM_TYPE_MASK
++				      | GRUB_PCI_ADDR_SPACE_MASK))
++		== (GRUB_PCI_ADDR_SPACE_MEMORY | GRUB_PCI_ADDR_MEM_TYPE_64))
++	      {
++		addr = grub_pci_make_address (resources[i].dev,
++					      GRUB_PCI_REG_ADDRESS_REG0
++					      + 4 * resources[i].bar + 4);
++		grub_pci_write (addr, 0);
++	      }
++	  }	  
++      }
++    grub_pci_iterate (enable_cards, NULL);
++  }
++}
++
++void
++grub_machine_init (void)
++{
++  grub_modbase = grub_core_entry_addr + (_edata - _start);
++
++  grub_pci_assign_addresses ();
++
++  grub_qemu_init_cirrus ();
++
++  grub_vga_text_init ();
++
++  grub_machine_mmap_init ();
++  grub_machine_mmap_iterate (heap_init, NULL);
++
++
++  grub_tsc_init ();
++}
++
++void
++grub_machine_get_bootlocation (char **device __attribute__ ((unused)),
++			       char **path __attribute__ ((unused)))
++{
++}
++
++void
++grub_machine_fini (void)
++{
++  grub_vga_text_fini ();
++  grub_stop_floppy ();
++}
+diff --git a/grub-core/kern/mips/loongson/init.c b/grub-core/kern/mips/loongson/init.c
+index 1abcf1a..52cbfd4 100644
+--- a/grub-core/kern/mips/loongson/init.c
++++ b/grub-core/kern/mips/loongson/init.c
+@@ -55,7 +55,8 @@ set_card (grub_pci_device_t dev, grub_pci_id_t pciid,
+ 	  void *data __attribute__ ((unused)))
+ {
+   grub_pci_address_t addr;
+-  /* FIXME: autoscan for BARs and devices.  */
++  /* We could use grub_pci_assign_addresses for this but we prefer to
++     have exactly same memory map as on pmon.  */
+   switch (pciid)
+     {
+     case GRUB_LOONGSON_OHCI_PCIID:
+diff --git a/grub-core/kern/vga_init.c b/grub-core/kern/vga_init.c
+index 1119bb3..301721d 100644
+--- a/grub-core/kern/vga_init.c
++++ b/grub-core/kern/vga_init.c
+@@ -88,44 +88,9 @@ load_palette (void)
+     grub_vga_palette_write (i, colors[i].r, colors[i].g, colors[i].b);
+ }
+ 
+-#ifndef __mips__
+-/* Helper for grub_qemu_init_cirrus.  */
+-static int
+-find_card (grub_pci_device_t dev, grub_pci_id_t pciid __attribute__ ((unused)),
+-	   void *data __attribute__ ((unused)))
+-{
+-  grub_pci_address_t addr;
+-  grub_uint32_t class;
+-
+-  addr = grub_pci_make_address (dev, GRUB_PCI_REG_CLASS);
+-  class = grub_pci_read (addr);
+-
+-  if (((class >> 16) & 0xffff) != GRUB_PCI_CLASS_SUBCLASS_VGA)
+-    return 0;
+-  
+-  /* FIXME: chooose addresses dynamically.  */
+-  addr = grub_pci_make_address (dev, GRUB_PCI_REG_ADDRESS_REG0);
+-  grub_pci_write (addr, 0xf0000000 | GRUB_PCI_ADDR_MEM_PREFETCH
+-		  | GRUB_PCI_ADDR_SPACE_MEMORY | GRUB_PCI_ADDR_MEM_TYPE_32);
+-  addr = grub_pci_make_address (dev, GRUB_PCI_REG_ADDRESS_REG1);
+-  grub_pci_write (addr, 0xf2000000
+-		  | GRUB_PCI_ADDR_SPACE_MEMORY | GRUB_PCI_ADDR_MEM_TYPE_32);
+-
+-  addr = grub_pci_make_address (dev, GRUB_PCI_REG_COMMAND);
+-  grub_pci_write (addr, GRUB_PCI_COMMAND_MEM_ENABLED
+-		  | GRUB_PCI_COMMAND_IO_ENABLED);
+-  
+-  return 1;
+-}
+-#endif
+-
+ void
+ grub_qemu_init_cirrus (void)
+ {
+-#ifndef __mips__
+-  grub_pci_iterate (find_card, NULL);
+-#endif
+-
+   grub_outb (GRUB_VGA_IO_MISC_COLOR,
+ 	     GRUB_MACHINE_PCI_IO_BASE + GRUB_VGA_IO_MISC_WRITE);
+ 
+diff --git a/include/grub/pci.h b/include/grub/pci.h
+index e163d47..70d9a05 100644
+--- a/include/grub/pci.h
++++ b/include/grub/pci.h
+@@ -81,6 +81,7 @@
+ #define  GRUB_PCI_STATUS_DEVSEL_TIMING_SHIFT 9
+ #define  GRUB_PCI_STATUS_DEVSEL_TIMING_MASK 0x0600
+ #define  GRUB_PCI_CLASS_SUBCLASS_VGA  0x0300
++#define  GRUB_PCI_CLASS_SUBCLASS_USB  0x0c03
+ 
+ #ifndef ASM_FILE
+ 
+-- 
+1.8.2.1
+

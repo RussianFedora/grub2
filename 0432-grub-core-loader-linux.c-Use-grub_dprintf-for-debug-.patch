@@ -1,0 +1,42 @@
+From 8e042532c805c9e850eaa92c5713c461b4f4e36c Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Tue, 7 May 2013 11:38:49 +0200
+Subject: [PATCH 432/482] 	* grub-core/loader/linux.c: Use grub_dprintf
+ for debug statements 	rather than printf.
+
+---
+ ChangeLog                | 5 +++++
+ grub-core/loader/linux.c | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 04a2f00..fc647b8 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/loader/linux.c: Use grub_dprintf for debug statements
++	rather than printf.
++
++2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/video/readers/jpeg.c: Use grub_dprintf for debug statements
+ 	rather than printf.
+ 	* grub-core/video/readers/tga.c: Likewise.
+diff --git a/grub-core/loader/linux.c b/grub-core/loader/linux.c
+index cbe3c53..af067a5 100644
+--- a/grub-core/loader/linux.c
++++ b/grub-core/loader/linux.c
+@@ -126,7 +126,7 @@ insert_dir (const char *name, struct dir **root,
+ 	  n->name = grub_strndup (cb, ce - cb);
+ 	  if (ptr)
+ 	    {
+-	      grub_printf ("Creating directory %s, %s\n", name, ce);
++	      grub_dprintf ("linux", "Creating directory %s, %s\n", name, ce);
+ 	      ptr = make_header (ptr, name, ce - name,
+ 				 040777, 0);
+ 	    }
+-- 
+1.8.2.1
+

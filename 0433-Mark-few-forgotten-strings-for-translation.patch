@@ -1,0 +1,121 @@
+From c061433a9a81b4114e4ed2b9c5c7784917b5e0d4 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Tue, 7 May 2013 11:41:47 +0200
+Subject: [PATCH 433/482] 	Mark few forgotten strings for translation.
+
+---
+ ChangeLog                          | 4 ++++
+ grub-core/commands/acpihalt.c      | 4 ++--
+ grub-core/commands/nativedisk.c    | 2 +-
+ grub-core/loader/i386/pc/freedos.c | 2 +-
+ grub-core/normal/misc.c            | 4 +++-
+ util/grub-render-label.c           | 6 +++---
+ 6 files changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index fc647b8..9c8a14a 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	Mark few forgotten strings for translation.
++
++2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/loader/linux.c: Use grub_dprintf for debug statements
+ 	rather than printf.
+ 
+diff --git a/grub-core/commands/acpihalt.c b/grub-core/commands/acpihalt.c
+index a8014de..6f156fd 100644
+--- a/grub-core/commands/acpihalt.c
++++ b/grub-core/commands/acpihalt.c
+@@ -311,13 +311,13 @@ main (int argc, char **argv)
+   buf = malloc (len);
+   if (!buf)
+     {
+-      printf ("Couldn't malloc buffer\n");
++      printf (_("error: %s.\n"), _("out of memory"));
+       fclose (f);
+       return 2;
+     }
+   if (fread (buf, 1, len, f) != len)
+     {
+-      printf ("Read failed\n");
++      printf (_("cannot read `%s': %s"), strerror (errno));
+       free (buf);
+       fclose (f);
+       return 2;
+diff --git a/grub-core/commands/nativedisk.c b/grub-core/commands/nativedisk.c
+index 453faad..71d7bc4 100644
+--- a/grub-core/commands/nativedisk.c
++++ b/grub-core/commands/nativedisk.c
+@@ -301,7 +301,7 @@ static grub_command_t cmd;
+ 
+ GRUB_MOD_INIT(nativedisk)
+ {
+-  cmd = grub_register_command ("nativedisk", grub_cmd_nativedisk, "[MODULE1 MODULE2 ...]",
++  cmd = grub_register_command ("nativedisk", grub_cmd_nativedisk, N_("[MODULE1 MODULE2 ...]"),
+ 			       N_("Switch to native disk drivers. If no modules are specified default set (pata,ahci,usbms,ohci,uhci,ehci) is used"));
+ }
+ 
+diff --git a/grub-core/loader/i386/pc/freedos.c b/grub-core/loader/i386/pc/freedos.c
+index e685c6e..478f3c5 100644
+--- a/grub-core/loader/i386/pc/freedos.c
++++ b/grub-core/loader/i386/pc/freedos.c
+@@ -145,7 +145,7 @@ grub_cmd_freedos (grub_command_t cmd __attribute__ ((unused)),
+   if (kernelsyssize > GRUB_FREEDOS_MAX_SIZE)
+     {
+       grub_error (GRUB_ERR_BAD_OS,
+-		  N_("file `%s' is too large"), argv[0]);
++		  N_("the size of `%s' is too large"), argv[0]);
+       goto fail;
+     }
+ 
+diff --git a/grub-core/normal/misc.c b/grub-core/normal/misc.c
+index bc6ce17..34d505e 100644
+--- a/grub-core/normal/misc.c
++++ b/grub-core/normal/misc.c
+@@ -181,7 +181,9 @@ grub_normal_print_device_info (const char *name)
+       else
+ 	grub_printf (_(" - Total size %llu%sKiB"),
+ 		     (unsigned long long) (grub_disk_get_size (dev->disk) >> 1),
+-		     (grub_disk_get_size (dev->disk) & 1) ? ".5" : "");
++		     /* TRANSLATORS: Replace dot with appropriate decimal separator for
++			your language.  */
++		     (grub_disk_get_size (dev->disk) & 1) ? _(".5") : "");
+ 
+       grub_device_close (dev);
+     }
+diff --git a/util/grub-render-label.c b/util/grub-render-label.c
+index 32d3774..1b28ab7 100644
+--- a/util/grub-render-label.c
++++ b/util/grub-render-label.c
+@@ -55,7 +55,7 @@ static struct argp_option options[] = {
+   {"bgcolor",  'b', N_("COLOR"), 0,
+    N_("use COLOR for background"), 0},
+   {"text",  't', N_("STR"), 0,
+-   N_("supply the string."), 0},
++   N_("set the label to render."), 0},
+   {"output",  'o', N_("FILE"), 0,
+    N_("set output filename. Default is STDOUT"), 0},
+   {"font",  'f', N_("FILE"), 0,
+@@ -89,13 +89,13 @@ argp_parser (int key, char *arg, struct argp_state *state)
+     case 'b':
+       err = grub_video_parse_color (arg, &arguments->bgcolor);
+       if (err)
+-	grub_util_error (_("Invalud color `%s'"), arg);
++	grub_util_error (_("invalid color specification `%s'"), arg);
+       break;
+ 
+     case 'c':
+       err = grub_video_parse_color (arg, &arguments->fgcolor);
+       if (err)
+-	grub_util_error (_("Invalud color `%s'"), arg);
++	grub_util_error (_("invalid color specification `%s'"), arg);
+       break;
+ 
+     case 'f':
+-- 
+1.8.2.1
+

@@ -1,7 +1,7 @@
 From ec6a8c449294b215a2c4019f42110a0c1f770ac2 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Mon, 2 Jul 2012 11:14:37 +0200
-Subject: [PATCH 003/364] 	* grub-core/loader/i386/linux.c
+Subject: [PATCH 003/482] 	* grub-core/loader/i386/linux.c
  (find_efi_mmap_size): Don't decrease 	efi_mmap_size. 	Reported by: Stuart
  Hayes.
 
@@ -54,5 +54,5 @@ index 62087cf..d34b2f8 100644
      }
  
 -- 
-1.8.1.4
+1.8.2.1
 

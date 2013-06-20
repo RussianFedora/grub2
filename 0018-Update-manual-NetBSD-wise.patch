@@ -1,7 +1,7 @@
 From 8d7ed36e113b21de18a1b4a2bf81d218d79114d2 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Gr=C3=A9goire=20Sutre?= <gregoire.sutre@gmail.com>
 Date: Wed, 1 Aug 2012 00:18:57 +0200
-Subject: [PATCH 018/364] Update manual NetBSD-wise.
+Subject: [PATCH 018/482] Update manual NetBSD-wise.
 
 ---
  ChangeLog      |  5 +++++
@@ -111,5 +111,5 @@ index b5954da..b0e7f59 100644
  @subsection DOS/Windows
  
 -- 
-1.8.1.4
+1.8.2.1
 

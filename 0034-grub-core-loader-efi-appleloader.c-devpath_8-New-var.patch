@@ -1,7 +1,7 @@
 From 8f779ade959a72267dcc045ad71012bf37cb96e0 Mon Sep 17 00:00:00 2001
 From: Benoit Gschwind <gschwind>
 Date: Mon, 10 Sep 2012 09:34:29 +0200
-Subject: [PATCH 034/364] 	* grub-core/loader/efi/appleloader.c
+Subject: [PATCH 034/482] 	* grub-core/loader/efi/appleloader.c
  (devpath_8): New var. 	(devs): Add devpath_8.
 
 ---
@@ -46,5 +46,5 @@ index e2de89f..56d5538 100644
  };
  
 -- 
-1.8.1.4
+1.8.2.1
 

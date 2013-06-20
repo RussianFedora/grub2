@@ -1,7 +1,7 @@
 From 9e9382ece3511ff530cfb3e1c1e7a7dbaa3416b6 Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Sat, 8 Sep 2012 09:40:24 +0200
-Subject: [PATCH 033/364] 	* grub-core/Makefile.core.def (efifwsetup):
+Subject: [PATCH 033/482] 	* grub-core/Makefile.core.def (efifwsetup):
  New module. 	* grub-core/commands/efi/efifwsetup.c: New file. 	*
  grub-core/kern/efi/efi.c (grub_efi_set_variable): New function 	*
  include/grub/efi/api.h (GRUB_EFI_OS_INDICATIONS_BOOT_TO_FW_UI): 	New
@@ -218,5 +218,5 @@ index e67d92b..489cf9e 100644
  EXPORT_FUNC (grub_efi_compare_device_paths) (const grub_efi_device_path_t *dp1,
  					     const grub_efi_device_path_t *dp2);
 -- 
-1.8.1.4
+1.8.2.1
 

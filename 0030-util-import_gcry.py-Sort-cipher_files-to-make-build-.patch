@@ -1,7 +1,7 @@
 From 53a8f5760591b14160bc07ef10f083882516ad27 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Wed, 5 Sep 2012 09:00:39 +0100
-Subject: [PATCH 030/364] * util/import_gcry.py: Sort cipher_files, to make
+Subject: [PATCH 030/482] * util/import_gcry.py: Sort cipher_files, to make
  build system generation more deterministic.
 
 ---
@@ -36,5 +36,5 @@ index 18966a6..64c5870 100644
  conf.write ("AutoGen definitions Makefile.tpl;\n\n")
  confutil = codecs.open ("Makefile.utilgcry.def", "w", "utf-8")
 -- 
-1.8.1.4
+1.8.2.1
 

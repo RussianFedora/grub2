@@ -1,0 +1,41 @@
+From f2c269eb161b7b32d52b6c818d8181c1d2b6d993 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Fri, 3 May 2013 14:05:57 +0200
+Subject: [PATCH 408/482] 	* include/grub/gui.h
+ (grub_gfxmenu_timeout_unregister): Free cb 	descriptor.
+
+---
+ ChangeLog          | 5 +++++
+ include/grub/gui.h | 1 +
+ 2 files changed, 6 insertions(+)
+
+diff --git a/ChangeLog b/ChangeLog
+index 858f0b0..9e8884a 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-05-03  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* include/grub/gui.h (grub_gfxmenu_timeout_unregister): Free cb
++	descriptor.
++
++2013-05-03  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/gfxmenu/view.c (grub_gfxmenu_view_new): Clear
+ 	grub_gfxmenu_timeout_notifications.
+ 	(grub_gfxmenu_view_destroy): Likewise.
+diff --git a/include/grub/gui.h b/include/grub/gui.h
+index 4b8ec89..6f81862 100644
+--- a/include/grub/gui.h
++++ b/include/grub/gui.h
+@@ -112,6 +112,7 @@ grub_gfxmenu_timeout_unregister (grub_gui_component_t self)
+     if (q->self == self)
+       {
+ 	*p = q->next;
++	grub_free (q);
+ 	break;
+       }
+ }
+-- 
+1.8.2.1
+

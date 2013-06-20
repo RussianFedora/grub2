@@ -1,7 +1,7 @@
 From c0be2c2099805c621f27d5b3ced224db437a582c Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Sun, 22 Jul 2012 19:59:06 +0200
-Subject: [PATCH 015/364] 	New command `lsefi'.
+Subject: [PATCH 015/482] 	New command `lsefi'.
 
 	* grub-core/Makefile.core.def (lsefi): New module.
 	* grub-core/commands/efi/lsefi.c: New file.
@@ -364,5 +364,5 @@ index 26127de..9e7a8d8 100644
  
  #define GRUB_EFI_ACPI_TABLE_GUID	\
 -- 
-1.8.1.4
+1.8.2.1
 

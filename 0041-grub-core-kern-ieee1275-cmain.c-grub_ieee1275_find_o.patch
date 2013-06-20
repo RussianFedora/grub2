@@ -1,7 +1,7 @@
 From 731ae0c1c7c0458a257e75c55b7739881dc2d5ed Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Tue, 18 Sep 2012 11:52:19 +0200
-Subject: [PATCH 041/364] 	* grub-core/kern/ieee1275/cmain.c
+Subject: [PATCH 041/482] 	* grub-core/kern/ieee1275/cmain.c
  (grub_ieee1275_find_options): Set 
  GRUB_IEEE1275_FLAG_CURSORONOFF_ANSI_BROKEN on mac. 	*
  grub-core/term/ieee1275/console.c (grub_console_init_lately): Use 
@@ -117,5 +117,5 @@ index 38a75fd..ee9b707 100644
  
  extern int EXPORT_FUNC(grub_ieee1275_test_flag) (enum grub_ieee1275_flag flag);
 -- 
-1.8.1.4
+1.8.2.1
 

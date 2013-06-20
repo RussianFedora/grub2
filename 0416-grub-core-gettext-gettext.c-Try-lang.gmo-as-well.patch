@@ -1,0 +1,67 @@
+From 51441aa016f8bd439752656d43504704b94f701c Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sat, 4 May 2013 13:40:52 +0200
+Subject: [PATCH 416/482] 	* grub-core/gettext/gettext.c: Try $lang.gmo
+ as well.
+
+---
+ ChangeLog                   |  4 ++++
+ grub-core/gettext/gettext.c | 19 +++++++++++++++----
+ 2 files changed, 19 insertions(+), 4 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 7a7d11c..e0576e5 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/gettext/gettext.c: Try $lang.gmo as well.
++
++2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	Fix test -a and -o precedence.
+ 	Reported by: adrian15.
+ 
+diff --git a/grub-core/gettext/gettext.c b/grub-core/gettext/gettext.c
+index 569f985..259251d 100644
+--- a/grub-core/gettext/gettext.c
++++ b/grub-core/gettext/gettext.c
+@@ -355,19 +355,30 @@ grub_mofile_open_lang (struct grub_gettext_context *ctx,
+     return grub_errno;
+ 
+   err = grub_mofile_open (ctx, mo_file);
++  grub_free (mo_file);
+ 
+   /* Will try adding .gz as well.  */
+   if (err)
+     {
+-      char *mo_file_old;
+       grub_errno = GRUB_ERR_NONE;
+-      mo_file_old = mo_file;
+-      mo_file = grub_xasprintf ("%s.gz", mo_file);
+-      grub_free (mo_file_old);
++      mo_file = grub_xasprintf ("%s%s/%s.mo.gz", part1, part2, locale);
+       if (!mo_file)
+ 	return grub_errno;
+       err = grub_mofile_open (ctx, mo_file);
++      grub_free (mo_file);
+     }
++
++  /* Will try adding .gmo as well.  */
++  if (err)
++    {
++      grub_errno = GRUB_ERR_NONE;
++      mo_file = grub_xasprintf ("%s%s/%s.gmo", part1, part2, locale);
++      if (!mo_file)
++	return grub_errno;
++      err = grub_mofile_open (ctx, mo_file);
++      grub_free (mo_file);
++    }
++
+   return err;
+ }
+ 
+-- 
+1.8.2.1
+

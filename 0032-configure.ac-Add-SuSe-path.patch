@@ -1,7 +1,7 @@
 From 4b13dd6c2fe6f75027c51f4b2616509040a5ea33 Mon Sep 17 00:00:00 2001
 From: Jiri Slaby <jslaby@suse.cz>
 Date: Wed, 5 Sep 2012 16:09:41 +0200
-Subject: [PATCH 032/364] 	* configure.ac: Add SuSe path.
+Subject: [PATCH 032/482] 	* configure.ac: Add SuSe path.
 
 ---
  ChangeLog    | 4 ++++
@@ -34,5 +34,5 @@ index 190665d..ea3830a 100644
        FONT_SOURCE="$dir/unifont.$ext"
        break 2
 -- 
-1.8.1.4
+1.8.2.1
 

@@ -1,0 +1,386 @@
+From bcf0809ca0ce82d3f4608ddddfb6996dda99a4f1 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Tue, 7 May 2013 11:30:48 +0200
+Subject: [PATCH 430/482] 	* tests/priority_queue_unit_test.cc: New test.
+
+---
+ ChangeLog                         |   4 ++
+ Makefile.util.def                 |  17 ++++++
+ configure.ac                      |   5 ++
+ grub-core/lib/priority_queue.c    |  94 ----------------------------------
+ include/grub/misc.h               |   2 +-
+ include/grub/priority_queue.h     |   8 +++
+ include/grub/test.h               |   8 +++
+ tests/priority_queue_unit_test.cc | 105 ++++++++++++++++++++++++++++++++++++++
+ 8 files changed, 148 insertions(+), 95 deletions(-)
+ create mode 100644 tests/priority_queue_unit_test.cc
+
+diff --git a/ChangeLog b/ChangeLog
+index 0fa3be0..0fe18bb 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* tests/priority_queue_unit_test.cc: New test.
++
++2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/font/font.c: Use grub_dprintf for debug statements rather
+ 	than printf.
+ 
+diff --git a/Makefile.util.def b/Makefile.util.def
+index d0ae67f..086ca12 100644
+--- a/Makefile.util.def
++++ b/Makefile.util.def
+@@ -859,6 +859,23 @@ program = {
+ 
+ program = {
+   testcase;
++  name = priority_queue_unit_test;
++  common = tests/priority_queue_unit_test.cc;
++  common = tests/lib/unit_test.c;
++  common = grub-core/kern/list.c;
++  common = grub-core/kern/misc.c;
++  common = grub-core/tests/lib/test.c;
++  common = grub-core/lib/priority_queue.c;
++  ldadd = libgrubmods.a;
++  ldadd = libgrubgcry.a;
++  ldadd = libgrubkern.a;
++  ldadd = grub-core/gnulib/libgnu.a;
++  ldadd = '$(LIBDEVMAPPER) $(LIBZFS) $(LIBNVPAIR) $(LIBGEOM)';
++  condition = COND_HAVE_CXX;
++};
++
++program = {
++  testcase;
+   name = cmp_test;
+   common = tests/cmp_unit_test.c;
+   common = tests/lib/unit_test.c;
+diff --git a/configure.ac b/configure.ac
+index 00540e6..6c310f7 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -320,12 +320,15 @@ AC_PATH_PROGS(MAKEINFO, makeinfo true)
+ 
+ AC_PROG_CC
+ gl_EARLY
++AC_PROG_CXX
+ AM_PROG_CC_C_O
+ AM_PROG_AS
+ 
+ # Must be GCC.
+ test "x$GCC" = xyes || AC_MSG_ERROR([GCC is required])
+ 
++AC_CHECK_PROG(HAVE_CXX, $CXX, yes, no)
++
+ AC_GNU_SOURCE
+ AM_GNU_GETTEXT([external])
+ AC_SYS_LARGEFILE
+@@ -1178,6 +1181,8 @@ AM_CONDITIONAL([COND_ENABLE_EFIEMU], [test x$enable_efiemu = xyes])
+ AM_CONDITIONAL([COND_ENABLE_CACHE_STATS], [test x$DISK_CACHE_STATS = x1])
+ AM_CONDITIONAL([COND_ENABLE_BOOT_TIME_STATS], [test x$BOOT_TIME_STATS = x1])
+ 
++AM_CONDITIONAL([COND_HAVE_CXX], [test x$HAVE_CXX = xyes])
++
+ AM_CONDITIONAL([COND_HAVE_ASM_USCORE], [test x$HAVE_ASM_USCORE = x1])
+ AM_CONDITIONAL([COND_CYGWIN], [test x$host_os = xcygwin])
+ AM_CONDITIONAL([COND_STARFIELD], [test "x$starfield_excuse" = x])
+diff --git a/grub-core/lib/priority_queue.c b/grub-core/lib/priority_queue.c
+index a790910..659be0b 100644
+--- a/grub-core/lib/priority_queue.c
++++ b/grub-core/lib/priority_queue.c
+@@ -16,37 +16,12 @@
+  *  along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+-#ifndef TEST
+ #include <grub/priority_queue.h>
+ #include <grub/mm.h>
+ #include <grub/dl.h>
+ 
+ GRUB_MOD_LICENSE ("GPLv3+");
+ 
+-#else
+-#include <stdlib.h>
+-#include <stdio.h>
+-#include <string.h>
+-
+-#include <queue>
+-
+-using namespace std;
+-
+-typedef size_t grub_size_t;
+-typedef int (*grub_comparator_t) (const void *a, const void *b);
+-typedef unsigned char grub_uint8_t;
+-#define grub_malloc malloc
+-#define grub_memcpy memcpy
+-#define grub_realloc realloc
+-#define grub_free free
+-
+-typedef enum
+-  {
+-    GRUB_ERR_NONE,
+-    grub_errno
+-  } grub_err_t;
+-#endif
+-
+ struct grub_priority_queue
+ {
+   grub_size_t elsize;
+@@ -56,10 +31,6 @@ struct grub_priority_queue
+   void *els;
+ };
+ 
+-#ifdef TEST
+-typedef struct grub_priority_queue *grub_priority_queue_t;
+-#endif
+-
+ static inline void *
+ element (struct grub_priority_queue *pq, grub_size_t k)
+ {
+@@ -189,69 +160,4 @@ grub_priority_queue_pop (grub_priority_queue_t pq)
+     }
+ }
+ 
+-#ifdef TEST
+-
+-static int 
+-compar (const void *a_, const void *b_)
+-{
+-  int a = *(int *) a_;
+-  int b = *(int *) b_;
+-  if (a < b)
+-    return -1;
+-  if (a > b)
+-    return +1;
+-  return 0;
+-}
+ 
+-int
+-main (void)
+-{
+-  priority_queue <int> pq;
+-  grub_priority_queue_t pq2;
+-  int counter;
+-  int s = 0;
+-  pq2 = grub_priority_queue_new (sizeof (int), compar);
+-  if (!pq2)
+-    return 1;
+-  srand (1);
+-
+-  for (counter = 0; counter < 1000000; counter++)
+-    {
+-      int op = rand () % 10;
+-      if (s && *(int *) grub_priority_queue_top (pq2) != pq.top ())
+-	{
+-	  printf ("Error at %d\n", counter);
+-	  return 2;
+-	}
+-      if (op < 3 && s)
+-	{
+-	  grub_priority_queue_pop (pq2);
+-	  pq.pop ();
+-	  s--;
+-	}
+-      else
+-	{
+-	  int v = rand ();
+-	  int e;
+-	  pq.push (v);
+-	  e = grub_priority_queue_push (pq2, &v);
+-	  if (e)
+-	    return 3;
+-	  s++;
+-	}
+-    }
+-  while (s)
+-    {
+-      if (*(int *) grub_priority_queue_top (pq2) != pq.top ())
+-	{
+-	  printf ("Error at the end. %d elements remaining.\n", s);
+-	  return 4;
+-	}
+-      grub_priority_queue_pop (pq2);
+-      pq.pop ();
+-      s--;
+-    }
+-  printf ("All tests passed successfully\n");
+-  return 0;
+-}
+-#endif
+diff --git a/include/grub/misc.h b/include/grub/misc.h
+index c191c1f..9d7f212 100644
+--- a/include/grub/misc.h
++++ b/include/grub/misc.h
+@@ -392,7 +392,7 @@ void EXPORT_FUNC (__deregister_frame_info) (void);
+ static inline char *
+ grub_memchr (const void *p, int c, grub_size_t len)
+ {
+-  const char *s = p;
++  const char *s = (const char *) p;
+   const char *e = s + len;
+ 
+   for (; s < e; s++)
+diff --git a/include/grub/priority_queue.h b/include/grub/priority_queue.h
+index a5d98c8..64cbc45 100644
+--- a/include/grub/priority_queue.h
++++ b/include/grub/priority_queue.h
+@@ -22,6 +22,10 @@
+ #include <grub/misc.h>
+ #include <grub/err.h>
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ struct grub_priority_queue;
+ typedef struct grub_priority_queue *grub_priority_queue_t;
+ typedef int (*grub_comparator_t) (const void *a, const void *b);
+@@ -33,4 +37,8 @@ void *grub_priority_queue_top (grub_priority_queue_t pq);
+ void grub_priority_queue_pop (grub_priority_queue_t pq);
+ grub_err_t grub_priority_queue_push (grub_priority_queue_t pq, const void *el);
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #endif
+diff --git a/include/grub/test.h b/include/grub/test.h
+index cc4e4a8..8df85d0 100644
+--- a/include/grub/test.h
++++ b/include/grub/test.h
+@@ -28,6 +28,10 @@
+ #include <grub/video.h>
+ #include <grub/video_fb.h>
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ struct grub_test
+ {
+   /* The next test.  */
+@@ -108,4 +112,8 @@ grub_video_checksum_get_modename (void);
+ #define GRUB_TEST_VIDEO_SMALL_N_MODES 6
+ extern struct grub_video_mode_info grub_test_video_modes[30];
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #endif /* ! GRUB_TEST_HEADER */
+diff --git a/tests/priority_queue_unit_test.cc b/tests/priority_queue_unit_test.cc
+new file mode 100644
+index 0000000..bb0060e
+--- /dev/null
++++ b/tests/priority_queue_unit_test.cc
+@@ -0,0 +1,105 @@
++/*
++ *  GRUB  --  GRand Unified Bootloader
++ *  Copyright (C) 2013 Free Software Foundation, Inc.
++ *
++ *  GRUB is free software: you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation, either version 3 of the License, or
++ *  (at your option) any later version.
++ *
++ *  GRUB is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <stdio.h>
++#include <string.h>
++#include <grub/test.h>
++#include <grub/misc.h>
++#include <grub/priority_queue.h>
++
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++
++#include <queue>
++
++using namespace std;
++
++static int 
++compar (const void *a_, const void *b_)
++{
++  int a = *(int *) a_;
++  int b = *(int *) b_;
++  if (a < b)
++    return -1;
++  if (a > b)
++    return +1;
++  return 0;
++}
++
++static void
++priority_queue_test (void)
++{
++  priority_queue <int> pq;
++  grub_priority_queue_t pq2;
++  int counter;
++  int s = 0;
++  pq2 = grub_priority_queue_new (sizeof (int), compar);
++  if (!pq2)
++    {
++      grub_test_assert (0,
++			"priority queue: queue creating failed\n");
++      return;
++    }
++  srand (1);
++
++  for (counter = 0; counter < 1000000; counter++)
++    {
++      int op = rand () % 10;
++      if (s && *(int *) grub_priority_queue_top (pq2) != pq.top ())
++	{
++	  printf ("Error at %d\n", counter);
++	  grub_test_assert (0,
++			    "priority queue: error at %d\n", counter);
++	  return;
++	}
++      if (op < 3 && s)
++	{
++	  grub_priority_queue_pop (pq2);
++	  pq.pop ();
++	  s--;
++	}
++      else
++	{
++	  int v = rand ();
++	  pq.push (v);
++	  if (grub_priority_queue_push (pq2, &v) != 0)
++	    {
++	      grub_test_assert (0,
++				"priority queue: push failed");
++	      return;
++	    }
++	  s++;
++	}
++    }
++  while (s)
++    {
++      if (*(int *) grub_priority_queue_top (pq2) != pq.top ())
++	{
++	  grub_test_assert (0,
++			    "priority queue: Error at the end. %d elements remaining.\n", s);
++	  return;
++	}
++      grub_priority_queue_pop (pq2);
++      pq.pop ();
++      s--;
++    }
++  printf ("priority_queue: passed successfully\n");
++}
++
++GRUB_UNIT_TEST ("priority_queue_unit_test", priority_queue_test);
+-- 
+1.8.2.1
+

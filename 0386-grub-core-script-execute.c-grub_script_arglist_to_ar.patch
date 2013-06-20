@@ -1,0 +1,75 @@
+From 899fcf9761f2da87c95e42d614a21c808f2da894 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Mon, 29 Apr 2013 12:02:26 +0200
+Subject: [PATCH 386/482] 	* grub-core/script/execute.c
+ (grub_script_arglist_to_argv): Fix 	handling of variables containing
+ backslash.
+
+---
+ ChangeLog                  |  5 +++++
+ grub-core/script/execute.c | 33 +++++++++++++++++++++++++++++++--
+ 2 files changed, 36 insertions(+), 2 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index bf413de..9dacb19 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-04-29  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/script/execute.c (grub_script_arglist_to_argv): Fix
++	handling of variables containing backslash.
++
++2013-04-29  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* include/grub/list.h (FOR_LIST_ELEMENTS_SAFE):Fix a NULL pointer
+ 	dereference.
+ 	Reported by: qwertial.
+diff --git a/grub-core/script/execute.c b/grub-core/script/execute.c
+index a1dcc34..9babbee 100644
+--- a/grub-core/script/execute.c
++++ b/grub-core/script/execute.c
+@@ -643,9 +643,38 @@ grub_script_arglist_to_argv (struct grub_script_arglist *arglist,
+ 
+ 		  if (arg->type == GRUB_SCRIPT_ARG_TYPE_VAR)
+ 		    {
+-		      if (grub_script_argv_append (&result, values[i],
+-						   grub_strlen (values[i])))
++		      int len;
++		      char ch;
++		      char *p;
++		      char *op;
++		      const char *s = values[i];
++
++		      len = grub_strlen (values[i]);
++		      /* \? -> \\\? */
++		      /* \* -> \\\* */
++		      /* \ -> \\ */
++		      p = grub_malloc (len * 2 + 1);
++		      if (! p)
+ 			goto fail;
++
++		      op = p;
++		      while ((ch = *s++))
++			{
++			  if (ch == '\\')
++			    {
++			      *op++ = '\\';
++			      if (*s == '?' || *s == '*')
++				*op++ = '\\';
++			    }
++			  *op++ = ch;
++			}
++		      *op = '\0';
++
++		      if (grub_script_argv_append (&result, p, op - p))
++			{
++			  grub_free (p);
++			  goto fail;
++			}
+ 		    }
+ 		  else
+ 		    {
+-- 
+1.8.2.1
+

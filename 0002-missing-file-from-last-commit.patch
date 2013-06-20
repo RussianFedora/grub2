@@ -1,7 +1,7 @@
 From d72015266eb5f1cf712db5edec3aa6926447f668 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Thu, 28 Jun 2012 15:36:48 +0200
-Subject: [PATCH 002/364] missing file from last commit
+Subject: [PATCH 002/482] missing file from last commit
 
 ---
  grub-core/term/i386/pc/mda_text.c | 3 +++
@@ -18,5 +18,5 @@ index 0000000..907a36e
 +#include "vga_text.c"
 +
 -- 
-1.8.1.4
+1.8.2.1
 

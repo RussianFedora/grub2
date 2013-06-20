@@ -1,7 +1,7 @@
 From d2ccb3209c62de4292107df4207c02ee59dc11a9 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Mon, 2 Jul 2012 11:19:22 +0200
-Subject: [PATCH 004/364] 	* include/grub/list.h
+Subject: [PATCH 004/482] 	* include/grub/list.h
  (FOR_LIST_ELEMENTS_SAFE): New macro. 	* include/grub/command.h
  (FOR_COMMANDS_SAFE): Likewise. 	* grub-core/commands/help.c
  (grub_cmd_help): Use FOR_COMMANDS_SAFE.
@@ -57,5 +57,5 @@ index cadb2d9..6f6dec0 100644
  static inline void *
  grub_bad_type_cast_real (int line, const char *file)
 -- 
-1.8.1.4
+1.8.2.1
 

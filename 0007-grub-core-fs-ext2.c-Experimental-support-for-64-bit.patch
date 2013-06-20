@@ -1,7 +1,7 @@
 From c545d0bb2fe87b5a8ea6a903e4e9c113595ccfff Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Mon, 2 Jul 2012 11:28:42 +0200
-Subject: [PATCH 007/364] 	* grub-core/fs/ext2.c: Experimental support
+Subject: [PATCH 007/482] 	* grub-core/fs/ext2.c: Experimental support
  for 64-bit.
 
 ---
@@ -178,5 +178,5 @@ index c50e379..bd1ab24 100644
    data->disk = disk;
  
 -- 
-1.8.1.4
+1.8.2.1
 

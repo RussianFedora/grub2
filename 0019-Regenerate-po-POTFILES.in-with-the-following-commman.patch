@@ -1,7 +1,7 @@
 From 8b2ef54da3e28cf66637a09c2a2afad9ee56a535 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Gr=C3=A9goire=20Sutre?= <gregoire.sutre@gmail.com>
 Date: Wed, 1 Aug 2012 01:06:53 +0200
-Subject: [PATCH 019/364] Regenerate po/POTFILES.in with the following commmand
+Subject: [PATCH 019/482] Regenerate po/POTFILES.in with the following commmand
  in a clean tree:
 
 export LC_ALL=en_US.UTF-8
@@ -64,5 +64,5 @@ index 987b37a..01cc53c 100644
  ./include/grub/video.h
  ./include/grub/x86_64/at_keyboard.h
 -- 
-1.8.1.4
+1.8.2.1
 

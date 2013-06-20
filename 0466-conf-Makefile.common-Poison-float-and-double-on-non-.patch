@@ -1,0 +1,62 @@
+From 922c5f5bac2699f8fb4273e9e542fc8cb416535a Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Wed, 8 May 2013 11:05:37 +0200
+Subject: [PATCH 466/482] 	* conf/Makefile.common: Poison float and
+ double on non-emu.
+
+---
+ ChangeLog            | 4 ++++
+ conf/Makefile.common | 5 +++++
+ util/import_gcry.py  | 6 ++++++
+ 3 files changed, 15 insertions(+)
+
+diff --git a/ChangeLog b/ChangeLog
+index 39dc051..0da7177 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-05-08  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* conf/Makefile.common: Poison float and double on non-emu.
++
++2013-05-08  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* configure.ac: Don't disable extended registers on emu.
+ 
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/conf/Makefile.common b/conf/Makefile.common
+index c185a55..ca1cb17 100644
+--- a/conf/Makefile.common
++++ b/conf/Makefile.common
+@@ -40,6 +40,11 @@ endif
+ 
+ # Other options
+ 
++if ! COND_emu
++CFLAGS_PLATFORM += -Dfloat=__grub_poision
++CFLAGS_PLATFORM += -Ddouble=__grub_poision
++endif
++
+ CPPFLAGS_DEFAULT = -DGRUB_FILE=\"$(subst $(srcdir)/,,$<)\"
+ CPPFLAGS_DEFAULT += -I$(builddir)
+ CPPFLAGS_DEFAULT += -I$(srcdir)
+diff --git a/util/import_gcry.py b/util/import_gcry.py
+index 18f5253..afa8e69 100644
+--- a/util/import_gcry.py
++++ b/util/import_gcry.py
+@@ -488,6 +488,12 @@ for src in sorted (os.listdir (os.path.join (indir, "src"))):
+         fw.close ()
+         continue
+     f = codecs.open (infile, "r", "utf-8")
++    if src == "types.h":
++        fw.write (f.read ().replace ("float f;", "").replace ("double g;", ""))
++        f.close ()
++        fw.close ()
++        continue
++
+     fw.write (f.read ())
+     f.close ()
+     fw.close ()
+-- 
+1.8.2.1
+

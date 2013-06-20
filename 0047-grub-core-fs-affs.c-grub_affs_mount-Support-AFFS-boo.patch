@@ -1,7 +1,7 @@
 From d36c4c3115977beb5f9247c6c6f0a2a209389f45 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Wed, 26 Sep 2012 09:33:41 +0200
-Subject: [PATCH 047/364] 	* grub-core/fs/affs.c (grub_affs_mount):
+Subject: [PATCH 047/482] 	* grub-core/fs/affs.c (grub_affs_mount):
  Support AFFS bootblock in 	sector 1.
 
 ---
@@ -198,5 +198,5 @@ index ef65479..848a455 100644
  
    grub_free (data);
 -- 
-1.8.1.4
+1.8.2.1
 

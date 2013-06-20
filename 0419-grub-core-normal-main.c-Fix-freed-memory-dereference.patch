@@ -1,0 +1,67 @@
+From c62405b0f7b966a7efb3642b3db14469d9b82ba8 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sat, 4 May 2013 13:50:16 +0200
+Subject: [PATCH 419/482] 	* grub-core/normal/main.c: Fix freed memory
+ dereference.
+
+---
+ ChangeLog               |  4 ++++
+ grub-core/normal/main.c | 13 ++++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 47f06fd..16456f0 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/normal/main.c: Fix freed memory dereference.
++
++2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	Fix several memory leaks.
+ 
+ 2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
+index f7a815f..ffc2cd2 100644
+--- a/grub-core/normal/main.c
++++ b/grub-core/normal/main.c
+@@ -163,8 +163,9 @@ static grub_menu_t
+ read_config_file (const char *config)
+ {
+   grub_file_t file;
+-  const char *old_file, *old_dir;
++  char *old_file = 0, *old_dir = 0;
+   char *config_dir, *ptr = 0;
++  const char *ctmp;
+ 
+   grub_menu_t newmenu;
+ 
+@@ -183,8 +184,12 @@ read_config_file (const char *config)
+   if (! file)
+     return 0;
+ 
+-  old_file = grub_env_get ("config_file");
+-  old_dir = grub_env_get ("config_directory");
++  ctmp = grub_env_get ("config_file");
++  if (ctmp)
++    old_file = grub_strdup (ctmp);
++  ctmp = grub_env_get ("config_directory");
++  if (ctmp)
++    old_dir = grub_strdup (ctmp);
+   grub_env_set ("config_file", config);
+   config_dir = grub_strdup (config);
+   if (config_dir)
+@@ -220,6 +225,8 @@ read_config_file (const char *config)
+     grub_env_set ("config_directory", old_dir);
+   else
+     grub_env_unset ("config_directory");
++  grub_free (old_file);
++  grub_free (old_dir);
+ 
+   grub_file_close (file);
+ 
+-- 
+1.8.2.1
+

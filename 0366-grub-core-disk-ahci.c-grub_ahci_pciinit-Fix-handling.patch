@@ -1,0 +1,53 @@
+From cc5de4333e4d45063ef5c62e424fa9c3ca01caae Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sat, 27 Apr 2013 21:49:14 +0200
+Subject: [PATCH 366/482] 	* grub-core/disk/ahci.c (grub_ahci_pciinit):
+ Fix handling of empty 	ports.
+
+---
+ ChangeLog             | 5 +++++
+ grub-core/disk/ahci.c | 8 ++++----
+ 2 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 0f3eaf6..317a367 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,8 @@
++2013-04-27  Vladimir Serbinenko  <phcoder@gmail.com>
++
++	* grub-core/disk/ahci.c (grub_ahci_pciinit): Fix handling of empty
++	ports.
++
+ 2013-04-27  Leon Drugi <eyak>
+ 
+ 	* grub-core/loader/multiboot_mbi2.c (grub_multiboot_load): Fix cast in
+diff --git a/grub-core/disk/ahci.c b/grub-core/disk/ahci.c
+index 29fe246..47fd423 100644
+--- a/grub-core/disk/ahci.c
++++ b/grub-core/disk/ahci.c
+@@ -350,7 +350,7 @@ grub_ahci_pciinit (grub_pci_device_t dev,
+ 	  continue;
+ 	}
+ 
+-      adevs[i] = grub_malloc (sizeof (*adevs[i]));
++      adevs[i] = grub_zalloc (sizeof (*adevs[i]));
+       if (!adevs[i])
+ 	return 1;
+ 
+@@ -619,9 +619,9 @@ grub_ahci_pciinit (grub_pci_device_t dev,
+   for (i = 0; i < nports; i++)
+     if (failed_adevs[i])
+       {
+-	grub_dma_free (adevs[i]->command_list_chunk);
+-	grub_dma_free (adevs[i]->command_table_chunk);
+-	grub_dma_free (adevs[i]->rfis);
++	grub_dma_free (failed_adevs[i]->command_list_chunk);
++	grub_dma_free (failed_adevs[i]->command_table_chunk);
++	grub_dma_free (failed_adevs[i]->rfis);
+       }
+ 
+   for (i = 0; i < nports; i++)
+-- 
+1.8.2.1
+

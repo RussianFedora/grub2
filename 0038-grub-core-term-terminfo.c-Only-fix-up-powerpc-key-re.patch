@@ -1,7 +1,7 @@
 From 5ba7247c064336767ee6b0ad9465b547ac90322a Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Fri, 14 Sep 2012 11:23:36 +0100
-Subject: [PATCH 038/364] * grub-core/term/terminfo.c: Only fix up powerpc key
+Subject: [PATCH 038/482] * grub-core/term/terminfo.c: Only fix up powerpc key
  repeat on IEEE1275 machines.  Fixes powerpc-emu compilation. *
  include/grub/terminfo.h: Likewise.
 
@@ -70,5 +70,5 @@ index c081a92..20541a9 100644
    grub_uint64_t last_key_time;
  #endif
 -- 
-1.8.1.4
+1.8.2.1
 

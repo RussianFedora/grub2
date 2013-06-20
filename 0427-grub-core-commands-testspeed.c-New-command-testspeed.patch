@@ -1,0 +1,272 @@
+From 54f2bdbfd75f25d6a109d92b25879dd30e88b227 Mon Sep 17 00:00:00 2001
+From: Bean <bean123ch@gmail.com>
+Date: Sun, 5 May 2013 18:16:48 +0200
+Subject: [PATCH 427/482] 	* grub-core/commands/testspeed.c: New command
+ testspeed.
+
+---
+ ChangeLog                      |   4 ++
+ grub-core/Makefile.core.def    |   4 ++
+ grub-core/commands/ls.c        |   3 +-
+ grub-core/commands/testspeed.c | 115 +++++++++++++++++++++++++++++++++++++++++
+ grub-core/normal/misc.c        |  44 +++++++++++-----
+ include/grub/normal.h          |   9 +++-
+ 6 files changed, 165 insertions(+), 14 deletions(-)
+ create mode 100644 grub-core/commands/testspeed.c
+
+diff --git a/ChangeLog b/ChangeLog
+index c9e6f06..b79c57a 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,7 @@
++2013-05-05  Bean  <bean123ch@gmail.com>
++
++	* grub-core/commands/testspeed.c: New command testspeed.
++
+ 2013-05-05  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
+ 	Factor-out human-size printing.
+diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
+index 469524f..56a1ec3 100644
+--- a/grub-core/Makefile.core.def
++++ b/grub-core/Makefile.core.def
+@@ -2019,3 +2019,7 @@ module = {
+   enable = i386;
+ };
+ 
++module = {
++  name = testspeed;
++  common = commands/testspeed.c;
++};
+diff --git a/grub-core/commands/ls.c b/grub-core/commands/ls.c
+index 6c608f6..0eaf836 100644
+--- a/grub-core/commands/ls.c
++++ b/grub-core/commands/ls.c
+@@ -141,7 +141,8 @@ print_files_long (const char *filename, const struct grub_dirhook_info *info,
+       if (! ctx->human)
+ 	grub_printf ("%-12llu", (unsigned long long) file->size);
+       else
+-	grub_printf ("%-12s", grub_get_human_size (file->size, 1));
++	grub_printf ("%-12s", grub_get_human_size (file->size,
++						   GRUB_HUMAN_SIZE_SHORT));
+       grub_file_close (file);
+       grub_free (pathname);
+     }
+diff --git a/grub-core/commands/testspeed.c b/grub-core/commands/testspeed.c
+new file mode 100644
+index 0000000..d45fa7c
+--- /dev/null
++++ b/grub-core/commands/testspeed.c
+@@ -0,0 +1,115 @@
++/* testspeed.c - Command to test file read speed  */
++/*
++ *  GRUB  --  GRand Unified Bootloader
++ *  Copyright (C) 2012  Free Software Foundation, Inc.
++ *
++ *  GRUB is free software: you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation, either version 3 of the License, or
++ *  (at your option) any later version.
++ *
++ *  GRUB is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <grub/mm.h>
++#include <grub/file.h>
++#include <grub/time.h>
++#include <grub/misc.h>
++#include <grub/dl.h>
++#include <grub/extcmd.h>
++#include <grub/i18n.h>
++#include <grub/normal.h>
++
++GRUB_MOD_LICENSE ("GPLv3+");
++
++#define DEFAULT_BLOCK_SIZE	65536
++
++static const struct grub_arg_option options[] =
++  {
++    {"size", 's', 0, N_("Specify size for each read operation"), 0, ARG_TYPE_INT},
++    {0, 0, 0, 0, 0, 0}
++  };
++
++static grub_err_t
++grub_cmd_testspeed (grub_extcmd_context_t ctxt, int argc, char **args)
++{
++  struct grub_arg_list *state = ctxt->state;
++  grub_uint64_t start;
++  grub_uint64_t end;
++  grub_ssize_t block_size;
++  grub_disk_addr_t total_size;
++  char *buffer;
++  grub_file_t file;
++  grub_uint64_t whole, fraction;
++
++  if (argc == 0)
++    return grub_error (GRUB_ERR_BAD_ARGUMENT, N_("filename expected"));
++
++  block_size = (state[0].set) ?
++    grub_strtoul (state[0].arg, 0, 0) : DEFAULT_BLOCK_SIZE;
++
++  if (block_size <= 0)
++    return grub_error (GRUB_ERR_BAD_ARGUMENT, N_("invalid block size"));
++
++  buffer = grub_malloc (block_size);
++  if (buffer == NULL)
++    return grub_errno;
++
++  file = grub_file_open (args[0]);
++  if (file == NULL)
++    goto quit;
++
++  total_size = 0;
++  start = grub_get_time_ms ();
++  while (1)
++    {
++      grub_ssize_t size = grub_file_read (file, buffer, block_size);
++      if (size <= 0)
++	break;
++      total_size += size;
++    }
++  end = grub_get_time_ms ();
++  grub_file_close (file);
++
++  grub_printf_ (N_("File size: %s\n"),
++		grub_get_human_size (total_size, GRUB_HUMAN_SIZE_NORMAL));
++  whole = grub_divmod64 (end - start, 1000, &fraction);
++  grub_printf_ (N_("Elapsed time: %llu.%03llu s \n"),
++		(unsigned long long) whole,
++		(unsigned long long) fraction);
++
++  if (end != start)
++    {
++      grub_uint64_t speed =
++	grub_divmod64 (total_size * 100ULL * 1000ULL, end - start, 0);
++
++      grub_printf_ (N_("Speed: %s \n"),
++		    grub_get_human_size (speed,
++					 GRUB_HUMAN_SIZE_SPEED));
++    }
++
++ quit:
++  grub_free (buffer);
++
++  return grub_errno;
++}
++
++static grub_extcmd_t cmd;
++
++GRUB_MOD_INIT(testspeed)
++{
++  cmd = grub_register_extcmd ("testspeed", grub_cmd_testspeed, 0, N_("[-s SIZE] FILENAME"),
++			      N_("Test file read speed."),
++			      options);
++}
++
++GRUB_MOD_FINI(testspeed)
++{
++  grub_unregister_extcmd (cmd);
++}
+diff --git a/grub-core/normal/misc.c b/grub-core/normal/misc.c
+index 1a86e0f..bc6ce17 100644
+--- a/grub-core/normal/misc.c
++++ b/grub-core/normal/misc.c
+@@ -28,25 +28,45 @@
+ #include <grub/i18n.h>
+ #include <grub/partition.h>
+ 
+-static const char *grub_human_sizes[] = {N_("B"), N_("KiB"), N_("MiB"), N_("GiB"), N_("TiB")};
+-static const char *grub_human_short_sizes[] = {"", "K", "M", "G", "T"};
++static const char *grub_human_sizes[3][6] =
++  {
++    /* This algorithm in reality would work only up to (2^64) / 100 B = 81 PiB.
++       Put here all possible suffixes it can produce so no array bounds check
++       is needed.
++     */
++    /* TRANSLATORS: that's the list of binary unit prefixes.  */
++    { N_("B"),   N_("KiB"),   N_("MiB"),   N_("GiB"),   N_("TiB"),   N_("PiB")},
++    /* TRANSLATORS: that's the list of binary unit prefixes.  */
++    {    "",     N_("K"),     N_("M"),     N_("G"),     N_("T"),     N_("P") },
++    /* TRANSLATORS: that's the list of binary unit prefixes.  */
++    { N_("B/s"), N_("KiB/s"), N_("MiB/s"), N_("GiB/s"), N_("TiB/s"), N_("PiB/s"),  },    
++  };
+ 
+ const char *
+-grub_get_human_size (grub_uint64_t size, int sh)
++grub_get_human_size (grub_uint64_t size, enum grub_human_size_type type)
+ {
+-  grub_uint64_t fsize = size * 100ULL;
+-  grub_uint64_t fsz = size;
+-  int units = 0;
+-  static char buf[20];
++  grub_uint64_t fsize;
++  unsigned units = 0;
++  static char buf[30];
++  const char *umsg;
+ 
+-  while (fsz / 1024)
++  if (type != GRUB_HUMAN_SIZE_SPEED)
++    fsize = size * 100ULL;
++  else
++    fsize = size;
++
++  /* Since 2^64 / 1024^5  < 102400, this can give at most 5 iterations.
++     So units <=5, so impossible to go past the end of array.
++   */
++  while (fsize >= 102400)
+     {
+       fsize = (fsize + 512) / 1024;
+-      fsz /= 1024;
+       units++;
+     }
+ 
+-  if (units)
++  umsg = _(grub_human_sizes[type][units]);
++
++  if (units || type == GRUB_HUMAN_SIZE_SPEED)
+     {
+       grub_uint64_t whole, fraction;
+ 
+@@ -54,11 +74,11 @@ grub_get_human_size (grub_uint64_t size, int sh)
+       grub_snprintf (buf, sizeof (buf),
+ 		     "%" PRIuGRUB_UINT64_T
+ 		     ".%02" PRIuGRUB_UINT64_T "%s", whole, fraction,
+-		     sh ? grub_human_short_sizes[units] : _(grub_human_sizes[units]));
++		     umsg);
+     }
+   else
+     grub_snprintf (buf, sizeof (buf), "%llu%s", (unsigned long long) size,
+-		   sh ? grub_human_short_sizes[units] : _(grub_human_sizes[units]));
++		   umsg);
+   return buf;
+ }
+ 
+diff --git a/include/grub/normal.h b/include/grub/normal.h
+index 930b3b9..c32bc96 100644
+--- a/include/grub/normal.h
++++ b/include/grub/normal.h
+@@ -150,7 +150,14 @@ grub_dyncmd_get_cmd (grub_command_t cmd);
+ void
+ grub_gettext_reread_prefix (const char *val);
+ 
++enum grub_human_size_type
++  {
++    GRUB_HUMAN_SIZE_NORMAL,
++    GRUB_HUMAN_SIZE_SHORT,
++    GRUB_HUMAN_SIZE_SPEED,
++  };
++
+ const char *
+-grub_get_human_size (grub_uint64_t size, int sh);
++grub_get_human_size (grub_uint64_t size, enum grub_human_size_type type);
+ 
+ #endif /* ! GRUB_NORMAL_HEADER */
+-- 
+1.8.2.1
+

@@ -1,7 +1,7 @@
 From 2cce795e46cef6c5f057d46bae9a845621ca4a95 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Mon, 2 Jul 2012 11:30:04 +0200
-Subject: [PATCH 008/364] 	* grub-core/term/efi/serial.c: Support 1.5
+Subject: [PATCH 008/482] 	* grub-core/term/efi/serial.c: Support 1.5
  stop bits.
 
 ---
@@ -44,5 +44,5 @@ index da8c3ce..dc5f33b 100644
      return grub_error (GRUB_ERR_BAD_ARGUMENT,
  		       N_("unsupported serial port stop bits number"));
 -- 
-1.8.1.4
+1.8.2.1
 

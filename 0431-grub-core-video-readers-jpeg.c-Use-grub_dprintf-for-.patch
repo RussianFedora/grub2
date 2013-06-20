@@ -1,0 +1,79 @@
+From 830ca107511b53803fbefa89b7c7af0b06c4e337 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Tue, 7 May 2013 11:37:11 +0200
+Subject: [PATCH 431/482] 	* grub-core/video/readers/jpeg.c: Use
+ grub_dprintf for debug statements 	rather than printf. 	*
+ grub-core/video/readers/tga.c: Likewise.
+
+---
+ ChangeLog                      | 6 ++++++
+ grub-core/video/readers/jpeg.c | 4 +---
+ grub-core/video/readers/tga.c  | 6 ++----
+ 3 files changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 0fe18bb..04a2f00 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,11 @@
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/video/readers/jpeg.c: Use grub_dprintf for debug statements
++	rather than printf.
++	* grub-core/video/readers/tga.c: Likewise.
++
++2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* tests/priority_queue_unit_test.cc: New test.
+ 
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/video/readers/jpeg.c b/grub-core/video/readers/jpeg.c
+index 33f28c3..0067b7d 100644
+--- a/grub-core/video/readers/jpeg.c
++++ b/grub-core/video/readers/jpeg.c
+@@ -693,9 +693,7 @@ grub_jpeg_decode_jpeg (struct grub_jpeg_data *data)
+       if (grub_errno)
+ 	break;
+ 
+-#ifdef JPEG_DEBUG
+-      grub_printf ("jpeg marker: %x\n", marker);
+-#endif
++      grub_dprintf ("jpeg", "jpeg marker: %x\n", marker);
+ 
+       switch (marker)
+ 	{
+diff --git a/grub-core/video/readers/tga.c b/grub-core/video/readers/tga.c
+index 84be68a..5aa4c7d 100644
+--- a/grub-core/video/readers/tga.c
++++ b/grub-core/video/readers/tga.c
+@@ -29,8 +29,8 @@ GRUB_MOD_LICENSE ("GPLv3+");
+ /* Uncomment following define to enable TGA debug.  */
+ //#define TGA_DEBUG
+ 
++#define dump_int_field(x) grub_dprintf ("tga", #x " = %d (0x%04x)\n", x, x);
+ #if defined(TGA_DEBUG)
+-#define dump_int_field(x) grub_printf( #x " = %d (0x%04x)\n", x, x);
+ static grub_command_t cmd;
+ #endif
+ 
+@@ -347,8 +347,7 @@ grub_video_reader_tga (struct grub_video_bitmap **bitmap,
+       return grub_errno;
+     }
+ 
+-#if defined(TGA_DEBUG)
+-  grub_printf("tga: header\n");
++  grub_dprintf("tga", "tga: header\n");
+   dump_int_field(header.id_length);
+   dump_int_field(header.color_map_type);
+   dump_int_field(header.image_type);
+@@ -361,7 +360,6 @@ grub_video_reader_tga (struct grub_video_bitmap **bitmap,
+   dump_int_field(header.image_height);
+   dump_int_field(header.image_bpp);
+   dump_int_field(header.image_descriptor);
+-#endif
+ 
+   /* Check that bitmap encoding is supported.  */
+   switch (header.image_type)
+-- 
+1.8.2.1
+

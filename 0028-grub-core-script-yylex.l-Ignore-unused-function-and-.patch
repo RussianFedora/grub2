@@ -1,7 +1,7 @@
 From b7ae222dae310111f17da6e1fc072237977ac417 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Wed, 5 Sep 2012 08:51:31 +0200
-Subject: [PATCH 028/364] 	* grub-core/script/yylex.l: Ignore
+Subject: [PATCH 028/482] 	* grub-core/script/yylex.l: Ignore
  unused-function and sign-compare 	warnings.
 
 ---
@@ -38,5 +38,5 @@ index f6a39c5..8fdcfef 100644
  #define yyfree    grub_lexer_yyfree
  #define yyalloc   grub_lexer_yyalloc
 -- 
-1.8.1.4
+1.8.2.1
 

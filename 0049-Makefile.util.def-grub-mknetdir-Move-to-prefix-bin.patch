@@ -1,7 +1,7 @@
 From 42593e7230fad9f87732c1687cb5daff918f2fa1 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Wed, 26 Sep 2012 13:51:13 +0100
-Subject: [PATCH 049/364] * Makefile.util.def (grub-mknetdir): Move to
+Subject: [PATCH 049/482] * Makefile.util.def (grub-mknetdir): Move to
  $prefix/bin. Reported by: Daniel Kahn Gillmor.  Fixes Debian bug #688799.
 
 ---
@@ -40,5 +40,5 @@ index 72057cf..8324ede 100644
  
    common = util/grub-mknetdir.in;
 -- 
-1.8.1.4
+1.8.2.1
 

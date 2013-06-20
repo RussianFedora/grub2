@@ -1,7 +1,7 @@
 From f333a71c6c02232151d9af98a8beae3b5e23e102 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Wed, 5 Sep 2012 13:55:54 +0100
-Subject: [PATCH 031/364] * NEWS: Fix typo.
+Subject: [PATCH 031/482] * NEWS: Fix typo.
 
 ---
  ChangeLog | 4 ++++
@@ -35,5 +35,5 @@ index f9b06ab..4bb5f98 100644
    * Menu is organised with submenus.
    * Better default video mode selection using EDID.
 -- 
-1.8.1.4
+1.8.2.1
 

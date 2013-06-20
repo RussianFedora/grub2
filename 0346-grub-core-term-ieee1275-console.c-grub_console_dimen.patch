@@ -1,0 +1,48 @@
+From 42b86368891e0380415148cdc1990604bbf7f807 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Thu, 25 Apr 2013 00:45:29 +0200
+Subject: [PATCH 346/482] 	* grub-core/term/ieee1275/console.c
+ (grub_console_dimensions): Ignore 	bogus SLOF values.
+
+---
+ ChangeLog                         | 5 +++++
+ grub-core/term/ieee1275/console.c | 8 ++++++++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/ChangeLog b/ChangeLog
+index 9f2eccc..2670946 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-04-24  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/term/ieee1275/console.c (grub_console_dimensions): Ignore
++	bogus SLOF values.
++
++2013-04-24  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	Make check work on mips-arc.
+ 
+ 2013-04-24  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/term/ieee1275/console.c b/grub-core/term/ieee1275/console.c
+index 3a80864..6bcee58 100644
+--- a/grub-core/term/ieee1275/console.c
++++ b/grub-core/term/ieee1275/console.c
+@@ -123,6 +123,14 @@ grub_console_dimensions (void)
+ 	}
+     }
+ 
++  /* Bogus default value on SLOF in QEMU.  */
++  if (grub_console_terminfo_output.width == 200
++      && grub_console_terminfo_output.height == 200)
++    {
++      grub_console_terminfo_output.width = 80;
++      grub_console_terminfo_output.height = 24;
++    }
++
+   /* Use a small console by default.  */
+   if (! grub_console_terminfo_output.width)
+     grub_console_terminfo_output.width = 80;
+-- 
+1.8.2.1
+

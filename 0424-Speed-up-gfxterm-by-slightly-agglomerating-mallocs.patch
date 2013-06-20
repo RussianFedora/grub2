@@ -1,0 +1,210 @@
+From b6fba8115cc492d54f185f37080817b05871785f Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sat, 4 May 2013 15:07:13 +0200
+Subject: [PATCH 424/482] 	Speed-up gfxterm by slightly agglomerating
+ mallocs.
+
+---
+ ChangeLog                |  4 ++++
+ grub-core/term/gfxterm.c | 61 ++++++++++++++----------------------------------
+ include/grub/unicode.h   | 24 +++++++++++++++++++
+ 3 files changed, 45 insertions(+), 44 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index a13face..963792e 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	Speed-up gfxterm by slightly agglomerating mallocs.
++
++2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	More video checks.
+ 
+ 2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/term/gfxterm.c b/grub-core/term/gfxterm.c
+index 54636d7..0cb4037 100644
+--- a/grub-core/term/gfxterm.c
++++ b/grub-core/term/gfxterm.c
+@@ -49,7 +49,7 @@ struct grub_dirty_region
+ struct grub_colored_char
+ {
+   /* An Unicode codepoint.  */
+-  struct grub_unicode_glyph *code;
++  struct grub_unicode_glyph code;
+ 
+   /* Color values.  */
+   grub_video_color_t fg_color;
+@@ -175,14 +175,8 @@ set_term_color (grub_uint8_t term_color)
+ static void
+ clear_char (struct grub_colored_char *c)
+ {
+-  if (c->code)
+-    {
+-      grub_free (c->code->combining);
+-      grub_free (c->code);
+-    }
+-  c->code = grub_unicode_glyph_from_code (' ');
+-  if (!c->code)
+-    grub_errno = GRUB_ERR_NONE;
++  grub_free (c->code.combining);
++  grub_unicode_set_glyph_from_code (&c->code, ' ');
+   c->fg_color = virtual_screen.fg_color;
+   c->bg_color = virtual_screen.bg_color;
+ }
+@@ -197,11 +191,7 @@ grub_virtual_screen_free (void)
+       for (i = 0;
+ 	   i < virtual_screen.columns * virtual_screen.rows;
+ 	   i++)
+-	if (virtual_screen.text_buffer[i].code)
+-	  {
+-	    grub_free (virtual_screen.text_buffer[i].code->combining);
+-	    grub_free (virtual_screen.text_buffer[i].code);
+-	  }
++	grub_free (virtual_screen.text_buffer[i].code.combining);
+       grub_free (virtual_screen.text_buffer);
+     }
+ 
+@@ -277,7 +267,7 @@ grub_virtual_screen_setup (unsigned int x, unsigned int y,
+   /* Clear out text buffer. */
+   for (i = 0; i < virtual_screen.columns * virtual_screen.rows; i++)
+     {
+-      virtual_screen.text_buffer[i].code = 0;
++      virtual_screen.text_buffer[i].code.combining = 0;
+       clear_char (&(virtual_screen.text_buffer[i]));
+     }
+ 
+@@ -418,12 +408,9 @@ grub_gfxterm_term_fini (struct grub_term_output *term __attribute__ ((unused)))
+ 
+   for (i = 0; i < virtual_screen.columns * virtual_screen.rows; i++)
+     {
+-      if (virtual_screen.text_buffer[i].code)
+-	{
+-	  grub_free (virtual_screen.text_buffer[i].code->combining);
+-	  grub_free (virtual_screen.text_buffer[i].code);
+-	}
+-      virtual_screen.text_buffer[i].code = 0;
++      grub_free (virtual_screen.text_buffer[i].code.combining);
++      virtual_screen.text_buffer[i].code.combining = 0;
++      virtual_screen.text_buffer[i].code.base = 0;
+     }
+ 
+   /* Clear error state.  */
+@@ -634,11 +621,11 @@ paint_char (unsigned cx, unsigned cy)
+   p = (virtual_screen.text_buffer
+        + cx + (cy * virtual_screen.columns));
+ 
+-  if (!p->code)
++  if (!p->code.base)
+     return;
+ 
+   /* Get glyph for character.  */
+-  glyph = grub_font_construct_glyph (virtual_screen.font, p->code);
++  glyph = grub_font_construct_glyph (virtual_screen.font, &p->code);
+   if (!glyph)
+     {
+       grub_errno = GRUB_ERR_NONE;
+@@ -817,11 +804,7 @@ scroll_up (void)
+ 
+   /* Clear first line in text buffer.  */
+   for (i = 0; i < virtual_screen.columns; i++)
+-    if (virtual_screen.text_buffer[i].code)
+-      {
+-	grub_free (virtual_screen.text_buffer[i].code->combining);
+-	grub_free (virtual_screen.text_buffer[i].code);
+-      }
++    grub_free (virtual_screen.text_buffer[i].code.combining);
+ 
+   /* Scroll text buffer with one line to up.  */
+   grub_memmove (virtual_screen.text_buffer,
+@@ -834,10 +817,7 @@ scroll_up (void)
+   for (i = virtual_screen.columns * (virtual_screen.rows - 1);
+        i < virtual_screen.columns * virtual_screen.rows;
+        i++)
+-    {
+-      virtual_screen.text_buffer[i].code = 0;
+-      clear_char (&(virtual_screen.text_buffer[i]));
+-    }
++    clear_char (&(virtual_screen.text_buffer[i]));
+ 
+   virtual_screen.total_scroll++;
+ }
+@@ -897,14 +877,9 @@ grub_gfxterm_putchar (struct grub_term_output *term,
+       p = (virtual_screen.text_buffer +
+            virtual_screen.cursor_x +
+            virtual_screen.cursor_y * virtual_screen.columns);
+-      if (p->code)
+-	{
+-	  grub_free (p->code->combining);
+-	  grub_free (p->code);
+-	}
+-      p->code = grub_unicode_glyph_dup (c);
+-      if (!p->code)
+-	grub_errno = GRUB_ERR_NONE;
++      grub_free (p->code.combining);
++      grub_unicode_set_glyph (&p->code, c);
++      grub_errno = GRUB_ERR_NONE;
+       p->fg_color = virtual_screen.fg_color;
+       p->bg_color = virtual_screen.bg_color;
+ 
+@@ -916,11 +891,9 @@ grub_gfxterm_putchar (struct grub_term_output *term,
+           for (i = 1; i < char_width && p + i < 
+ 		 virtual_screen.text_buffer + virtual_screen.columns
+ 		 * virtual_screen.rows; i++)
+-	    if (p[i].code)
+ 	      {
+-		grub_free (p[i].code->combining);
+-		grub_free (p[i].code);
+-		p[i].code = NULL;
++		grub_free (p[i].code.combining);
++		p[i].code.base = 0;
+ 	      }
+         }
+ 
+diff --git a/include/grub/unicode.h b/include/grub/unicode.h
+index 5a96a19..3d79c4c 100644
+--- a/include/grub/unicode.h
++++ b/include/grub/unicode.h
+@@ -274,6 +274,21 @@ grub_unicode_glyph_dup (const struct grub_unicode_glyph *in)
+   return out;
+ }
+ 
++static inline void
++grub_unicode_set_glyph (struct grub_unicode_glyph *out,
++			const struct grub_unicode_glyph *in)
++{
++  grub_memcpy (out, in, sizeof (*in));
++  if (in->combining)
++    {
++      out->combining = grub_malloc (in->ncomb * sizeof (out->combining[0]));
++      if (!out->combining)
++	return;
++      grub_memcpy (out->combining, in->combining,
++		   in->ncomb * sizeof (out->combining[0]));
++    }
++}
++
+ static inline struct grub_unicode_glyph *
+ grub_unicode_glyph_from_code (grub_uint32_t code)
+ {
+@@ -287,6 +302,15 @@ grub_unicode_glyph_from_code (grub_uint32_t code)
+   return ret;
+ }
+ 
++static inline void
++grub_unicode_set_glyph_from_code (struct grub_unicode_glyph *glyph,
++				  grub_uint32_t code)
++{
++  grub_memset (glyph, 0, sizeof (*glyph));
++
++  glyph->base = code;
++}
++
+ grub_uint32_t
+ grub_unicode_mirror_code (grub_uint32_t in);
+ grub_uint32_t
+-- 
+1.8.2.1
+

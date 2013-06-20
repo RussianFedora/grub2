@@ -1,0 +1,48 @@
+From 0053990e0ed35bc3f438628a5b6b5aa6134b2d4b Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sat, 4 May 2013 13:43:07 +0200
+Subject: [PATCH 417/482] 	* grub-core/normal/menu.c (run_menu): Fix
+ timeout reference point.
+
+---
+ ChangeLog               | 4 ++++
+ grub-core/normal/menu.c | 6 +++---
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index e0576e5..6b0576d 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/normal/menu.c (run_menu): Fix timeout reference point.
++
++2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/gettext/gettext.c: Try $lang.gmo as well.
+ 
+ 2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
+index 787b287..fba19db 100644
+--- a/grub-core/normal/menu.c
++++ b/grub-core/normal/menu.c
+@@ -519,12 +519,12 @@ run_menu (grub_menu_t menu, int nested, int *auto_boot)
+ 
+   current_entry = default_entry;
+ 
+-  /* Initialize the time.  */
+-  saved_time = grub_get_time_ms ();
+-
+  refresh:
+   menu_init (current_entry, menu, nested);
+ 
++  /* Initialize the time.  */
++  saved_time = grub_get_time_ms ();
++
+   timeout = grub_menu_get_timeout ();
+ 
+   if (timeout > 0)
+-- 
+1.8.2.1
+

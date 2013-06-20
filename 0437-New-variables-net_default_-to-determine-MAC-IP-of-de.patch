@@ -1,0 +1,136 @@
+From 95329b0fbbbd6c7258c275a27ed904bdae11caad Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Tue, 7 May 2013 12:05:36 +0200
+Subject: [PATCH 437/482] 	New variables 'net_default_*' to determine
+ MAC/IP of default interface.
+
+---
+ ChangeLog             |  4 +++
+ grub-core/net/bootp.c |  3 +++
+ grub-core/net/net.c   | 69 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 75 insertions(+), 1 deletion(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 67b4c6f..cbd5d97 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	New variables 'net_default_*' to determine MAC/IP of default interface.
++
++2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* tests/gettext_strings_test.in: A test to check for strings not
+ 	marked for translation.
+ 
+diff --git a/grub-core/net/bootp.c b/grub-core/net/bootp.c
+index 33f860a..c8ef4d6 100644
+--- a/grub-core/net/bootp.c
++++ b/grub-core/net/bootp.c
+@@ -211,6 +211,9 @@ grub_net_configure_by_dhcp_ack (const char *name,
+       grub_print_error ();
+     }
+ 
++  if (is_def)
++    grub_env_set ("net_default_interface", name);
++
+   if (device && !*device && bp->server_ip)
+     {
+       *device = grub_xasprintf ("tftp,%d.%d.%d.%d",
+diff --git a/grub-core/net/net.c b/grub-core/net/net.c
+index aebbe4b..8ea6906 100644
+--- a/grub-core/net/net.c
++++ b/grub-core/net/net.c
+@@ -1,6 +1,6 @@
+ /*
+  *  GRUB  --  GRand Unified Bootloader
+- *  Copyright (C) 2010,2011  Free Software Foundation, Inc.
++ *  Copyright (C) 2010,2011,2012,2013  Free Software Foundation, Inc.
+  *
+  *  GRUB is free software: you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License as published by
+@@ -813,6 +813,69 @@ defserver_get_env (struct grub_env_var *var __attribute__ ((unused)),
+   return grub_net_default_server ? : "";
+ }
+ 
++static const char *
++defip_get_env (struct grub_env_var *var __attribute__ ((unused)),
++	       const char *val __attribute__ ((unused)))
++{
++  const char *intf = grub_env_get ("net_default_interface");
++  const char *ret = NULL;
++  if (intf)
++    {
++      char *buf = grub_xasprintf ("net_%s_ip", intf);
++      if (buf)
++	ret = grub_env_get (buf);
++      grub_free (buf);
++    }
++  return ret;
++}
++
++static char *
++defip_set_env (struct grub_env_var *var __attribute__ ((unused)),
++	       const char *val)
++{
++  const char *intf = grub_env_get ("net_default_interface");
++  if (intf)
++    {
++      char *buf = grub_xasprintf ("net_%s_ip", intf);
++      if (buf)
++	grub_env_set (buf, val);
++      grub_free (buf);
++    }
++  return NULL;
++}
++
++
++static const char *
++defmac_get_env (struct grub_env_var *var __attribute__ ((unused)),
++	       const char *val __attribute__ ((unused)))
++{
++  const char *intf = grub_env_get ("net_default_interface");
++  const char *ret = NULL;
++  if (intf)
++    {
++      char *buf = grub_xasprintf ("net_%s_mac", intf);
++      if (buf)
++	ret = grub_env_get (buf);
++      grub_free (buf);
++    }
++  return ret;
++}
++
++static char *
++defmac_set_env (struct grub_env_var *var __attribute__ ((unused)),
++	       const char *val)
++{
++  const char *intf = grub_env_get ("net_default_interface");
++  if (intf)
++    {
++      char *buf = grub_xasprintf ("net_%s_mac", intf);
++      if (buf)
++	grub_env_set (buf, val);
++      grub_free (buf);
++    }
++  return NULL;
++}
++
+ 
+ static void
+ grub_net_network_level_interface_register (struct grub_net_network_level_interface *inter)
+@@ -1560,6 +1623,10 @@ GRUB_MOD_INIT(net)
+ 			       defserver_set_env);
+   grub_register_variable_hook ("pxe_default_server", defserver_get_env,
+ 			       defserver_set_env);
++  grub_register_variable_hook ("net_default_ip", defip_get_env,
++			       defip_set_env);
++  grub_register_variable_hook ("net_default_mac", defmac_get_env,
++			       defmac_set_env);
+ 
+   cmd_addaddr = grub_register_command ("net_add_addr", grub_cmd_addaddr,
+ 					/* TRANSLATORS: HWADDRESS stands for
+-- 
+1.8.2.1
+

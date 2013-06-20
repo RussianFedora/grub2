@@ -1,0 +1,80 @@
+From 189c134b407a9addc5f8cc4b7c95042820103c0e Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Fri, 26 Apr 2013 23:41:13 +0200
+Subject: [PATCH 357/482] 	* util/getroot.c (exec_pipe): Put proper #if's
+ so that its users don't 	compile when not needed.
+
+---
+ ChangeLog      |  5 +++++
+ util/getroot.c | 11 ++++++-----
+ 2 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 5ddb7a8..4975a2c 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-04-26  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* util/getroot.c (exec_pipe): Put proper #if's so that its users don't
++	compile when not needed.
++
++2013-04-26  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* tests/pseries_test.in: New test.
+ 
+ 2013-04-26  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/util/getroot.c b/util/getroot.c
+index ecf7ce1..2ad8a55 100644
+--- a/util/getroot.c
++++ b/util/getroot.c
+@@ -220,9 +220,6 @@ xgetcwd (void)
+ 
+ #if !defined (__MINGW32__) && !defined (__CYGWIN__) && !defined (__GNU__)
+ 
+-#if (defined (__linux__) || \
+-     !defined (HAVE_LIBZFS) || !defined (HAVE_LIBNVPAIR))
+-
+ static pid_t
+ exec_pipe (char **argv, int *fd)
+ {
+@@ -268,8 +265,6 @@ exec_pipe (char **argv, int *fd)
+     }
+ }
+ 
+-#endif
+-
+ static char **
+ find_root_devices_from_poolname (char *poolname)
+ {
+@@ -1322,6 +1317,8 @@ grub_util_get_dev_abstraction (const char *os_dev)
+   return GRUB_DEV_ABSTRACTION_NONE;
+ }
+ 
++#if !defined (__MINGW32__) && !defined (__CYGWIN__) && !defined (__GNU__)
++
+ static void
+ pull_lvm_by_command (const char *os_dev)
+ {
+@@ -1392,6 +1389,8 @@ out:
+   free (buf);
+ }
+ 
++#endif
++
+ #ifdef __linux__
+ static char *
+ get_mdadm_uuid (const char *os_dev)
+@@ -1615,7 +1614,9 @@ grub_util_pull_device (const char *os_dev)
+       break;
+ 
+     case GRUB_DEV_ABSTRACTION_LVM:
++#if !defined (__MINGW32__) && !defined (__CYGWIN__) && !defined (__GNU__)
+       pull_lvm_by_command (os_dev);
++#endif
+       /* Fallthrough in case that lvm-tools are unavailable.  */
+     case GRUB_DEV_ABSTRACTION_LUKS:
+ #ifdef HAVE_DEVICE_MAPPER
+-- 
+1.8.2.1
+

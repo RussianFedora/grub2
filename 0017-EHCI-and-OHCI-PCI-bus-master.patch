@@ -1,7 +1,7 @@
 From 6054ac4ca1ce5f3e4589bfead3c9c05af89f9ace Mon Sep 17 00:00:00 2001
 From: starous <starous@pracovna>
 Date: Sun, 22 Jul 2012 21:09:30 +0200
-Subject: [PATCH 017/364] EHCI and OHCI PCI bus master
+Subject: [PATCH 017/482] EHCI and OHCI PCI bus master
 
 ---
  ChangeLog                | 5 +++++
@@ -55,5 +55,5 @@ index 23cf631..6fabb4b 100644
  		    class, subclass, interf);
      }
 -- 
-1.8.1.4
+1.8.2.1
 

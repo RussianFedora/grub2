@@ -1,7 +1,7 @@
 From 4942f9b133e52828d2441309beea0e9278e8b80c Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Sun, 22 Jul 2012 16:27:03 +0200
-Subject: [PATCH 013/364] 	* grub-core/lib/xzembed/xz_dec_stream.c
+Subject: [PATCH 013/482] 	* grub-core/lib/xzembed/xz_dec_stream.c
  (hash_validate): Fix behaviour 	if hash function is unavailable. 
  (dec_stream_header): Likewise.
 
@@ -69,5 +69,5 @@ index 0d79b1f..6170b0c 100644
  	}
  	else
 -- 
-1.8.1.4
+1.8.2.1
 

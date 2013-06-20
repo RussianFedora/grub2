@@ -1,0 +1,452 @@
+From 5ece7791529296e557e7b38aa66ffb4262a96a31 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Mon, 29 Apr 2013 12:26:43 +0200
+Subject: [PATCH 391/482] 	Unify more code in grub-install_header.
+
+---
+ ChangeLog                 |  4 ++++
+ util/grub-install.in      | 37 -------------------------------------
+ util/grub-install_header  | 40 ++++++++++++++++++++++++++++++++++++++++
+ util/grub-mknetdir.in     | 36 ------------------------------------
+ util/grub-mkrescue.in     | 39 ---------------------------------------
+ util/grub-mkstandalone.in | 37 -------------------------------------
+ 6 files changed, 44 insertions(+), 149 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index e4a7307..eff0b6b 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-04-29  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	Unify more code in grub-install_header.
++
++2013-04-29  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	Add few new tests.
+ 
+ 2013-04-29  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/util/grub-install.in b/util/grub-install.in
+index d69ef3a..3dbd5da 100644
+--- a/util/grub-install.in
++++ b/util/grub-install.in
+@@ -17,38 +17,19 @@
+ # along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
+ 
+ # Initialize some variables.
+-prefix="@prefix@"
+-exec_prefix="@exec_prefix@"
+-datarootdir="@datarootdir@"
+ sbindir="@sbindir@"
+-bindir="@bindir@"
+-libdir="@libdir@"
+ sysconfdir="@sysconfdir@"
+-PACKAGE_NAME=@PACKAGE_NAME@
+-PACKAGE_TARNAME=@PACKAGE_TARNAME@
+-PACKAGE_VERSION=@PACKAGE_VERSION@
+-
+-export TEXTDOMAIN=@PACKAGE@
+-export TEXTDOMAINDIR="@localedir@"
+ 
+ host_os=@host_os@
+ target=
+-datadir="@datadir@"
+-if [ "x$pkgdatadir" = x ]; then
+-    pkgdatadir="${datadir}/@PACKAGE@"
+-fi
+ localedir="@datadir@/locale"
+ 
+-self="`basename $0`"
+-
+-grub_mkimage="${bindir}/@grub_mkimage@"
+ grub_probe="${sbindir}/@grub_probe@"
+ grub_editenv="${bindir}/@grub_editenv@"
+ grub_mkrelpath="${bindir}/@grub_mkrelpath@"
+ rootdir=
+ bootdir=
+ grubdir="`echo "/@bootdirname@/@grubdirname@" | sed 's,//*,/,g'`"
+-modules=
+ 
+ install_device=
+ force_lba=
+@@ -73,8 +54,6 @@ fi
+ 
+ disk_module=unspecified
+ 
+-. "${pkgdatadir}/grub-mkconfig_lib"
+-
+ # Usage: usage
+ # Print the usage.
+ usage () {
+@@ -85,8 +64,6 @@ usage () {
+     gettext "Install GRUB on your drive." ; echo
+     echo
+     print_option_help "-h, --help" "$(gettext "print this message and exit")"
+-    print_option_help "-v, --version" "$(gettext "print the version information and exit")"
+-    print_option_help "--modules=$(gettext "MODULES")" "$(gettext "pre-load specified modules MODULES")"
+     grub_print_install_files_help
+ 
+     dirmsg="$(gettext_printf "install GRUB images under the directory DIR/%s instead of the %s directory" "@grubdirname@" "$grubdir")"
+@@ -96,7 +73,6 @@ usage () {
+     # TRANSLATORS: "current" refers to the platform user's currently running on
+     print_option_help "--target=$target_trans" "$(gettext "install GRUB for TARGET platform [default=current]")"
+     print_option_help "--grub-setup=$(gettext "FILE")" "$(gettext "use FILE as grub-setup")"
+-    print_option_help "--grub-mkimage=$(gettext "FILE")" "$(gettext "use FILE as grub-mkimage")"
+     print_option_help "--grub-mkrelpath=$(gettext "FILE")" "$(gettext "use FILE as grub-mkrelpath")"
+     print_option_help "--grub-probe=$(gettext "FILE")" "$(gettext "use FILE as grub-probe")"
+     # TRANSLATORS: "may break" doesn't just mean that option wouldn't have any
+@@ -140,14 +116,6 @@ do
+     -h | --help)
+ 	usage
+ 	exit 0 ;;
+-    -v | --version)
+-	echo "$self (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+-	exit 0 ;;
+-
+-    --modules)
+-	modules=`argument $option "$@"`; shift;;
+-    --modules=*)
+-	modules=`echo "$option" | sed 's/--modules=//'` ;;
+ 
+     --force-file-id)
+ 	force_file_id=y ;;
+@@ -189,11 +157,6 @@ do
+     --bootloader-id=*)
+ 	bootloader_id="`echo "$option" | sed 's/--bootloader-id=//'`" ;;
+ 
+-    --grub-mkimage)
+-	grub_mkimage="`argument $option "$@"`"; shift;;
+-    --grub-mkimage=*)
+-	grub_mkimage="`echo "$option" | sed 's/--grub-mkimage=//'`" ;;
+-
+     --grub-mkrelpath)
+ 	grub_mkrelpath="`argument "$option" "$@"`"; shift;;
+     --grub-mkrelpath=*)
+diff --git a/util/grub-install_header b/util/grub-install_header
+index 72d91e9..cf7fa9d 100644
+--- a/util/grub-install_header
++++ b/util/grub-install_header
+@@ -16,9 +16,34 @@ set -e
+ # You should have received a copy of the GNU General Public License
+ # along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
+ 
++prefix="@prefix@"
++exec_prefix="@exec_prefix@"
++datarootdir="@datarootdir@"
++bindir="@bindir@"
++
++libdir="@libdir@"
++PACKAGE_NAME=@PACKAGE_NAME@
++PACKAGE_TARNAME=@PACKAGE_TARNAME@
++PACKAGE_VERSION=@PACKAGE_VERSION@
++datadir="@datadir@"
++if [ "x$pkgdatadir" = x ]; then
++    pkgdatadir="${datadir}/@PACKAGE@"
++fi
++
++self=`basename $0`
++
++export TEXTDOMAIN=@PACKAGE@
++export TEXTDOMAINDIR="@localedir@"
++
++. "${pkgdatadir}/grub-mkconfig_lib"
++
++modules=
++
+ pkglib_DATA="moddep.lst command.lst fs.lst partmap.lst parttool.lst \
+ handler.lst video.lst crypto.lst terminal.lst"
+ 
++grub_mkimage="${bindir}/@grub_mkimage@"
++
+ grub_compress_file () {
+     if [ "$compressor" != "" ] ; then
+         "$compressor" $compressor_opts "$1" > "$2"
+@@ -121,6 +146,7 @@ grub_install_files () {
+ }
+ 
+ grub_print_install_files_help () {
++    print_option_help "--modules=$(gettext "MODULES")" "$(gettext "pre-load specified modules MODULES")"
+     print_option_help "--install-modules=$(gettext "MODULES")" "$(gettext "install only MODULES and their dependencies [default=all]")"
+     print_option_help "--themes=THEMES" "$(gettext_printf "install THEMES [default=%s]" "starfield")"
+     print_option_help "--fonts=FONTS" "$(gettext_printf "install FONTS [default=%s]" "unicode")"
+@@ -129,6 +155,8 @@ grub_print_install_files_help () {
+     # TRANSLATORS: platform here isn't identifier. It can be translated.
+     dir_msg="$(gettext_printf "use images and modules under DIR [default=%s/<platform>]" "${libdir}/@PACKAGE@")"
+     print_option_help "-d, --directory=$(gettext "DIR")" "$dir_msg"
++    print_option_help  "--grub-mkimage=$(gettext "FILE")" "$(gettext "use FILE as grub-mkimage")"
++    print_option_help "-v, --version" "$(gettext "print the version information and exit")"
+ }
+ 
+ install_modules=all
+@@ -212,6 +240,18 @@ grub_process_install_options () {
+ 	    source_directory=`argument $option "$@"`; grub_process_install_options_consumed=2 ;;
+ 	--override-directory=*)
+ 	    source_directory=`echo "$option" | sed 's/--override-directory=//'` grub_process_install_options_consumed=1;;
++
++	--grub-mkimage)
++	    grub_mkimage=`argument $option "$@"`; grub_process_install_options_consumed=2 ;;
++        --grub-mkimage=*)
++	    grub_mkimage=`echo "$option" | sed 's/--grub-mkimage=//'`;grub_process_install_options_consumed=1 ;;
++        --modules)
++	    modules=`argument $option "$@"`; grub_process_install_options_consumed=2;;
++        --modules=*)
++	    modules=`echo "$option" | sed 's/--modules=//'` grub_process_install_options_consumed=1;;
++        -v | --version)
++	    echo "$self (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
++	    exit 0 ;;
+     esac
+ }
+ 
+diff --git a/util/grub-mknetdir.in b/util/grub-mknetdir.in
+index 051b985..97d4155 100644
+--- a/util/grub-mknetdir.in
++++ b/util/grub-mknetdir.in
+@@ -15,23 +15,8 @@
+ # along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
+ 
+ # Initialize some variables.
+-prefix="@prefix@"
+-exec_prefix="@exec_prefix@"
+-datarootdir="@datarootdir@"
+-bindir="@bindir@"
+-libdir="@libdir@"
+-PACKAGE_NAME=@PACKAGE_NAME@
+-PACKAGE_TARNAME=@PACKAGE_TARNAME@
+-PACKAGE_VERSION=@PACKAGE_VERSION@
+ host_os=@host_os@
+-datadir="@datadir@"
+-if [ "x$pkgdatadir" = x ]; then
+-    pkgdatadir="${datadir}/@PACKAGE@"
+-fi
+-
+-self=`basename $0`
+ 
+-grub_mkimage="${bindir}/@grub_mkimage@"
+ rootdir=/srv/tftp
+ modules=
+ 
+@@ -48,11 +33,6 @@ efi32_dir="${libdir}/@PACKAGE@/i386-efi"
+ efi64_dir="${libdir}/@PACKAGE@/x86_64-efi"
+ itanium_dir="${libdir}/@PACKAGE@/ia64-efi"
+ 
+-export TEXTDOMAIN=@PACKAGE@
+-export TEXTDOMAINDIR="@localedir@"
+-
+-. "${pkgdatadir}/grub-mkconfig_lib"
+-
+ # Usage: usage
+ # Print the usage.
+ usage () {
+@@ -60,12 +40,9 @@ usage () {
+     gettext; echo "Install GRUB on your drive."; echo
+     echo
+     print_option_help "-h, --help" "$(gettext "print this message and exit")"
+-    print_option_help "-v, --version" "$(gettext "print the version information and exit")"
+-    print_option_help "--modules=$(gettext "MODULES")" "$(gettext "pre-load specified modules MODULES")"
+     grub_print_install_files_help
+     print_option_help "--net-directory=$(gettext "DIR")" "$(gettext "root directory of TFTP server")"
+     print_option_help "--subdir=$(gettext "DIR")" "$(gettext "relative subdirectory on network server")"
+-    print_option_help "--grub-mkimage=$(gettext "FILE")" "$(gettext "use FILE as grub-mkimage")"
+     echo
+     gettext_printf "%s copies GRUB images into net_directory/subdir/target_cpu-platform\n" "$self" 
+     echo
+@@ -88,14 +65,6 @@ do
+     -h | --help)
+ 	usage
+ 	exit 0 ;;
+-    -v | --version)
+-	echo "$self (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+-	exit 0 ;;
+-
+-    --modules)
+-	modules=`argument $option "$@"`; shift;;
+-    --modules=*)
+-	modules=`echo "$option" | sed 's/--modules=//'` ;;
+ 
+     --net-directory)
+ 	rootdir=`argument $option "$@"`; shift;;
+@@ -107,11 +76,6 @@ do
+     --subdir=*)
+ 	subdir=`echo "$option" | sed 's/--subdir=//'` ;;
+ 
+-    --grub-mkimage)
+-	grub_mkimage=`argument $option "$@"`; shift;;
+-    --grub-mkimage=*)
+-	grub_mkimage=`echo "$option" | sed 's/--grub-mkimage=//'` ;;
+-
+     # This is an undocumented feature...
+     --debug)
+ 	debug=yes ;;
+diff --git a/util/grub-mkrescue.in b/util/grub-mkrescue.in
+index a8d492e..b942c8f 100644
+--- a/util/grub-mkrescue.in
++++ b/util/grub-mkrescue.in
+@@ -18,22 +18,6 @@
+ 
+ # Initialize some variables.
+ 
+-prefix="@prefix@"
+-exec_prefix="@exec_prefix@"
+-datarootdir="@datarootdir@"
+-bindir="@bindir@"
+-libdir="@libdir@"
+-PACKAGE_NAME=@PACKAGE_NAME@
+-PACKAGE_TARNAME=@PACKAGE_TARNAME@
+-PACKAGE_VERSION=@PACKAGE_VERSION@
+-datadir="@datadir@"
+-if [ "x$pkgdatadir" = x ]; then
+-    pkgdatadir="${datadir}/@PACKAGE@"
+-fi
+-pkglib_DATA="moddep.lst command.lst fs.lst partmap.lst parttool.lst handler.lst video.lst crypto.lst terminal.lst"
+-
+-self=`basename $0`
+-
+ multiboot_dir="${libdir}/@PACKAGE@/i386-multiboot"
+ coreboot_dir="${libdir}/@PACKAGE@/i386-coreboot"
+ qemu_dir="${libdir}/@PACKAGE@/i386-qemu"
+@@ -50,7 +34,6 @@ arcs_dir="${libdir}/@PACKAGE@/mips-arc"
+ arc_dir="${libdir}/@PACKAGE@/mipsel-arc"
+ ppc_dir="${libdir}/@PACKAGE@/powerpc-ieee1275"
+ rom_directory=
+-grub_mkimage="${bindir}/@grub_mkimage@"
+ grub_render_label="${bindir}/@grub_render_label@"
+ grub_glue_efi="${bindir}/@grub_glue_efi@"
+ label_font="${pkgdatadir}/unicode.pf2"
+@@ -61,13 +44,8 @@ product_version="${PACKAGE_VERSION}"
+ 
+ xorriso=xorriso
+ 
+-export TEXTDOMAIN=@PACKAGE@
+-export TEXTDOMAINDIR="@localedir@"
+-
+ localedir="@datadir@/locale"
+ 
+-. "${pkgdatadir}/grub-mkconfig_lib"
+-
+ # Usage: usage
+ # Print the usage.
+ usage () {
+@@ -77,15 +55,11 @@ usage () {
+     echo
+     filetrans="$(gettext FILE)"
+     print_option_help "-h, --help" "$(gettext "print this message and exit")"
+-    print_option_help "-v, --version" "$(gettext "print the version information and exit")"
+     print_option_help "-o, --output=$filetrans" "$(gettext "save output in FILE [required]")"
+-    print_option_help "--modules=$(gettext "MODULES")" "$(gettext "pre-load specified modules MODULES")"
+     grub_print_install_files_help
+-    print_option_help "--install-modules=$(gettext "MODULES")" "$(gettext "install only MODULES and their dependencies on bootable media")"
+     print_option_help "--rom-directory=$(gettext "DIR")" "$(gettext "save ROM images in DIR [optional]")"
+     # TRANSLATORS: xorriso is a program for creating ISOs and burning CDs
+     print_option_help "--xorriso=$filetrans" "$(gettext "use FILE as xorriso [optional]")"
+-    print_option_help "--grub-mkimage=$filetrans" "$(gettext "use FILE as grub-mkimage")"
+     print_option_help "--grub-glue-efi=$filetrans" "$(gettext "use FILE as grub-glue-efi")"
+     print_option_help "--grub-render-label=$filetrans" "$(gettext "use FILE as grub-render-label")"
+     print_option_help "--label-font=$filetrans" "$(gettext "use FILE as font for label")"
+@@ -123,14 +97,6 @@ do
+     -h | --help)
+ 	usage
+ 	exit 0 ;;
+-    -v | --version)
+-	echo "$self (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+-	exit 0 ;;
+-
+-    --modules)
+-        modules=`argument $option "$@"`; shift ;;
+-    --modules=*)
+-	modules=`echo "$option" | sed 's/--modules=//'` ;;
+ 
+     -o | --output)
+ 	output_image=`argument $option "$@"`; shift ;;
+@@ -164,11 +130,6 @@ do
+     --product-version=*)
+ 	product_version=`echo "$option" | sed 's/--product-version=//'` ;;
+ 
+-    --grub-mkimage)
+-	grub_mkimage=`argument $option "$@"`; shift ;;
+-    --grub-mkimage=*)
+-	grub_mkimage=`echo "$option" | sed 's/--grub-mkimage=//'` ;;
+-
+     --grub-glue-efi)
+ 	grub_glue_efi=`argument $option "$@"`; shift ;;
+     --grub-glue-efi=*)
+diff --git a/util/grub-mkstandalone.in b/util/grub-mkstandalone.in
+index 30dd90f..b692c48 100644
+--- a/util/grub-mkstandalone.in
++++ b/util/grub-mkstandalone.in
+@@ -18,31 +18,10 @@
+ 
+ # Initialize some variables.
+ 
+-prefix="@prefix@"
+-exec_prefix="@exec_prefix@"
+-datarootdir="@datarootdir@"
+-bindir="@bindir@"
+-libdir="@libdir@"
+-PACKAGE_NAME=@PACKAGE_NAME@
+-PACKAGE_TARNAME=@PACKAGE_TARNAME@
+-PACKAGE_VERSION=@PACKAGE_VERSION@
+-datadir="@datadir@"
+-if [ "x$pkgdatadir" = x ]; then
+-    pkgdatadir="${datadir}/@PACKAGE@"
+-fi
+-
+-self=`basename $0`
+-
+ compression=auto
+ format=
+-grub_mkimage="${bindir}/@grub_mkimage@"
+ source=
+ 
+-export TEXTDOMAIN=@PACKAGE@
+-export TEXTDOMAINDIR="@localedir@"
+-
+-. "${pkgdatadir}/grub-mkconfig_lib"
+-
+ # Usage: usage
+ # Print the usage.
+ usage () {
+@@ -51,15 +30,12 @@ usage () {
+     gettext "Generate a standalone image (containing all modules) in the selected format"
+     echo
+     print_option_help "-h, --help" "$(gettext "print this message and exit")"
+-    print_option_help "-v, --version" "$(gettext "print the version information and exit")"
+     print_option_help "-o, --output=$(gettext FILE)" "$(gettext "save output in FILE [required]")"
+     print_option_help "-O, --format=$(gettext "FORMAT")" "$(gettext "generate an image in FORMAT")"; echo
+     print_option_help "" "$(gettext "available formats:") $formats"
+     echo
+     print_option_help "-C, --compression=(xz|none|auto)" "$(gettext "choose the compression to use for core image")"
+-    print_option_help "--modules=$(gettext "MODULES")" "$(gettext "pre-load specified modules MODULES")"
+     grub_print_install_files_help
+-    print_option_help  "--grub-mkimage=$(gettext "FILE")" "$(gettext "use FILE as grub-mkimage")"
+     echo
+     gettext "Report bugs to <bug-grub@gnu.org>."; echo
+ }
+@@ -80,25 +56,12 @@ do
+     -h | --help)
+ 	usage
+ 	exit 0 ;;
+-    -v | --version)
+-	echo "$self (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+-	exit 0 ;;
+-
+-    --modules)
+-	modules=`argument $option "$@"`; shift ;;
+-    --modules=*)
+-	modules=`echo "$option" | sed 's/--modules=//'` ;;
+ 
+     -o | --output)
+ 	output_image=`argument $option "$@"`; shift ;;
+     --output=*)
+ 	output_image=`echo "$option" | sed 's/--output=//'` ;;
+ 
+-    --grub-mkimage)
+-	grub_mkimage=`argument $option "$@"`; shift ;;
+-    --grub-mkimage=*)
+-	grub_mkimage=`echo "$option" | sed 's/--grub-mkimage=//'` ;;
+-
+     --compression | -C)
+ 	compression=`argument $option "$@"`; shift ;;
+     --compression=*)
+-- 
+1.8.2.1
+

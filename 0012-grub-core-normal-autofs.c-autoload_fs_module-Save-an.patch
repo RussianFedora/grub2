@@ -1,7 +1,7 @@
 From 1f75c529d5309defb33c8c216422003eee1248a5 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Sun, 22 Jul 2012 16:23:46 +0200
-Subject: [PATCH 012/364] 	* grub-core/normal/autofs.c
+Subject: [PATCH 012/482] 	* grub-core/normal/autofs.c
  (autoload_fs_module): Save and restore 	filter state.
 
 ---
@@ -64,5 +64,5 @@ index 0b27abf..721b9c3 100644
  
  /* Read the file fs.lst for auto-loading.  */
 -- 
-1.8.1.4
+1.8.2.1
 

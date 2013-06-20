@@ -1,0 +1,72 @@
+From e8aa1eb895298af57764ec03ff6df44a48b1f7d1 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Fri, 3 May 2013 14:08:51 +0200
+Subject: [PATCH 410/482] 	* grub-core/gfxmenu/gfxmenu.c
+ (grub_gfxmenu_try): Allow specifying 	the theme path relative to
+ $prefix/themes.
+
+---
+ ChangeLog                   |  5 +++++
+ grub-core/gfxmenu/gfxmenu.c | 17 +++++++++++++++--
+ 2 files changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index c26b110..ed99c80 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-05-03  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/gfxmenu/gfxmenu.c (grub_gfxmenu_try): Allow specifying
++	the theme path relative to $prefix/themes.
++
++2013-05-03  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/video/fb/fbblit.c (grub_video_fbblit_blend_BGR888_RGBA8888):
+ 	Fix order bug.
+ 	(grub_video_fbblit_blend_RGB888_RGBA8888): Likewise.
+diff --git a/grub-core/gfxmenu/gfxmenu.c b/grub-core/gfxmenu/gfxmenu.c
+index 09e8621..51110a6 100644
+--- a/grub-core/gfxmenu/gfxmenu.c
++++ b/grub-core/gfxmenu/gfxmenu.c
+@@ -53,6 +53,7 @@ grub_gfxmenu_try (int entry, grub_menu_t menu, int nested)
+ {
+   grub_gfxmenu_view_t view = NULL;
+   const char *theme_path;
++  char *full_theme_path = 0;
+   struct grub_menu_viewer *instance;
+   grub_err_t err;
+   struct grub_video_mode_info mode_info;
+@@ -70,15 +71,27 @@ grub_gfxmenu_try (int entry, grub_menu_t menu, int nested)
+   if (err)
+     return err;
+ 
+-  if (!cached_view || grub_strcmp (cached_view->theme_path, theme_path) != 0
++  if (theme_path[0] != '/' && theme_path[0] != '(')
++    {
++      const char *prefix;
++      prefix = grub_env_get ("prefix");
++      full_theme_path = grub_xasprintf ("%s/themes/%s",
++					prefix,
++					theme_path);
++    }
++
++  if (!cached_view || grub_strcmp (cached_view->theme_path,
++				   full_theme_path ? : theme_path) != 0
+       || cached_view->screen.width != mode_info.width
+       || cached_view->screen.height != mode_info.height)
+     {
+       grub_free (cached_view);
+       /* Create the view.  */
+-      cached_view = grub_gfxmenu_view_new (theme_path, mode_info.width,
++      cached_view = grub_gfxmenu_view_new (full_theme_path ? : theme_path,
++					   mode_info.width,
+ 					   mode_info.height);
+     }
++  grub_free (full_theme_path);
+ 
+   if (! cached_view)
+     {
+-- 
+1.8.2.1
+

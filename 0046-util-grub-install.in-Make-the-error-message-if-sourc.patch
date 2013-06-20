@@ -1,7 +1,7 @@
 From e6f215afa8ff4d586f71276fc12ea14eb1e6cd8b Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 24 Sep 2012 18:50:35 +0100
-Subject: [PATCH 046/364] * util/grub-install.in: Make the error message if
+Subject: [PATCH 046/482] * util/grub-install.in: Make the error message if
  $source_dir doesn't exist more useful.
 
 ---
@@ -36,5 +36,5 @@ index e19f1cd..56be98f 100644
  fi
  
 -- 
-1.8.1.4
+1.8.2.1
 

@@ -1,7 +1,7 @@
 From 981361e1db432371d895ac1339cc4a940cd6830e Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Wed, 5 Sep 2012 08:45:07 +0200
-Subject: [PATCH 026/364] 	* grub-core/fs/xfs.c (grub_xfs_read_block):
+Subject: [PATCH 026/482] 	* grub-core/fs/xfs.c (grub_xfs_read_block):
  Make keys a const pointer.
 
 ---
@@ -35,5 +35,5 @@ index 2c6b00c..1ed048f 100644
  
        leaf = grub_malloc (node->data->bsize);
 -- 
-1.8.1.4
+1.8.2.1
 

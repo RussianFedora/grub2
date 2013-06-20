@@ -1,7 +1,7 @@
 From 8c5886df17cdfb148d4e17bddf38143ed65fe674 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Thu, 28 Jun 2012 15:27:54 +0200
-Subject: [PATCH 001/364] 	Add monochrome text support (mda_text, aka
+Subject: [PATCH 001/482] 	Add monochrome text support (mda_text, aka
  `hercules' in grub-legacy).
 
 	* grub-core/Makefile.core.def (mda_text): New module.
@@ -608,5 +608,5 @@ index a7b13ee..1a666a1 100644
      GRUB_VGA_IO_ARX_READ = 0x3c1,
      GRUB_VGA_IO_MISC_WRITE = 0x3c2,
 -- 
-1.8.1.4
+1.8.2.1
 

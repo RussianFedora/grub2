@@ -1,7 +1,7 @@
 From 21c2f856cbdf4a98d015ed05bb6b9b16c021af9c Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Mon, 2 Jul 2012 11:20:51 +0200
-Subject: [PATCH 005/364] 	* gentpl.py: Make mans depend on
+Subject: [PATCH 005/482] 	* gentpl.py: Make mans depend on
  grub-mkconfig_lib.
 
 ---
@@ -43,5 +43,5 @@ index 13a6081..bab4a8a 100644
  PATH=$(builddir):$$PATH pkgdatadir=$(builddir) $(HELP2MAN) --section=[+ mansection +] -i $(top_srcdir)/docs/man/[+ name +].h2m -o $@ [+ name +]
  """)
 -- 
-1.8.1.4
+1.8.2.1
 

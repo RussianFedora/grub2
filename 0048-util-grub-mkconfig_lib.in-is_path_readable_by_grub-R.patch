@@ -1,7 +1,7 @@
 From 9196249442d3d9b360b77a5bd35ffb6c49935c78 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Wed, 26 Sep 2012 13:12:20 +0100
-Subject: [PATCH 048/364] * util/grub-mkconfig_lib.in
+Subject: [PATCH 048/482] * util/grub-mkconfig_lib.in
  (is_path_readable_by_grub): Redirect errors from grub-probe to /dev/null, not
  stdout.
 
@@ -37,5 +37,5 @@ index 8f21eb2..3574839 100644
    else
      return 1
 -- 
-1.8.1.4
+1.8.2.1
 

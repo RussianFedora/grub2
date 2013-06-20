@@ -1,0 +1,41 @@
+From 08f12738be24a89a9724e65c7244008d192ea297 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sun, 28 Apr 2013 18:52:53 +0200
+Subject: [PATCH 381/482] 	* grub-core/commands/nativedisk.c: Ignore
+ unknown filesystem error.
+
+---
+ ChangeLog                       | 4 ++++
+ grub-core/commands/nativedisk.c | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/ChangeLog b/ChangeLog
+index 69c7839..4833670 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-04-28  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/commands/nativedisk.c: Ignore unknown filesystem error.
++
++2013-04-28  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	New command `nativedisk'.
+ 
+ 2013-04-28  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/commands/nativedisk.c b/grub-core/commands/nativedisk.c
+index adb4043..333fc82 100644
+--- a/grub-core/commands/nativedisk.c
++++ b/grub-core/commands/nativedisk.c
+@@ -79,6 +79,8 @@ iterate_device (const char *name, void *data)
+ 
+   if (get_uuid (name, &cur_uuid))
+     {
++      if (grub_errno == GRUB_ERR_UNKNOWN_FS)
++	grub_errno = 0;
+       grub_print_error ();
+       return 0;
+     }
+-- 
+1.8.2.1
+

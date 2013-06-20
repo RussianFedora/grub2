@@ -1,0 +1,75 @@
+From e5947ad0f47058715a588ff2fdfa5487f65f459b Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sun, 28 Apr 2013 13:54:32 +0200
+Subject: [PATCH 375/482] 	* grub-core/commands/probe.c: Add missing
+ grub_device_close.
+
+---
+ ChangeLog                  | 4 ++++
+ grub-core/commands/probe.c | 6 ++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/ChangeLog b/ChangeLog
+index 21260c0..5c50b56 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-04-28  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/commands/probe.c: Add missing grub_device_close.
++
++2013-04-28  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* INSTALL: Document linguas.sh.
+ 
+ 2013-04-28  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/commands/probe.c b/grub-core/commands/probe.c
+index eeece87..cf2793e 100644
+--- a/grub-core/commands/probe.c
++++ b/grub-core/commands/probe.c
+@@ -83,6 +83,7 @@ grub_cmd_probe (grub_extcmd_context_t ctxt, int argc, char **args)
+ 	grub_env_set (state[0].arg, val);
+       else
+ 	grub_printf ("%s", val);
++      grub_device_close (dev);
+       return GRUB_ERR_NONE;
+     }
+   if (state[2].set)
+@@ -94,6 +95,7 @@ grub_cmd_probe (grub_extcmd_context_t ctxt, int argc, char **args)
+ 	grub_env_set (state[0].arg, val);
+       else
+ 	grub_printf ("%s", val);
++      grub_device_close (dev);
+       return GRUB_ERR_NONE;
+     }
+   fs = grub_fs_probe (dev);
+@@ -105,6 +107,7 @@ grub_cmd_probe (grub_extcmd_context_t ctxt, int argc, char **args)
+ 	grub_env_set (state[0].arg, fs->name);
+       else
+ 	grub_printf ("%s", fs->name);
++      grub_device_close (dev);
+       return GRUB_ERR_NONE;
+     }
+   if (state[4].set)
+@@ -125,6 +128,7 @@ grub_cmd_probe (grub_extcmd_context_t ctxt, int argc, char **args)
+       else
+ 	grub_printf ("%s", uuid);
+       grub_free (uuid);
++      grub_device_close (dev);
+       return GRUB_ERR_NONE;
+     }
+   if (state[5].set)
+@@ -147,8 +151,10 @@ grub_cmd_probe (grub_extcmd_context_t ctxt, int argc, char **args)
+       else
+ 	grub_printf ("%s", label);
+       grub_free (label);
++      grub_device_close (dev);
+       return GRUB_ERR_NONE;
+     }
++  grub_device_close (dev);
+   return grub_error (GRUB_ERR_BAD_ARGUMENT, "unrecognised target");
+ }
+ 
+-- 
+1.8.2.1
+

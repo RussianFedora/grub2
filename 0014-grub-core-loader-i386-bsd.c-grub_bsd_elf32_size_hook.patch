@@ -1,7 +1,7 @@
 From 6a6140eac9a2d0889dcf6d118979d4af242b8060 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Sun, 22 Jul 2012 16:30:48 +0200
-Subject: [PATCH 014/364] 	* grub-core/loader/i386/bsd.c
+Subject: [PATCH 014/482] 	* grub-core/loader/i386/bsd.c
  (grub_bsd_elf32_size_hook): Fix mask. 	(grub_bsd_elf32_hook): Likewise. 
  (grub_bsd_elf64_size_hook): Likewise. 	(grub_bsd_elf64_hook): Likewise. 
  (grub_bsd_load_elf): Likewise.
@@ -79,5 +79,5 @@ index 0fd4df0..6e024e4 100644
  				     grub_bsd_elf32_size_hook, NULL);
        if (err)
 -- 
-1.8.1.4
+1.8.2.1
 

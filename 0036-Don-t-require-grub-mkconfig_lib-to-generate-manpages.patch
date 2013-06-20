@@ -1,7 +1,7 @@
 From c7d45a90490c5f3337a6412a6ebe500e3a41a63b Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Wed, 12 Sep 2012 08:27:26 +0200
-Subject: [PATCH 036/364] 	Don't require grub-mkconfig_lib to generate
+Subject: [PATCH 036/482] 	Don't require grub-mkconfig_lib to generate
  manpages for programs.
 
 	* gentpl.py (manpage): Additional argument adddeps. Add adddeps to
@@ -66,5 +66,5 @@ index bab4a8a..6d7f613 100644
  
      r += rule("[+ name +]", platform_sources(platform) + " $(top_builddir)/config.status", """
 -- 
-1.8.1.4
+1.8.2.1
 

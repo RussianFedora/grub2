@@ -1,7 +1,7 @@
 From 7efa81764aa812d1f44ff53fb42472befea19f0b Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 17 Sep 2012 16:58:50 +0100
-Subject: [PATCH 039/364] * util/grub-mkconfig_lib.in (grub_quote): Remove
+Subject: [PATCH 039/482] * util/grub-mkconfig_lib.in (grub_quote): Remove
  outdated sentence from comment.
 
 ---
@@ -40,5 +40,5 @@ index beb52ee..a9f5809 100644
    sed "s/'/'\\\\''/g"
  }
 -- 
-1.8.1.4
+1.8.2.1
 

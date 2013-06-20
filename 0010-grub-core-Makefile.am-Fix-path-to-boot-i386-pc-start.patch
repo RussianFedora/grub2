@@ -1,7 +1,7 @@
 From f1c2b05162cc583ec64ae0b3cdf5ef128d2ca05c Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Sat, 7 Jul 2012 14:29:01 +0200
-Subject: [PATCH 010/364] 	* grub-core/Makefile.am: Fix path to
+Subject: [PATCH 010/482] 	* grub-core/Makefile.am: Fix path to
  boot/i386/pc/startup_raw.S.
 
 ---
@@ -35,5 +35,5 @@ index 7dc2519..cc4fb68 100644
  
  CLEANFILES += grub_script.yy.c grub_script.yy.h
 -- 
-1.8.1.4
+1.8.2.1
 

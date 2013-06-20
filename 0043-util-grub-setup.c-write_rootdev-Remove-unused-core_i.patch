@@ -1,7 +1,7 @@
 From fc8c72d6ad43b3fd7a960e67bbacd6fe8d68e48a Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Wed, 19 Sep 2012 02:41:51 +0100
-Subject: [PATCH 043/364] * util/grub-setup.c (write_rootdev): Remove unused
+Subject: [PATCH 043/482] * util/grub-setup.c (write_rootdev): Remove unused
  core_img parameter.  Update all callers. (setup): Define core_sectors only if
  GRUB_SETUP_BIOS, to appease 'gcc -Wunused-but-set-variable'.  Remove
  unnecessary nested #ifdef GRUB_SETUP_BIOS.
@@ -105,5 +105,5 @@ index 085e8df..de0417f 100644
    /* Write the first two sectors of the core image onto the disk.  */
    grub_util_info ("opening the core image `%s'", core_path);
 -- 
-1.8.1.4
+1.8.2.1
 

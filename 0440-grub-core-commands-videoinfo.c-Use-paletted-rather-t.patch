@@ -1,0 +1,46 @@
+From 06e77f951e1d316bab1e799b1fed741e59d25ce9 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Tue, 7 May 2013 14:44:05 +0200
+Subject: [PATCH 440/482] 	* grub-core/commands/videoinfo.c: Use
+ "paletted" rather than "packed 	pixel".
+
+---
+ ChangeLog                      | 5 +++++
+ grub-core/commands/videoinfo.c | 6 +++---
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index b7b3777..8b77759 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/commands/videoinfo.c: Use "paletted" rather than "packed
++	pixel".
++
++2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	Menu color test.
+ 
+ 2013-05-07  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/commands/videoinfo.c b/grub-core/commands/videoinfo.c
+index 7a75c9d..4be8107 100644
+--- a/grub-core/commands/videoinfo.c
++++ b/grub-core/commands/videoinfo.c
+@@ -73,9 +73,9 @@ hook (const struct grub_video_mode_info *info, void *hook_arg)
+ 		  info->blue_field_pos,
+ 		  info->reserved_field_pos);
+   if (info->mode_type & GRUB_VIDEO_MODE_TYPE_INDEX_COLOR)
+-    /* TRANSLATORS: In "packed pixel" mode you write the index of the color
+-       in the palette. Synonyms include "paletted color".  */
+-    grub_xputs (_("Packed pixel "));
++    /* TRANSLATORS: In "paletted color" mode you write the index of the color
++       in the palette. Synonyms include "packed pixel".  */
++    grub_xputs (_("Paletted "));
+   if (info->mode_type & GRUB_VIDEO_MODE_TYPE_YUV)
+     grub_xputs (_("YUV "));
+   if (info->mode_type & GRUB_VIDEO_MODE_TYPE_PLANAR)
+-- 
+1.8.2.1
+

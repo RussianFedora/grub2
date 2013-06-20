@@ -1,0 +1,64 @@
+From f11cb55e6d2efcccb2be34942622f18a40dd1218 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Fri, 3 May 2013 14:02:49 +0200
+Subject: [PATCH 407/482] 	* grub-core/gfxmenu/view.c
+ (grub_gfxmenu_view_new): Clear 	grub_gfxmenu_timeout_notifications. 
+ (grub_gfxmenu_view_destroy): Likewise.
+
+---
+ ChangeLog                |  6 ++++++
+ grub-core/gfxmenu/view.c | 15 +++++++++++++++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/ChangeLog b/ChangeLog
+index 9e99eb5..858f0b0 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,11 @@
+ 2013-05-03  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/gfxmenu/view.c (grub_gfxmenu_view_new): Clear
++	grub_gfxmenu_timeout_notifications.
++	(grub_gfxmenu_view_destroy): Likewise.
++
++2013-05-03  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/normal/term.c (print_ucs4_real): Fix startwidth in dry run.
+ 
+ 2013-05-02  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/gfxmenu/view.c b/grub-core/gfxmenu/view.c
+index 475fc76..bcf6399 100644
+--- a/grub-core/gfxmenu/view.c
++++ b/grub-core/gfxmenu/view.c
+@@ -58,6 +58,14 @@ grub_gfxmenu_view_new (const char *theme_path,
+   if (! view)
+     return 0;
+ 
++  while (grub_gfxmenu_timeout_notifications)
++    {
++      struct grub_gfxmenu_timeout_notify *p;
++      p = grub_gfxmenu_timeout_notifications;
++      grub_gfxmenu_timeout_notifications = grub_gfxmenu_timeout_notifications->next;
++      grub_free (p);
++    }
++
+   view->screen.x = 0;
+   view->screen.y = 0;
+   view->screen.width = width;
+@@ -105,6 +113,13 @@ grub_gfxmenu_view_destroy (grub_gfxmenu_view_t view)
+ {
+   if (!view)
+     return;
++  while (grub_gfxmenu_timeout_notifications)
++    {
++      struct grub_gfxmenu_timeout_notify *p;
++      p = grub_gfxmenu_timeout_notifications;
++      grub_gfxmenu_timeout_notifications = grub_gfxmenu_timeout_notifications->next;
++      grub_free (p);
++    }
+   grub_video_bitmap_destroy (view->desktop_image);
+   if (view->terminal_box)
+     view->terminal_box->destroy (view->terminal_box);
+-- 
+1.8.2.1
+

@@ -1,7 +1,7 @@
 From 134e4df1335b0498684d093b55332f87c2e8a301 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Mon, 2 Jul 2012 11:31:31 +0200
-Subject: [PATCH 009/364] 	* grub-core/lib/legacy_parse.c: Support clear
+Subject: [PATCH 009/482] 	* grub-core/lib/legacy_parse.c: Support clear
  and testload.
 
 ---
@@ -103,5 +103,5 @@ index 14768b8..ddfaec4 100644
  
  char *
 -- 
-1.8.1.4
+1.8.2.1
 

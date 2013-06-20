@@ -1,0 +1,55 @@
+From ea051678fa221e5c4e527bd97c408605ecaca3a0 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Fri, 26 Apr 2013 23:47:46 +0200
+Subject: [PATCH 358/482] 	* grub-core/Makefile.core.def: Fix grub-emu
+ and grub-emu-lite sources.
+
+---
+ ChangeLog                   | 4 ++++
+ grub-core/Makefile.core.def | 8 ++++----
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 4975a2c..f554ba8 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-04-26  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/Makefile.core.def: Fix grub-emu and grub-emu-lite sources.
++
++2013-04-26  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* util/getroot.c (exec_pipe): Put proper #if's so that its users don't
+ 	compile when not needed.
+ 
+diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
+index ad912a6..e2ecff1 100644
+--- a/grub-core/Makefile.core.def
++++ b/grub-core/Makefile.core.def
+@@ -248,9 +248,9 @@ program = {
+   emu = kern/emu/full.c;
+   emu_nodist = grub_emu_init.c;
+ 
+-  ldadd = 'kernel.img$(EXEEXT)';
++  ldadd = 'kernel.exec$(EXEEXT)';
+   ldadd = '$(MODULE_FILES)';
+-  ldadd = '$(LIBUTIL) $(LIBCURSES) $(LIBSDL) $(LIBUSB) $(LIBPCIACCESS) $(LIBDEVMAPPER) $(LIBZFS) $(LIBNVPAIR) $(LIBGEOM)';
++  ldadd = 'gnulib/libgnu.a $(LIBCURSES) $(LIBINTL) $(LIBUTIL) $(LIBSDL) $(LIBUSB) $(LIBPCIACCESS) $(LIBDEVMAPPER) $(LIBZFS) $(LIBNVPAIR) $(LIBGEOM)';
+ 
+   enable = emu;
+ };
+@@ -261,8 +261,8 @@ program = {
+   emu = kern/emu/lite.c;
+   emu_nodist = symlist.c;
+ 
+-  ldadd = 'kernel.img$(EXEEXT)';
+-  ldadd = '$(LIBUTIL) $(LIBCURSES) $(LIBSDL) $(LIBUSB) $(LIBPCIACCESS) $(LIBDEVMAPPER) $(LIBZFS) $(LIBNVPAIR) $(LIBGEOM)';
++  ldadd = 'kernel.exec$(EXEEXT)';
++  ldadd = 'gnulib/libgnu.a $(LIBCURSES) $(LIBINTL) $(LIBUTIL) $(LIBSDL) $(LIBUSB) $(LIBPCIACCESS) $(LIBDEVMAPPER) $(LIBZFS) $(LIBNVPAIR) $(LIBGEOM)';
+ 
+   enable = emu;
+ };
+-- 
+1.8.2.1
+

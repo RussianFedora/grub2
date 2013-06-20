@@ -1,0 +1,79 @@
+From 8dd3765f0e6a13637d43e4fb2990eee748bfe961 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Wed, 24 Apr 2013 22:24:28 +0200
+Subject: [PATCH 345/482] 	Make check work on mips-arc.
+
+---
+ ChangeLog                |  4 ++++
+ tests/partmap_test.in    | 10 +++++++---
+ tests/util/grub-shell.in |  7 +++++++
+ 3 files changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index bdaba2b..9f2eccc 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-04-24  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	Make check work on mips-arc.
++
++2013-04-24  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* util/grub-mkrescue.in: Alias sashARCS as sash.
+ 
+ 2013-04-24  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/tests/partmap_test.in b/tests/partmap_test.in
+index bc503f5..e8aca2e 100644
+--- a/tests/partmap_test.in
++++ b/tests/partmap_test.in
+@@ -63,21 +63,25 @@ case "${grub_modinfo_target_cpu}-${grub_modinfo_platform}" in
+     powerpc-ieee1275)
+ 	disk=ieee1275//pci@80000000/mac-io@4/ata-3@20000/disk@0
+ 	qemudisk=hda
+-	# QEMU firmware has bugs which prevent it from accessing hard disk.
++	# QEMU firmware has bugs which prevent it from accessing hard disk w/o recognised label.
+ 	exit 0
+ 	;;
+     sparc64-ieee1275)
+ 	disk=ieee1275//pci@1fe\,0/pci-ata@5/ide0@500/disk@0
+ 	qemudisk=hda
+-	# QEMU firmware has bugs which prevent it from accessing hard disk.
++	# QEMU firmware has bugs which prevent it from accessing hard disk w/o recognised label.
+ 	exit 0
+ 	;;
+     i386-ieee1275)
+ 	disk=ieee1275/d
+ 	qemudisk=hdb
+-	# QEMU firmware has bugs which prevent it from accessing hard disk.
++	# QEMU firmware has bugs which prevent it from accessing hard disk w/o recognised label.
+ 	exit 0
+ 	;;
++    mips-arc)
++	# ARC firmware has bugs which prevent it from accessing hard disk w/o dvh disklabel.
++	exit 0
++
+     *)
+ 	disk=hd0
+ 	qemudisk=hda
+diff --git a/tests/util/grub-shell.in b/tests/util/grub-shell.in
+index 739c300..b051669 100644
+--- a/tests/util/grub-shell.in
++++ b/tests/util/grub-shell.in
+@@ -85,6 +85,13 @@ case "${grub_modinfo_target_cpu}-${grub_modinfo_platform}" in
+ 	qemuopts="$qemuopts -M mips"
+ 	console=vga_text
+ 	;;
++    mips-arc)
++	boot=cd
++	qemu=qemu-system-mips64
++	qemuopts="$qemuopts -M indy"
++	console=console
++	trim=1
++	;;
+     mipsel-qemu_mips)
+ 	boot=mipsel_qemu
+ 	qemu=qemu-system-mipsel
+-- 
+1.8.2.1
+

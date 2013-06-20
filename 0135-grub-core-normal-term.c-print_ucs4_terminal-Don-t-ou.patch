@@ -1,0 +1,28 @@
+From 94a0e7cd49455fd2a6717211393e336f5e26e755 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Mon, 21 Jan 2013 20:33:38 +0100
+Subject: [PATCH 135/482] 	* grub-core/normal/term.c
+ (print_ucs4_terminal): Don't output right 	margin when not needed.
+
+---
+ ChangeLog | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/ChangeLog b/ChangeLog
+index 32b891a..cf7a777 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-01-21  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* grub-core/normal/term.c (print_ucs4_terminal): Don't output right
++	margin when not needed.
++
++2013-01-21  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	Make color variables global instead of it being per-terminal.
+ 
+ 2013-01-21  Vladimir Serbinenko  <phcoder@gmail.com>
+-- 
+1.8.2.1
+

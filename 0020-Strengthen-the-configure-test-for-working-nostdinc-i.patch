@@ -1,7 +1,7 @@
 From cb6d50b03d383cae32b0fbe308acc76c9d041fc6 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Gr=C3=A9goire=20Sutre?= <gregoire.sutre@gmail.com>
 Date: Sun, 5 Aug 2012 16:49:03 +0200
-Subject: [PATCH 020/364] Strengthen the configure test for working -nostdinc
+Subject: [PATCH 020/482] Strengthen the configure test for working -nostdinc
  -isystem.
 
 ---
@@ -34,5 +34,5 @@ index 91b36d0..190665d 100644
        [grub_cv_cc_isystem=yes],
        [grub_cv_cc_isystem=no])
 -- 
-1.8.1.4
+1.8.2.1
 

@@ -1,7 +1,7 @@
 From cec2f4441396afd4c6abad10e51e5f0fe1dad686 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Tue, 4 Sep 2012 18:39:40 +0100
-Subject: [PATCH 022/364] * docs/man/grub-mkdevicemap.h2m: Remove, since
+Subject: [PATCH 022/482] * docs/man/grub-mkdevicemap.h2m: Remove, since
  grub-mkdevicemap is gone.
 
 ---
@@ -34,5 +34,5 @@ index 3ef8e97..0000000
 -[SEE ALSO]
 -.BR grub-install (8)
 -- 
-1.8.1.4
+1.8.2.1
 

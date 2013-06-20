@@ -1,7 +1,7 @@
 From e8ec492c1f16328149e2e2c1eed6c300529bcb7a Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Tue, 4 Sep 2012 23:35:38 +0100
-Subject: [PATCH 025/364] * Makefile.am (EXTRA_DIST): Add linguas.sh.  It's
+Subject: [PATCH 025/482] * Makefile.am (EXTRA_DIST): Add linguas.sh.  It's
  only strictly required for checkouts from bzr, but it may be useful for users
  or distributors wishing to update translations against a tarball
  distribution, and it can be helpful for the tarball to be a superset of
@@ -41,5 +41,5 @@ index 3bb911c..30aa5a7 100644
 +
 +EXTRA_DIST += linguas.sh
 -- 
-1.8.1.4
+1.8.2.1
 

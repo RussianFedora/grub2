@@ -1,7 +1,7 @@
 From 8c38cb1283a0cf1c8eae465bff26e0ca966ac43a Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Fri, 5 Oct 2012 13:09:19 +0100
-Subject: [PATCH 050/364] * grub-core/loader/i386/linux.c (allocate_pages): Fix
+Subject: [PATCH 050/482] * grub-core/loader/i386/linux.c (allocate_pages): Fix
  spelling of preferred_address. (grub_cmd_linux): Likewise. *
  grub-core/net/icmp6.c (struct prefix_option): Fix spelling of
  preferred_lifetime.  Update all users.
@@ -128,5 +128,5 @@ index 4fc343d..9ded94b 100644
  				  opt->prefixlen != 64);
  		    continue;
 -- 
-1.8.1.4
+1.8.2.1
 

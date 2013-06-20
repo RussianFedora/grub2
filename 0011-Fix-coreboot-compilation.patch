@@ -1,7 +1,7 @@
 From a7fa3c8e8c7b2dab5a704493b7965bbc60f84bed Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Sun, 22 Jul 2012 16:21:24 +0200
-Subject: [PATCH 011/364] 	Fix coreboot compilation.
+Subject: [PATCH 011/482] 	Fix coreboot compilation.
 
 	* grub-core/term/i386/pc/vga_text.c (grub_vga_text_init): Rename to ...
 	(grub_vga_text_init_real): ... this.
@@ -63,5 +63,5 @@ index d1e4ef9..74c155c 100644
      .getwh = grub_vga_text_getwh,
      .getxy = grub_vga_text_getxy,
 -- 
-1.8.1.4
+1.8.2.1
 

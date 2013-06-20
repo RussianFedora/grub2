@@ -1,7 +1,7 @@
 From 8ec34c46a3cc4cacce65e3a2a671e08548c6a95e Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Mon, 2 Jul 2012 11:22:50 +0200
-Subject: [PATCH 006/364] 	* grub-core/net/tftp.c (ack): Fix endianness
+Subject: [PATCH 006/482] 	* grub-core/net/tftp.c (ack): Fix endianness
  problem. 	(tftp_receive): Likewise. 	Reported by: Michael
  Davidsaver.
 
@@ -49,5 +49,5 @@ index 9c70efb..d0f39ea 100644
  	      {
  		file->device->net->stall = 1;
 -- 
-1.8.1.4
+1.8.2.1
 

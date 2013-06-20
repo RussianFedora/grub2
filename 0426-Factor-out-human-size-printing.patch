@@ -1,0 +1,133 @@
+From d58051e416c525401a2cd86a0fe7750a7f9c1a62 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sun, 5 May 2013 11:31:53 +0200
+Subject: [PATCH 426/482] 	Factor-out human-size printing.
+
+---
+ ChangeLog               |  4 ++++
+ grub-core/commands/ls.c | 31 +------------------------------
+ grub-core/normal/misc.c | 34 ++++++++++++++++++++++++++++++++++
+ include/grub/normal.h   |  3 +++
+ 4 files changed, 42 insertions(+), 30 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 57bce50..c9e6f06 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,7 @@
++2013-05-05  Vladimir Serbinenko  <phcoder@gmail.com>
++
++	Factor-out human-size printing.
++
+ 2013-05-04  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
+ 	Agglomerate more mallocs to speed-up gfxterm.
+diff --git a/grub-core/commands/ls.c b/grub-core/commands/ls.c
+index 83930aa..6c608f6 100644
+--- a/grub-core/commands/ls.c
++++ b/grub-core/commands/ls.c
+@@ -43,8 +43,6 @@ static const struct grub_arg_option options[] =
+     {0, 0, 0, 0, 0, 0}
+   };
+ 
+-static const char grub_human_sizes[] = {' ', 'K', 'M', 'G', 'T'};
+-
+ /* Helper for grub_ls_list_devices.  */
+ static int
+ grub_ls_print_devices (const char *name, void *data)
+@@ -143,34 +141,7 @@ print_files_long (const char *filename, const struct grub_dirhook_info *info,
+       if (! ctx->human)
+ 	grub_printf ("%-12llu", (unsigned long long) file->size);
+       else
+-	{
+-	  grub_uint64_t fsize = file->size * 100ULL;
+-	  grub_uint64_t fsz = file->size;
+-	  int units = 0;
+-	  char buf[20];
+-
+-	  while (fsz / 1024)
+-	    {
+-	      fsize = (fsize + 512) / 1024;
+-	      fsz /= 1024;
+-	      units++;
+-	    }
+-
+-	  if (units)
+-	    {
+-	      grub_uint64_t whole, fraction;
+-
+-	      whole = grub_divmod64 (fsize, 100, &fraction);
+-	      grub_snprintf (buf, sizeof (buf),
+-			     "%" PRIuGRUB_UINT64_T
+-			     ".%02" PRIuGRUB_UINT64_T "%c", whole, fraction,
+-			     grub_human_sizes[units]);
+-	      grub_printf ("%-12s", buf);
+-	    }
+-	  else
+-	    grub_printf ("%-12llu", (unsigned long long) file->size);
+-
+-	}
++	grub_printf ("%-12s", grub_get_human_size (file->size, 1));
+       grub_file_close (file);
+       grub_free (pathname);
+     }
+diff --git a/grub-core/normal/misc.c b/grub-core/normal/misc.c
+index d23de62..1a86e0f 100644
+--- a/grub-core/normal/misc.c
++++ b/grub-core/normal/misc.c
+@@ -28,6 +28,40 @@
+ #include <grub/i18n.h>
+ #include <grub/partition.h>
+ 
++static const char *grub_human_sizes[] = {N_("B"), N_("KiB"), N_("MiB"), N_("GiB"), N_("TiB")};
++static const char *grub_human_short_sizes[] = {"", "K", "M", "G", "T"};
++
++const char *
++grub_get_human_size (grub_uint64_t size, int sh)
++{
++  grub_uint64_t fsize = size * 100ULL;
++  grub_uint64_t fsz = size;
++  int units = 0;
++  static char buf[20];
++
++  while (fsz / 1024)
++    {
++      fsize = (fsize + 512) / 1024;
++      fsz /= 1024;
++      units++;
++    }
++
++  if (units)
++    {
++      grub_uint64_t whole, fraction;
++
++      whole = grub_divmod64 (fsize, 100, &fraction);
++      grub_snprintf (buf, sizeof (buf),
++		     "%" PRIuGRUB_UINT64_T
++		     ".%02" PRIuGRUB_UINT64_T "%s", whole, fraction,
++		     sh ? grub_human_short_sizes[units] : _(grub_human_sizes[units]));
++    }
++  else
++    grub_snprintf (buf, sizeof (buf), "%llu%s", (unsigned long long) size,
++		   sh ? grub_human_short_sizes[units] : _(grub_human_sizes[units]));
++  return buf;
++}
++
+ /* Print the information on the device NAME.  */
+ grub_err_t
+ grub_normal_print_device_info (const char *name)
+diff --git a/include/grub/normal.h b/include/grub/normal.h
+index 4fcc3da..930b3b9 100644
+--- a/include/grub/normal.h
++++ b/include/grub/normal.h
+@@ -150,4 +150,7 @@ grub_dyncmd_get_cmd (grub_command_t cmd);
+ void
+ grub_gettext_reread_prefix (const char *val);
+ 
++const char *
++grub_get_human_size (grub_uint64_t size, int sh);
++
+ #endif /* ! GRUB_NORMAL_HEADER */
+-- 
+1.8.2.1
+

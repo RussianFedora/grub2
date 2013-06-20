@@ -1,0 +1,94 @@
+From 3cc0a7193fb4eb6fcfb9698b6a84c5df57349ab8 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Thu, 2 May 2013 14:34:13 +0200
+Subject: [PATCH 400/482] 	* grub-core/commands/videotest.c: Reduce
+ flickering and draw 6 squares 	instead of 2 to have full RGB/CMY test
+ pattern.
+
+---
+ ChangeLog                      |  5 +++++
+ grub-core/commands/videotest.c | 43 ++++++++++++++++++++++++++----------------
+ 2 files changed, 32 insertions(+), 16 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 642858c..b202abe 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,8 @@
++2013-05-02  Vladimir Serbinenko  <phcoder@gmail.com>
++
++	* grub-core/commands/videotest.c: Reduce flickering and draw 6 squares
++	instead of 2 to have full RGB/CMY test pattern.
++
+ 2013-04-30  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
+ 	Add few more tests.
+diff --git a/grub-core/commands/videotest.c b/grub-core/commands/videotest.c
+index 2256237..b6c181b 100644
+--- a/grub-core/commands/videotest.c
++++ b/grub-core/commands/videotest.c
+@@ -49,7 +49,6 @@ grub_cmd_videotest (grub_command_t cmd __attribute__ ((unused)),
+   if (grub_strcmp (cmd->name, "vbetest") == 0)
+     grub_dl_load ("vbe");
+ #endif
+-
+   mode = grub_env_get ("gfxmode");
+   if (argc)
+     mode = args[0];
+@@ -155,26 +154,38 @@ grub_cmd_videotest (grub_command_t cmd __attribute__ ((unused)),
+ 
+   grub_video_set_active_render_target (GRUB_VIDEO_RENDER_TARGET_DISPLAY);
+ 
+-  for (i = 0; i < 2; i++)
++  for (i = 0; i < 5; i++)
+     {
+-      color = grub_video_map_rgb (0, 0, 0);
+-      grub_video_fill_rect (color, 0, 0, width, height);
+ 
+-      color = grub_video_map_rgb (255, 0, 0);
+-      grub_video_fill_rect (color, 0, 0, 100, 100);
++      if (i == 0 || i == 1)
++	{	  
++	  color = grub_video_map_rgb (0, 0, 0);
++	  grub_video_fill_rect (color, 0, 0, width, height);
+ 
+-      color = grub_video_map_rgb (0, 255, 255);
+-      grub_video_fill_rect (color, 100, 100, 100, 100);
++	  color = grub_video_map_rgb (255, 0, 0);
++	  grub_video_fill_rect (color, 0, 0, 100, 100);
+ 
+-      grub_video_set_viewport (x + 150, y + 150,
+-			       width - 150 * 2, height - 150 * 2);
+-      color = grub_video_map_rgb (77, 33, 77);
+-      grub_video_fill_rect (color, 0, 0, width, height);
+-      grub_video_swap_buffers ();
+-    }
++	  color = grub_video_map_rgb (0, 255, 0);
++	  grub_video_fill_rect (color, 100, 0, 100, 100);
++
++	  color = grub_video_map_rgb (0, 0, 255);
++	  grub_video_fill_rect (color, 200, 0, 100, 100);
++
++	  color = grub_video_map_rgb (0, 255, 255);
++	  grub_video_fill_rect (color, 0, 100, 100, 100);
++
++	  color = grub_video_map_rgb (255, 0, 255);
++	  grub_video_fill_rect (color, 100, 100, 100, 100);
++
++	  color = grub_video_map_rgb (255, 255, 0);
++	  grub_video_fill_rect (color, 200, 100, 100, 100);
++
++	  grub_video_set_viewport (x + 150, y + 150,
++				   width - 150 * 2, height - 150 * 2);
++	  color = grub_video_map_rgb (77, 33, 77);
++	  grub_video_fill_rect (color, 0, 0, width, height);
++	}
+ 
+-  for (i = 0; i < 5; i++)
+-    {
+       color = grub_video_map_rgb (i, 33, 77);
+       grub_video_fill_rect (color, 0, 0, width, height);
+       grub_video_blit_render_target (text_layer, GRUB_VIDEO_BLIT_BLEND, 0, 0,
+-- 
+1.8.2.1
+

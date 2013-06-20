@@ -1,7 +1,7 @@
 From 33437c4676de37bf30679b5874813af38e5c00c2 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Wed, 5 Sep 2012 08:47:39 +0200
-Subject: [PATCH 027/364] 	* grub-core/partmap/dvh.c (grub_dvh_is_valid):
+Subject: [PATCH 027/482] 	* grub-core/partmap/dvh.c (grub_dvh_is_valid):
  Add missing byteswap.
 
 ---
@@ -37,5 +37,5 @@ index c8f467e..79ec01b 100644
    return ! sum;
  }
 -- 
-1.8.1.4
+1.8.2.1
 

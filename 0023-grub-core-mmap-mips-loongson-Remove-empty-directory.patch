@@ -1,7 +1,7 @@
 From 9023fdb4b0f75d3c8e1d0e1b0199ecd416a18c59 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Tue, 4 Sep 2012 18:56:13 +0100
-Subject: [PATCH 023/364] * grub-core/mmap/mips/loongson: Remove empty
+Subject: [PATCH 023/482] * grub-core/mmap/mips/loongson: Remove empty
  directory.
 
 ---
@@ -23,5 +23,5 @@ index 09ffe65..5a938ae 100644
  	* docs/man/grub-mkdevicemap.h2m: Remove, since grub-mkdevicemap is
  	gone.
 -- 
-1.8.1.4
+1.8.2.1
 

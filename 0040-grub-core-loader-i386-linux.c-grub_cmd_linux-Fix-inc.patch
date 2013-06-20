@@ -1,7 +1,7 @@
 From 1f5027bb0ec48851cc2f9c54552a6ec1f1145930 Mon Sep 17 00:00:00 2001
 From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
 Date: Tue, 18 Sep 2012 11:44:29 +0200
-Subject: [PATCH 040/364] 	* grub-core/loader/i386/linux.c
+Subject: [PATCH 040/482] 	* grub-core/loader/i386/linux.c
  (grub_cmd_linux): Fix incorrect 	le-conversion. 	Reported by: BURETTE,
  Bernard.
 
@@ -38,5 +38,5 @@ index d34b2f8..bcb037c 100644
      return grub_error(GRUB_ERR_BAD_OS,
  		      "kernel does not support 64-bit addressing");
 -- 
-1.8.1.4
+1.8.2.1
 

@@ -1,7 +1,7 @@
 From 75887218d652d578af29494dd54cd8733643653b Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Tue, 4 Sep 2012 18:59:41 +0100
-Subject: [PATCH 024/364] * Makefile.am (EXTRA_DIST): Add
+Subject: [PATCH 024/482] * Makefile.am (EXTRA_DIST): Add
  grub-core/tests/boot/linux.init-mips.S,
  grub-core/tests/boot/linux.init-ppc.S, and
  grub-core/tests/boot/linux-ppc.cfg.
@@ -42,5 +42,5 @@ index db9e930..3bb911c 100644
  .PHONY: bootcheck-linux-i386 bootcheck-linux-x86_64 \
         bootcheck-kfreebsd-i386 bootcheck-kfreebsd-x86_64 \
 -- 
-1.8.1.4
+1.8.2.1
 

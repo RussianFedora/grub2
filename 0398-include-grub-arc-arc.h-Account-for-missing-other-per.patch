@@ -1,0 +1,91 @@
+From f4b8e9c9249112964441d582283761ada51198a7 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Tue, 30 Apr 2013 17:40:31 +0200
+Subject: [PATCH 398/482] 	* include/grub/arc/arc.h: Account for missing
+ "other" peripheral on 	ARCS. All users updated.
+
+---
+ ChangeLog                      |  5 +++++
+ grub-core/kern/mips/arc/init.c |  6 +++++-
+ grub-core/term/arc/console.c   | 10 +++++-----
+ include/grub/arc/arc.h         |  2 ++
+ 4 files changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 6b5feff..b924457 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,10 @@
+ 2013-04-30  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	* include/grub/arc/arc.h: Account for missing "other" peripheral on
++	ARCS. All users updated.
++
++2013-04-30  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/kern/mips/loongson/init.c: Support halt for loongson 2E.
+ 
+ 2013-04-30  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/kern/mips/arc/init.c b/grub-core/kern/mips/arc/init.c
+index fdcc2bd..ddee814 100644
+--- a/grub-core/kern/mips/arc/init.c
++++ b/grub-core/kern/mips/arc/init.c
+@@ -45,7 +45,11 @@ const char *type_names[] = {
+   "eisa", "tc", "scsi", "dti", "multi", "disk", "tape", "cdrom", "worm",
+   "serial", "net", "video", "par", "point", "key", "audio", "other",
+   "rdisk", "fdisk", "tape", "modem", "monitor", "print", "pointer",
+-  "keyboard", "term", "other", "line", "network", NULL
++  "keyboard", "term",
++#ifndef GRUB_CPU_WORDS_BIGENDIAN
++  "other",
++#endif
++  "line", "network", NULL
+ };
+ 
+ static int
+diff --git a/grub-core/term/arc/console.c b/grub-core/term/arc/console.c
+index ea4737c..df099f0 100644
+--- a/grub-core/term/arc/console.c
++++ b/grub-core/term/arc/console.c
+@@ -61,7 +61,7 @@ grub_arc_is_device_serial (const char *name, int alt_names)
+   /*
+     Recognize:
+     serial(N)
+-    serial(N)other(M)
++    serial(N)line(M)
+    */
+   for (i = 0; i < 2; i++)
+     {
+@@ -84,11 +84,11 @@ grub_arc_is_device_serial (const char *name, int alt_names)
+ 	  && grub_memcmp (ptr + 1 - (sizeof ("serial") - 1),
+ 			  "serial", sizeof ("serial") - 1) == 0)
+ 	return 1;
+-      if (!(ptr + 1 >= name + sizeof ("other") - 1
+-	    && grub_memcmp (ptr + 1 - (sizeof ("other") - 1),
+-			    "other", sizeof ("other") - 1) == 0))
++      if (!(ptr + 1 >= name + sizeof ("line") - 1
++	    && grub_memcmp (ptr + 1 - (sizeof ("line") - 1),
++			    "line", sizeof ("line") - 1) == 0))
+ 	return 0;
+-      ptr -= sizeof ("other") - 1;
++      ptr -= sizeof ("line") - 1;
+       if (alt_names)
+ 	{
+ 	  if (*ptr != '/')
+diff --git a/include/grub/arc/arc.h b/include/grub/arc/arc.h
+index c2578f4..7615a49 100644
+--- a/include/grub/arc/arc.h
++++ b/include/grub/arc/arc.h
+@@ -139,7 +139,9 @@ enum
+     GRUB_ARC_COMPONENT_TYPE_POINTER,
+     GRUB_ARC_COMPONENT_TYPE_KBD,
+     GRUB_ARC_COMPONENT_TYPE_TERMINAL,
++#ifndef GRUB_CPU_WORDS_BIGENDIAN
+     GRUB_ARC_COMPONENT_TYPE_OTHER_PERIPHERAL,
++#endif
+     GRUB_ARC_COMPONENT_TYPE_LINE,
+     GRUB_ARC_COMPONENT_TYPE_NET,
+     GRUB_ARC_COMPONENT_TYPE_MEMORY_UNIT,
+-- 
+1.8.2.1
+

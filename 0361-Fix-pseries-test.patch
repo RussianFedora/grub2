@@ -1,0 +1,79 @@
+From 942ce2482508609d311410d6bc79316435512d16 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Sat, 27 Apr 2013 14:11:12 +0200
+Subject: [PATCH 361/482] 	Fix pseries test.
+
+---
+ ChangeLog                     | 4 ++++
+ grub-core/lib/ieee1275/halt.c | 2 +-
+ tests/pseries_test.in         | 6 +++---
+ tests/util/grub-shell.in      | 2 +-
+ 4 files changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index f4306c4..8c34cc0 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-04-26  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	Fix pseries test.
++
++2013-04-26  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	Make 'make check' work on emu.
+ 
+ 2013-04-26  Vladimir Serbinenko  <phcoder@gmail.com>
+diff --git a/grub-core/lib/ieee1275/halt.c b/grub-core/lib/ieee1275/halt.c
+index 7ede29d..8fc16d2 100644
+--- a/grub-core/lib/ieee1275/halt.c
++++ b/grub-core/lib/ieee1275/halt.c
+@@ -25,8 +25,8 @@ grub_halt (void)
+ {
+   /* Not standardized.  We try three known commands.  */
+ 
+-  grub_ieee1275_interpret ("shut-down", 0);
+   grub_ieee1275_interpret ("power-off", 0);
++  grub_ieee1275_interpret ("shut-down", 0);
+   grub_ieee1275_interpret ("poweroff", 0);
+ 
+   while (1);
+diff --git a/tests/pseries_test.in b/tests/pseries_test.in
+index 86a396a..2264945 100644
+--- a/tests/pseries_test.in
++++ b/tests/pseries_test.in
+@@ -23,15 +23,15 @@ if [ "${grub_modinfo_target_cpu}-${grub_modinfo_platform}" != powerpc-ieee1275 ]
+    exit 0
+ fi
+ 
+-if [ "$(echo hello | "${grubshell}" --pseries --timeout 180 --boot=cd)" != "Hello World" ]; then
++if [ "$(echo hello | "${grubshell}" --pseries --timeout=180 --boot=cd)" != "Hello World" ]; then
+    exit 1
+ fi
+ 
+-if [ "$(echo hello | "${grubshell}" --pseries --timeout 180 --boot=hd)" != "Hello World" ]; then
++if [ "$(echo hello | "${grubshell}" --pseries --timeout=180 --boot=hd)" != "Hello World" ]; then
+    exit 1
+ fi
+ 
+ # FIXME: workaround SLOF bugs
+-#if [ "$(echo hello | "${grubshell}" --pseries --timeout 180 --boot=net)" != "Hello World" ]; then
++#if [ "$(echo hello | "${grubshell}" --pseries --timeout=180 --boot=net)" != "Hello World" ]; then
+ #   exit 1
+ #fi
+diff --git a/tests/util/grub-shell.in b/tests/util/grub-shell.in
+index 7c88018..e00998a 100644
+--- a/tests/util/grub-shell.in
++++ b/tests/util/grub-shell.in
+@@ -205,7 +205,7 @@ for option in "$@"; do
+ 	qemu=qemu-system-ppc64
+ 	serial_port=ieee1275/hvterm
+ 	serial_null=
+-	qemuopts="$qemuopts -no-reboot"
++	qemuopts="$qemuopts -M pseries -no-reboot"
+ 	trim=1
+ 	    ;;
+     --qemu-opts=*)
+-- 
+1.8.2.1
+

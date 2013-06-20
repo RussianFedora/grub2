@@ -1,0 +1,41 @@
+From 6313937e7275a3117ceee46a3030a7e9c08720e9 Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Mon, 29 Apr 2013 11:57:51 +0200
+Subject: [PATCH 383/482] 	* grub-core/lib/arg.c (grub_arg_show_help):
+ Fix a NULL pointer 	dereference. 	Reported by: qwertial.
+
+---
+ ChangeLog           | 6 ++++++
+ grub-core/lib/arg.c | 2 +-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index 32a2a8e..41a941c 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,9 @@
++2013-04-29  Vladimir Serbinenko  <phcoder@gmail.com>
++
++	* grub-core/lib/arg.c (grub_arg_show_help): Fix a NULL pointer
++	dereference.
++	Reported by: qwertial.
++
+ 2013-04-28  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
+ 	* docs/grub.texi: Add a comment about usefullness of nativedisk.
+diff --git a/grub-core/lib/arg.c b/grub-core/lib/arg.c
+index 7492ac6..9cc18dc 100644
+--- a/grub-core/lib/arg.c
++++ b/grub-core/lib/arg.c
+@@ -158,7 +158,7 @@ grub_arg_show_help (grub_extcmd_t cmd)
+   show_usage (cmd);
+   grub_printf ("%s\n\n", _(cmd->cmd->description));
+ 
+-  for (opt = cmd->options; opt->doc; opt++)
++  for (opt = cmd->options; opt && opt->doc; opt++)
+     switch (opt->shortarg)
+       {
+       case 'h':
+-- 
+1.8.2.1
+

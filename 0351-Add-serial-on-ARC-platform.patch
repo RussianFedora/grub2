@@ -1,0 +1,555 @@
+From 856d1d38f73b370b3dd30b7ab0c362f6da7e7dcb Mon Sep 17 00:00:00 2001
+From: Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
+Date: Thu, 25 Apr 2013 22:40:03 +0200
+Subject: [PATCH 351/482] 	Add serial on ARC platform.
+
+---
+ ChangeLog                      |   4 ++
+ docs/grub.texi                 |   6 +-
+ grub-core/Makefile.am          |   1 +
+ grub-core/Makefile.core.def    |   2 +
+ grub-core/disk/arc/arcdisk.c   |  34 +---------
+ grub-core/kern/mips/arc/init.c |  39 +++++++++++
+ grub-core/term/arc/console.c   |  81 ++++++++++++++---------
+ grub-core/term/arc/serial.c    | 147 +++++++++++++++++++++++++++++++++++++++++
+ grub-core/term/serial.c        |   9 ++-
+ include/grub/arc/arc.h         |  11 +++
+ include/grub/serial.h          |  16 +++++
+ 11 files changed, 279 insertions(+), 71 deletions(-)
+ create mode 100644 grub-core/term/arc/serial.c
+
+diff --git a/ChangeLog b/ChangeLog
+index 94dd291..7f2c4dd 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,5 +1,9 @@
+ 2013-04-25  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
++	Add serial on ARC platform.
++
++2013-04-25  Vladimir Serbinenko  <phcoder@gmail.com>
++
+ 	* grub-core/boot/powerpc/bootinfo.txt.in: Missing update from previous
+ 	commit.
+ 
+diff --git a/docs/grub.texi b/docs/grub.texi
+index 87d19ea..920a558 100644
+--- a/docs/grub.texi
++++ b/docs/grub.texi
+@@ -4729,8 +4729,7 @@ ARC platform is unable to change datetime (firmware doesn't seem to provide a
+ function for it).
+ EMU has similar limitation.
+ 
+-ARC platform no serial port is available.
+-EMU has similar limitation.
++On EMU platform no serial port is available.
+ 
+ Console charset refers only to firmware-assisted console. gfxterm is always
+ Unicode (see Internationalisation section for its limitations). Serial is
+@@ -4747,9 +4746,6 @@ the actual console may be much more limited depending on firmware
+ On BIOS network is supported only if the image is loaded through network.
+ On sparc64 GRUB is unable to determine which server it was booted from.
+ 
+-On platforms not having direct serial support (as indicated in the line serial)
+-you can still redirect firmware console to serial if it allows so.
+-
+ Direct ATA/AHCI support allows to circumvent various firmware limitations but
+ isn't needed for normal operation except on baremetal ports.
+ 
+diff --git a/grub-core/Makefile.am b/grub-core/Makefile.am
+index 6f156e7..07aad50 100644
+--- a/grub-core/Makefile.am
++++ b/grub-core/Makefile.am
+@@ -151,6 +151,7 @@ endif
+ if COND_mips_arc
+ KERNEL_HEADER_FILES += $(top_srcdir)/include/grub/extcmd.h
+ KERNEL_HEADER_FILES += $(top_srcdir)/include/grub/arc/arc.h
++KERNEL_HEADER_FILES += $(top_srcdir)/include/grub/terminfo.h
+ endif
+ 
+ if COND_mips_qemu_mips
+diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
+index 8f36ea0..cdef5b4 100644
+--- a/grub-core/Makefile.core.def
++++ b/grub-core/Makefile.core.def
+@@ -1661,10 +1661,12 @@ module = {
+   common = term/serial.c;
+   x86 = term/ns8250.c;
+   ieee1275 = term/ieee1275/serial.c;
++  mips_arc = term/arc/serial.c;
+   efi = term/efi/serial.c;
+ 
+   enable = terminfomodule;
+   enable = ieee1275;
++  enable = mips_arc;
+ };
+ 
+ module = {
+diff --git a/grub-core/disk/arc/arcdisk.c b/grub-core/disk/arc/arcdisk.c
+index 780728f..9aefb7c 100644
+--- a/grub-core/disk/arc/arcdisk.c
++++ b/grub-core/disk/arc/arcdisk.c
+@@ -153,9 +153,7 @@ reopen (const char *name, int writable)
+ static grub_err_t
+ grub_arcdisk_open (const char *name, grub_disk_t disk)
+ {
+-  char *fullname, *optr;
+-  const char *iptr;
+-  int state = 0;
++  char *fullname;
+   grub_err_t err;
+   grub_arc_err_t r;
+   struct grub_arc_fileinfo info;
+@@ -163,35 +161,7 @@ grub_arcdisk_open (const char *name, grub_disk_t disk)
+ 
+   if (grub_memcmp (name, "arc/", 4) != 0)
+     return grub_error (GRUB_ERR_UNKNOWN_DEVICE, "not arc device");
+-  fullname = grub_malloc (2 * grub_strlen (name) + sizeof (RAW_SUFFIX));
+-  if (!fullname)
+-    return grub_errno;
+-  optr = fullname;
+-  for (iptr = name + 4; *iptr; iptr++)
+-    if (state == 0)
+-      {
+-	if (!grub_isdigit (*iptr))
+-	  *optr++ = *iptr;
+-	else
+-	  {
+-	    *optr++ = '(';
+-	    *optr++ = *iptr;
+-	    state = 1;
+-	  }
+-      }
+-    else
+-      {
+-	if (grub_isdigit (*iptr))
+-	  *optr++ = *iptr;
+-	else
+-	  {
+-	    *optr++ = ')';
+-	    state = 0;
+-	  }
+-      }
+-  if (state)
+-    *optr++ = ')';
+-  grub_memcpy (optr, RAW_SUFFIX, sizeof (RAW_SUFFIX));
++  fullname = grub_arc_alt_name_to_norm (name, RAW_SUFFIX);
+   disk->data = fullname;
+   grub_dprintf ("arcdisk", "opening %s\n", fullname);
+ 
+diff --git a/grub-core/kern/mips/arc/init.c b/grub-core/kern/mips/arc/init.c
+index 011c63f..92a2877 100644
+--- a/grub-core/kern/mips/arc/init.c
++++ b/grub-core/kern/mips/arc/init.c
+@@ -125,6 +125,45 @@ grub_machine_mmap_iterate (grub_memory_hook_t hook, void *hook_data)
+     }
+ }
+ 
++char *
++grub_arc_alt_name_to_norm (const char *name, const char *suffix)
++{
++  char *optr;
++  const char *iptr;
++  char * ret = grub_malloc (2 * grub_strlen (name) + grub_strlen (suffix));
++  int state = 0;
++
++  if (!ret)
++    return NULL;
++  optr = ret;
++  for (iptr = name + 4; *iptr; iptr++)
++    if (state == 0)
++      {
++	if (!grub_isdigit (*iptr))
++	  *optr++ = *iptr;
++	else
++	  {
++	    *optr++ = '(';
++	    *optr++ = *iptr;
++	    state = 1;
++	  }
++      }
++    else
++      {
++	if (grub_isdigit (*iptr))
++	  *optr++ = *iptr;
++	else
++	  {
++	    *optr++ = ')';
++	    state = 0;
++	  }
++      }
++  if (state)
++    *optr++ = ')';
++  grub_strcpy (optr, suffix);
++  return ret;
++}
++
+ extern grub_uint32_t grub_total_modules_size __attribute__ ((section(".text")));
+ grub_addr_t grub_modbase;
+ 
+diff --git a/grub-core/term/arc/console.c b/grub-core/term/arc/console.c
+index 13478ea..ea4737c 100644
+--- a/grub-core/term/arc/console.c
++++ b/grub-core/term/arc/console.c
+@@ -50,6 +50,55 @@ put (struct grub_term_output *term __attribute__ ((unused)), const int c)
+ 
+ static struct grub_terminfo_output_state grub_console_terminfo_output;
+ 
++int
++grub_arc_is_device_serial (const char *name, int alt_names)
++{
++  if (name[0] == '\0')
++    return 0;
++
++  const char *ptr = name + grub_strlen (name) - 1;
++  int i;
++  /*
++    Recognize:
++    serial(N)
++    serial(N)other(M)
++   */
++  for (i = 0; i < 2; i++)
++    {
++      if (!alt_names)
++	{
++	  if (*ptr != ')')
++	    return 0;
++	  ptr--;
++	}
++      for (; ptr >= name && grub_isdigit (*ptr); ptr--);
++      if (ptr < name)
++	return 0;
++      if (!alt_names)
++	{
++	  if (*ptr != '(')
++	    return 0;
++	  ptr--;
++	}
++      if (ptr + 1 >= name + sizeof ("serial") - 1
++	  && grub_memcmp (ptr + 1 - (sizeof ("serial") - 1),
++			  "serial", sizeof ("serial") - 1) == 0)
++	return 1;
++      if (!(ptr + 1 >= name + sizeof ("other") - 1
++	    && grub_memcmp (ptr + 1 - (sizeof ("other") - 1),
++			    "other", sizeof ("other") - 1) == 0))
++	return 0;
++      ptr -= sizeof ("other") - 1;
++      if (alt_names)
++	{
++	  if (*ptr != '/')
++	    return 0;
++	  ptr--;
++	}
++    }
++  return 0;
++}
++
+ static int
+ check_is_serial (void)
+ {
+@@ -71,37 +120,7 @@ check_is_serial (void)
+     consout = GRUB_ARC_FIRMWARE_VECTOR->getenvironmentvariable ("ConsoleOut");
+   if (!consout)
+     return is_serial = 0;
+-  if (consout[0] == '\0')
+-    return is_serial = 0;
+-
+-  const char *ptr = consout + grub_strlen (consout) - 1;
+-  int i;
+-  /*
+-    Recognize:
+-    serial(N)
+-    serial(N)other(M)
+-   */
+-  for (i = 0; i < 2; i++)
+-    {
+-      if (*ptr != ')')
+-	return is_serial = 0;
+-      ptr--;
+-      for (; ptr >= consout && grub_isdigit (*ptr); ptr--);
+-      if (ptr < consout)
+-	return is_serial = 0;
+-      if (*ptr != '(')
+-	return is_serial = 0;
+-      if (ptr >= consout + sizeof ("serial") - 1
+-	  && grub_memcmp (ptr - (sizeof ("serial") - 1),
+-			  "serial", sizeof ("serial") - 1) == 0)
+-	return is_serial = 1;
+-      if (!(ptr >= consout + sizeof ("other") - 1
+-	    && grub_memcmp (ptr - (sizeof ("other") - 1),
+-			    "other", sizeof ("other") - 1) == 0))
+-	return is_serial = 0;
+-      ptr -= sizeof ("other");
+-    }
+-  return 0;
++  return is_serial = grub_arc_is_device_serial (consout, 0);
+ }
+     
+ static void
+diff --git a/grub-core/term/arc/serial.c b/grub-core/term/arc/serial.c
+new file mode 100644
+index 0000000..87d1ce8
+--- /dev/null
++++ b/grub-core/term/arc/serial.c
+@@ -0,0 +1,147 @@
++/*
++ *  GRUB  --  GRand Unified Bootloader
++ *  Copyright (C) 2013  Free Software Foundation, Inc.
++ *
++ *  GRUB is free software: you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation, either version 3 of the License, or
++ *  (at your option) any later version.
++ *
++ *  GRUB is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with GRUB.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <grub/serial.h>
++#include <grub/types.h>
++#include <grub/dl.h>
++#include <grub/misc.h>
++#include <grub/mm.h>
++#include <grub/time.h>
++#include <grub/i18n.h>
++#include <grub/arc/arc.h>
++
++
++static void
++do_real_config (struct grub_serial_port *port)
++{
++  char *name;
++  if (port->configured)
++    return;
++
++  name = grub_arc_alt_name_to_norm (port->name, "");
++
++  if (GRUB_ARC_FIRMWARE_VECTOR->open (name,GRUB_ARC_FILE_ACCESS_OPEN_RW,
++				      &port->handle))
++    port->handle_valid = 0;
++  else
++    port->handle_valid = 1;
++
++  port->configured = 1;
++}
++
++/* Fetch a key.  */
++static int
++serial_hw_fetch (struct grub_serial_port *port)
++{
++  unsigned long actual;
++  char c;
++
++  do_real_config (port);
++
++  if (!port->handle_valid)
++    return -1;
++  if (GRUB_ARC_FIRMWARE_VECTOR->read (port->handle, &c,
++				      1, &actual) || actual <= 0)
++    return -1;
++  return c;
++}
++
++/* Put a character.  */
++static void
++serial_hw_put (struct grub_serial_port *port, const int c)
++{
++  unsigned long actual;
++  char c0 = c;
++
++  do_real_config (port);
++
++  if (!port->handle_valid)
++    return;
++
++  GRUB_ARC_FIRMWARE_VECTOR->write (port->handle, &c0,
++				   1, &actual);
++}
++
++/* Initialize a serial device. PORT is the port number for a serial device.
++   SPEED is a DTE-DTE speed which must be one of these: 2400, 4800, 9600,
++   19200, 38400, 57600 and 115200. WORD_LEN is the word length to be used
++   for the device. Likewise, PARITY is the type of the parity and
++   STOP_BIT_LEN is the length of the stop bit. The possible values for
++   WORD_LEN, PARITY and STOP_BIT_LEN are defined in the header file as
++   macros.  */
++static grub_err_t
++serial_hw_configure (struct grub_serial_port *port __attribute__ ((unused)),
++		     struct grub_serial_config *config __attribute__ ((unused)))
++{
++  /*  FIXME: no ARC serial config available.  */
++
++  return GRUB_ERR_NONE;
++}
++
++struct grub_serial_driver grub_arcserial_driver =
++  {
++    .configure = serial_hw_configure,
++    .fetch = serial_hw_fetch,
++    .put = serial_hw_put
++  };
++
++const char *
++grub_arcserial_add_port (const char *path)
++{
++  struct grub_serial_port *port;
++  grub_err_t err;
++
++  port = grub_zalloc (sizeof (*port));
++  if (!port)
++    return NULL;
++  port->name = grub_strdup (path);
++  if (!port->name)
++    return NULL;
++
++  port->driver = &grub_arcserial_driver;
++  err = grub_serial_config_defaults (port);
++  if (err)
++    grub_print_error ();
++
++  grub_serial_register (port);
++
++  return port->name;
++}
++
++static int
++dev_iterate (const char *name,
++	     const struct grub_arc_component *comp __attribute__ ((unused)),
++	     void *data __attribute__ ((unused)))
++{
++  /* We should check consolein/consoleout flags as
++     well but some implementations are buggy.  */
++  if ((comp->flags & (GRUB_ARC_COMPONENT_FLAG_IN | GRUB_ARC_COMPONENT_FLAG_OUT))
++      != (GRUB_ARC_COMPONENT_FLAG_IN | GRUB_ARC_COMPONENT_FLAG_OUT))
++    return 0;
++  if (!grub_arc_is_device_serial (name, 1))
++    return 0;
++  grub_arcserial_add_port (name);
++  return 0;
++}
++
++void
++grub_arcserial_init (void)
++{
++  grub_arc_iterate_devs (dev_iterate, 0, 1);
++}
++
+diff --git a/grub-core/term/serial.c b/grub-core/term/serial.c
+index 96f9d7f..61cd80a 100644
+--- a/grub-core/term/serial.c
++++ b/grub-core/term/serial.c
+@@ -137,7 +137,7 @@ grub_serial_find (const char *name)
+     if (grub_strcmp (port->name, name) == 0)
+       break;
+ 
+-#if (defined(__mips__) || defined (__i386__) || defined (__x86_64__)) && !defined(GRUB_MACHINE_EMU)
++#if (defined(__mips__) || defined (__i386__) || defined (__x86_64__)) && !defined(GRUB_MACHINE_EMU) && !defined(GRUB_MACHINE_ARC)
+   if (!port && grub_memcmp (name, "port", sizeof ("port") - 1) == 0
+       && grub_isxdigit (name [sizeof ("port") - 1]))
+     {
+@@ -242,7 +242,7 @@ grub_cmd_serial (grub_extcmd_context_t ctxt, int argc, char **args)
+   err = port->driver->configure (port, &config);
+   if (err)
+     return err;
+-#if !defined (GRUB_MACHINE_EMU) && (defined(__mips__) || defined (__i386__) || defined (__x86_64__))
++#if !defined (GRUB_MACHINE_EMU) && !defined(GRUB_MACHINE_ARC) && (defined(__mips__) || defined (__i386__) || defined (__x86_64__))
+ 
+   /* Compatibility kludge.  */
+   if (port->driver == &grub_ns8250_driver)
+@@ -396,7 +396,7 @@ GRUB_MOD_INIT(serial)
+ 	       &grub_serial_terminfo_input_template,
+ 	       sizeof (grub_serial_terminfo_input));
+ 
+-#if !defined (GRUB_MACHINE_EMU) && (defined(__mips__) || defined (__i386__) || defined (__x86_64__))
++#if !defined (GRUB_MACHINE_EMU) && !defined(GRUB_MACHINE_ARC) && (defined(__mips__) || defined (__i386__) || defined (__x86_64__))
+   grub_ns8250_init ();
+ #endif
+ #ifdef GRUB_MACHINE_IEEE1275
+@@ -405,6 +405,9 @@ GRUB_MOD_INIT(serial)
+ #ifdef GRUB_MACHINE_EFI
+   grub_efiserial_init ();
+ #endif
++#ifdef GRUB_MACHINE_ARC
++  grub_arcserial_init ();
++#endif
+ }
+ 
+ #if defined (GRUB_MACHINE_MIPS_LOONGSON) || defined (GRUB_MACHINE_MIPS_QEMU_MIPS)
+diff --git a/include/grub/arc/arc.h b/include/grub/arc/arc.h
+index 8f86500..c2578f4 100644
+--- a/include/grub/arc/arc.h
++++ b/include/grub/arc/arc.h
+@@ -79,6 +79,12 @@ struct grub_arc_display_status
+   grub_arc_uchar_t reverse_video;
+ };
+ 
++enum
++  {
++    GRUB_ARC_COMPONENT_FLAG_OUT = 0x40,
++    GRUB_ARC_COMPONENT_FLAG_IN = 0x20,
++  };
++
+ struct grub_arc_component
+ {
+   grub_arc_enum_t class;
+@@ -262,6 +268,11 @@ int EXPORT_FUNC (grub_arc_iterate_devs) (grub_arc_iterate_devs_hook_t hook,
+ 					 void *hook_data,
+ 					 int alt_names);
+ 
++char *EXPORT_FUNC (grub_arc_alt_name_to_norm) (const char *name, const char *suffix);
++
++int EXPORT_FUNC (grub_arc_is_device_serial) (const char *name, int alt_names);
++
++
+ #define FOR_ARC_CHILDREN(comp, parent) for (comp = GRUB_ARC_FIRMWARE_VECTOR->getchild (parent); comp; comp = GRUB_ARC_FIRMWARE_VECTOR->getpeer (comp))
+ 
+ extern void grub_arcdisk_init (void);
+diff --git a/include/grub/serial.h b/include/grub/serial.h
+index 32f507c..20840d0 100644
+--- a/include/grub/serial.h
++++ b/include/grub/serial.h
+@@ -30,6 +30,9 @@
+ #ifdef GRUB_MACHINE_IEEE1275
+ #include <grub/ieee1275/ieee1275.h>
+ #endif
++#ifdef GRUB_MACHINE_ARC
++#include <grub/arc/arc.h>
++#endif
+ 
+ struct grub_serial_port;
+ struct grub_serial_config;
+@@ -105,6 +108,13 @@ struct grub_serial_port
+ #ifdef GRUB_MACHINE_EFI
+     struct grub_efi_serial_io_interface *interface;
+ #endif
++#ifdef GRUB_MACHINE_ARC
++    struct
++    {
++      grub_arc_fileno_t handle;
++      int handle_valid;
++    };
++#endif
+   };
+   grub_term_output_t term_out;
+   grub_term_input_t term_in;
+@@ -170,6 +180,12 @@ void grub_ofserial_init (void);
+ void
+ grub_efiserial_init (void);
+ #endif
++#ifdef GRUB_MACHINE_ARC
++void
++grub_arcserial_init (void);
++const char *
++grub_arcserial_add_port (const char *path);
++#endif
+ 
+ struct grub_serial_port *grub_serial_find (const char *name);
+ extern struct grub_serial_driver grub_ns8250_driver;
+-- 
+1.8.2.1
+

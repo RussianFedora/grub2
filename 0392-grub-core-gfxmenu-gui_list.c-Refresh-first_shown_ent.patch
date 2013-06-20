@@ -1,0 +1,117 @@
+From a4ff5d5fe50365bd4ba31addc3fa67b59aa59d78 Mon Sep 17 00:00:00 2001
+From: Vladimir Testov <vladimir.testov@rosalab.ru>
+Date: Mon, 29 Apr 2013 13:40:11 +0200
+Subject: [PATCH 392/482] 	* grub-core/gfxmenu/gui_list.c: Refresh
+ first_shown_entry value when 	cached view is reused. 	*
+ grub-core/gfxmenu/view.c: Call the refresh procedure for all 	open boot
+ menus.
+
+---
+ ChangeLog                    |  7 +++++++
+ grub-core/gfxmenu/gui_list.c | 13 ++++++++++++-
+ grub-core/gfxmenu/view.c     | 22 ++++++++++++++++++++++
+ include/grub/gui.h           |  2 ++
+ 4 files changed, 43 insertions(+), 1 deletion(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index eff0b6b..86effa0 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,10 @@
++2013-04-29 Vladimir Testov <vladimir.testov@rosalab.ru>
++
++	* grub-core/gfxmenu/gui_list.c: Refresh first_shown_entry value when
++	cached view is reused.
++	* grub-core/gfxmenu/view.c: Call the refresh procedure for all
++	open boot menus.
++
+ 2013-04-29  Vladimir Serbinenko  <phcoder@gmail.com>
+ 
+ 	Unify more code in grub-install_header.
+diff --git a/grub-core/gfxmenu/gui_list.c b/grub-core/gfxmenu/gui_list.c
+index 1982d9a..a06603b 100644
+--- a/grub-core/gfxmenu/gui_list.c
++++ b/grub-core/gfxmenu/gui_list.c
+@@ -541,6 +541,16 @@ list_set_view_info (void *vself,
+   self->view = view;
+ }
+ 
++/* Refresh list variables */
++static void
++list_refresh_info (void *vself,
++                   grub_gfxmenu_view_t view)
++{
++  list_impl_t self = vself;
++  if (view->nested)
++    self->first_shown_index = 0;
++}
++
+ static struct grub_gui_component_ops list_comp_ops =
+   {
+     .destroy = list_destroy,
+@@ -557,7 +567,8 @@ static struct grub_gui_component_ops list_comp_ops =
+ 
+ static struct grub_gui_list_ops list_ops =
+ {
+-  .set_view_info = list_set_view_info
++  .set_view_info = list_set_view_info,
++  .refresh_list = list_refresh_info
+ };
+ 
+ grub_gui_component_t
+diff --git a/grub-core/gfxmenu/view.c b/grub-core/gfxmenu/view.c
+index 6de96ca..475fc76 100644
+--- a/grub-core/gfxmenu/view.c
++++ b/grub-core/gfxmenu/view.c
+@@ -237,6 +237,27 @@ update_menu_components (grub_gfxmenu_view_t view)
+ }
+ 
+ static void
++refresh_menu_visit (grub_gui_component_t component,
++              void *userdata)
++{
++  grub_gfxmenu_view_t view;
++  view = userdata;
++  if (component->ops->is_instance (component, "list"))
++    {
++      grub_gui_list_t list = (grub_gui_list_t) component;
++      list->ops->refresh_list (list, view);
++    }
++}
++
++/* Refresh list information (useful for submenus) */
++static void
++refresh_menu_components (grub_gfxmenu_view_t view)
++{
++  grub_gui_iterate_recursively ((grub_gui_component_t) view->canvas,
++                                refresh_menu_visit, view);
++}
++
++static void
+ draw_message (grub_gfxmenu_view_t view)
+ {
+   char *text = view->progress_message_text;
+@@ -294,6 +315,7 @@ grub_gfxmenu_view_draw (grub_gfxmenu_view_t view)
+ 			  view->screen.x, view->screen.y,
+ 			  view->screen.width, view->screen.height);
+ 
++  refresh_menu_components (view);
+   update_menu_components (view);
+ 
+   grub_gfxmenu_view_redraw (view, &view->screen);
+diff --git a/include/grub/gui.h b/include/grub/gui.h
+index ef0795c..4b8ec89 100644
+--- a/include/grub/gui.h
++++ b/include/grub/gui.h
+@@ -67,6 +67,8 @@ struct grub_gui_list_ops
+ {
+   void (*set_view_info) (void *self,
+                          grub_gfxmenu_view_t view);
++  void (*refresh_list) (void *self,
++                        grub_gfxmenu_view_t view);
+ };
+ 
+ struct grub_gui_progress_ops
+-- 
+1.8.2.1
+
