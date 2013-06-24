@@ -41,7 +41,7 @@
 Name:           grub2
 Epoch:          1
 Version:        2.00
-Release:        20%{?dist}
+Release:        22%{?dist}
 Summary:        Bootloader with support for Linux, Multiboot and more
 
 Group:          System Environment/Base
@@ -537,6 +537,7 @@ Patch0480: 0480-Disable-GRUB-video-support-for-IBM-power-machines.patch
 Patch0481: 0481-Revert-Add-bootpath-device-to-the-list-967862.patch
 Patch0482: 0482-Fix-net_bootp-cmd-crash-when-there-isn-t-network-car.patch
 Patch0483: 0483-Initialize-grub_file_filters_-all-enabled.patch
+Patch0484: 0484-Use-2-instead-of-1-for-our-right-hand-margin-so-line.patch
 
 BuildRequires:  flex bison binutils python
 BuildRequires:  ncurses-devel xz-devel
@@ -563,6 +564,7 @@ Requires(pre):  dracut
 Requires(post): dracut
 
 ExcludeArch:	s390 s390x %{arm}
+Obsoletes:	grub2 <= 2.00-20%{?dist}
 
 %description
 The GRand Unified Bootloader (GRUB) is a highly configurable and customizable
@@ -575,6 +577,7 @@ provides support for PC BIOS systems.
 Summary:	GRUB for EFI systems.
 Group:		System Environment/Base
 Requires:	%{name}-tools = %{epoch}:%{version}-%{release}
+Obsoletes:	grub2-efi <= 2.00-20%{?dist}
 
 %description efi
 The GRand Unified Bootloader (GRUB) is a highly configurable and customizable
@@ -598,6 +601,8 @@ provides tools for support of all platforms.
 Summary:	An example theme for GRUB.
 Group:		System Environment/Base
 Requires:	system-logos
+Obsoletes:	grub2 <= 2.00-20%{?dist}
+Obsoletes:	grub2-efi <= 2.00-20%{?dist}
 
 %description starfield-theme
 The GRand Unified Bootloader (GRUB) is a highly configurable and customizable
@@ -918,6 +923,13 @@ fi
 %{_datarootdir}/grub/themes/
 
 %changelog
+* Fri Jun 21 2013 Peter Jones <pjones@redhat.com> - 2.00-22.R
+- Fix linewrapping in edit menu.
+  Resolves: rhbz #976643
+
+* Thu Jun 20 2013 Peter Jones <pjones@redhat.com> - 2.00-21.R
+- Fix obsoletes to pull in -starfield-theme subpackage when it should.
+
 * Fri Jun 14 2013 Peter Jones <pjones@redhat.com> - 2.00-20.R
 - Put the theme entirely ento the subpackage where it belongs (#974667)
 
