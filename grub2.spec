@@ -41,7 +41,7 @@
 Name:           grub2
 Epoch:          1
 Version:        2.00
-Release:        23%{?dist}
+Release:        25%{?dist}
 Summary:        Bootloader with support for Linux, Multiboot and more
 
 Group:          System Environment/Base
@@ -646,7 +646,8 @@ cd grub-efi-%{tarversion}
 %configure							\
 	CFLAGS="$(echo $RPM_OPT_FLAGS | sed			\
 		-e 's/-O.//g'					\
-		-e 's/-fstack-protector//g'			\
+		-e 's/-fstack-protector\(-[[:alnum:]]\+\)*//g'	\
+		-e 's/-Wp,-D_FORTIFY_SOURCE=[[:digit:]]//g'	\
 		-e 's/--param=ssp-buffer-size=4//g'		\
 		-e 's/-mregparm=3/-mregparm=4/g'		\
 		-e 's/-fexceptions//g'				\
@@ -685,7 +686,8 @@ cd grub-%{tarversion}
 %configure							\
 	CFLAGS="$(echo $RPM_OPT_FLAGS | sed			\
 		-e 's/-O.//g'					\
-		-e 's/-fstack-protector//g'			\
+		-e 's/-fstack-protector\(-[[:alnum:]]\+\)*//g'	\
+		-e 's/-Wp,-D_FORTIFY_SOURCE=[[:digit:]]//g'	\
 		-e 's/--param=ssp-buffer-size=4//g'		\
 		-e 's/-mregparm=3/-mregparm=4/g'		\
 		-e 's/-fexceptions//g'				\
@@ -923,6 +925,12 @@ fi
 %{_datarootdir}/grub/themes/
 
 %changelog
+* Sat Aug 10 2013 Peter Jones <pjones@redhat.com> - 2.00-25.R
+- Last build failed because of a hardware error on the builder.
+
+* Mon Aug 05 2013 Peter Jones <pjones@redhat.com> - 2.00-24.R
+- Fix compiler flags to deal with -fstack-protector-strong
+
 * Tue Jul 02 2013 Dennis Gilmore <dennis@ausil.us> - 2.00-23.R
 - add epoch to obsoletes
 
