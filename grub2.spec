@@ -13,7 +13,8 @@
 
 %if ! 0%{?efi}
 
-%global efiarchs %{ix86} x86_64 ia64
+%global efi_only aarch64
+%global efiarchs %{ix86} x86_64 ia64 %{efi_only}
 
 %ifarch %{ix86}
 %global grubefiarch i386-efi
@@ -25,6 +26,11 @@
 %global grubefiname grubx64.efi
 %global grubeficdname gcdx64.efi
 %endif
+%ifarch aarch64
+%global grubefiarch arm64-efi
+%global grubefiname grubaa64.efi
+%global grubeficdname gcdaa64.efi
+%endif
 
 %if 0%{?rhel}
 %global efidir redhat
@@ -35,13 +41,13 @@
 
 %endif
 
-%global tarversion 2.00
+%global tarversion 2.02~beta2
 %undefine _missing_build_ids_terminate_build
 
 Name:           grub2
 Epoch:          1
-Version:        2.00
-Release:        25%{?dist}
+Version:        2.02
+Release:        0.3%{?dist}
 Summary:        Bootloader with support for Linux, Multiboot and more
 
 Group:          System Environment/Base
@@ -49,500 +55,128 @@ License:        GPLv3+
 URL:            http://www.gnu.org/software/grub/
 Obsoletes:	grub < 1:0.98
 Source0:        ftp://alpha.gnu.org/gnu/grub/grub-%{tarversion}.tar.xz
-Source3:        README.Fedora
+#Source0:	ftp://ftp.gnu.org/gnu/grub/grub-%{tarversion}.tar.xz
 Source4:	http://unifoundry.com/unifont-5.1.20080820.pcf.gz
 Source5:	theme.tar.bz2
 #Source6:	grub-cd.cfg
-Patch0000: grub-2.00-bzrignore.patch
-Patch0001: 0001-Add-monochrome-text-support-mda_text-aka-hercules-in.patch
-Patch0002: 0002-missing-file-from-last-commit.patch
-Patch0003: 0003-grub-core-loader-i386-linux.c-find_efi_mmap_size-Don.patch
-Patch0004: 0004-include-grub-list.h-FOR_LIST_ELEMENTS_SAFE-New-macro.patch
-Patch0005: 0005-gentpl.py-Make-mans-depend-on-grub-mkconfig_lib.patch
-Patch0006: 0006-grub-core-net-tftp.c-ack-Fix-endianness-problem.patch
-Patch0007: 0007-grub-core-fs-ext2.c-Experimental-support-for-64-bit.patch
-Patch0008: 0008-grub-core-term-efi-serial.c-Support-1.5-stop-bits.patch
-Patch0009: 0009-grub-core-lib-legacy_parse.c-Support-clear-and-testl.patch
-Patch0010: 0010-grub-core-Makefile.am-Fix-path-to-boot-i386-pc-start.patch
-Patch0011: 0011-Fix-coreboot-compilation.patch
-Patch0012: 0012-grub-core-normal-autofs.c-autoload_fs_module-Save-an.patch
-Patch0013: 0013-grub-core-lib-xzembed-xz_dec_stream.c-hash_validate-.patch
-Patch0014: 0014-grub-core-loader-i386-bsd.c-grub_bsd_elf32_size_hook.patch
-Patch0015: 0015-New-command-lsefi.patch
-Patch0016: 0016-util-grub-mkconfig_lib.in-grub_quote-Remove-extra-la.patch
-Patch0017: 0017-EHCI-and-OHCI-PCI-bus-master.patch
-Patch0018: 0018-Update-manual-NetBSD-wise.patch
-Patch0019: 0019-Regenerate-po-POTFILES.in-with-the-following-commman.patch
-Patch0020: 0020-Strengthen-the-configure-test-for-working-nostdinc-i.patch
-Patch0021: 0021-.bzrignore-Add-grub-bios-setup-grub-ofpathname-and.patch
-Patch0022: 0022-docs-man-grub-mkdevicemap.h2m-Remove-since-grub-mkde.patch
-Patch0023: 0023-grub-core-mmap-mips-loongson-Remove-empty-directory.patch
-Patch0024: 0024-Makefile.am-EXTRA_DIST-Add.patch
-Patch0025: 0025-Makefile.am-EXTRA_DIST-Add-linguas.sh.-It-s-only-str.patch
-Patch0026: 0026-grub-core-fs-xfs.c-grub_xfs_read_block-Make-keys-a-c.patch
-Patch0027: 0027-grub-core-partmap-dvh.c-grub_dvh_is_valid-Add-missin.patch
-Patch0028: 0028-grub-core-script-yylex.l-Ignore-unused-function-and-.patch
-Patch0029: 0029-grub-core-disk-ieee1275-ofdisk.c-scan-Check-function.patch
-Patch0030: 0030-util-import_gcry.py-Sort-cipher_files-to-make-build-.patch
-Patch0031: 0031-NEWS-Fix-typo.patch
-Patch0032: 0032-configure.ac-Add-SuSe-path.patch
-Patch0033: 0033-grub-core-Makefile.core.def-efifwsetup-New-module.patch
-Patch0034: 0034-grub-core-loader-efi-appleloader.c-devpath_8-New-var.patch
-Patch0035: 0035-grub-core-disk-diskfilter.c-free_array-GRUB_UTIL-Fix.patch
-Patch0036: 0036-Don-t-require-grub-mkconfig_lib-to-generate-manpages.patch
-Patch0037: 0037-include-grub-efi-api.h-grub_efi_runtime_services-Mak.patch
-Patch0038: 0038-grub-core-term-terminfo.c-Only-fix-up-powerpc-key-re.patch
-Patch0039: 0039-util-grub-mkconfig_lib.in-grub_quote-Remove-outdated.patch
-Patch0040: 0040-grub-core-loader-i386-linux.c-grub_cmd_linux-Fix-inc.patch
-Patch0041: 0041-grub-core-kern-ieee1275-cmain.c-grub_ieee1275_find_o.patch
-Patch0042: 0042-util-grub-mkconfig_lib.in-grub_tab-New-variable.patch
-Patch0043: 0043-util-grub-setup.c-write_rootdev-Remove-unused-core_i.patch
-Patch0044: 0044-grub-core-partmap-msdos.c-pc_partition_map_embed-Rev.patch
-Patch0045: 0045-Fix-grub-emu-build-on-FreeBSD.patch
-Patch0046: 0046-util-grub-install.in-Make-the-error-message-if-sourc.patch
-Patch0047: 0047-grub-core-fs-affs.c-grub_affs_mount-Support-AFFS-boo.patch
-Patch0048: 0048-util-grub-mkconfig_lib.in-is_path_readable_by_grub-R.patch
-Patch0049: 0049-Makefile.util.def-grub-mknetdir-Move-to-prefix-bin.patch
-Patch0050: 0050-grub-core-loader-i386-linux.c-allocate_pages-Fix-spe.patch
-Patch0051: 0051-grub-core-commands-configfile.c-GRUB_MOD_INIT-Correc.patch
-Patch0052: 0052-grub-core-Makefile.am-moddep.lst-Use-AWK-instead-of-.patch
-Patch0053: 0053-Add-missing-ChangeLog.patch
-Patch0054: 0054-Fix-ordering-and-tab-indentation-of-NetBSD-boot-menu.patch
-Patch0055: 0055-grub-core-net-bootp.c-parse_dhcp_vendor-Fix-double-i.patch
-Patch0056: 0056-include-grub-types.h-Fix-functionality-unaffecting-t.patch
-Patch0057: 0057-Support-big-endian-UFS1.patch
-Patch0058: 0058-Fix-big-endian-mtime.patch
-Patch0059: 0059-grub-core-fs-ufs.c-grub_ufs_dir-Stop-if-direntlen-is.patch
-Patch0060: 0060-util-getroot.c-convert_system_partition_to_system_di.patch
-Patch0061: 0061-util-grub-mkfont.c-argp_parser-Fix-a-typo-which-prev.patch
-Patch0062: 0062-grub-core-term-gfxterm.c-grub_virtual_screen_setup-G.patch
-Patch0063: 0063-grub-core-gfxmenu-view.c-init_terminal-Avoid-making-.patch
-Patch0064: 0064-grub-core-kern-ieee1275-init.c-grub_machine_get_boot.patch
-Patch0065: 0065-util-grub-install.in-Remove-stale-TODO.patch
-Patch0066: 0066-util-grub-install.in-Follow-the-symbolic-link-parame.patch
-Patch0067: 0067-grub-core-disk-cryptodisk.c-grub_cmd_cryptomount-Str.patch
-Patch0068: 0068-docs-grub.texi-Network-Update-instructions-on-genera.patch
-Patch0069: 0069-util-grub.d-20_linux_xen.in-Addmissing-assignment-to.patch
-Patch0070: 0070-Backport-gnulib-fixes-for-C11.-Fixes-Savannah-bug-37.patch
-Patch0071: 0071-Apply-program-name-transformations-at-build-time-rat.patch
-Patch0072: 0072-neater-gnulib-backport.patch
-Patch0073: 0073-util-grub-mkconfig.in-Accept-GRUB_TERMINAL_OUTPUT-vg.patch
-Patch0074: 0074-grub-core-bus-usb-ehci.c-grub_ehci_pci_iter-Remove-i.patch
-Patch0075: 0075-Remove-several-trivially-unnecessary-uses-of-nested-.patch
-Patch0076: 0076-docs-grub.texi-configfile-Explain-environment-variab.patch
-Patch0077: 0077-Fix-failing-printf-test.patch
-Patch0078: 0078-grub-core-tests-lib-test.c-grub_test_run-Return-non-.patch
-Patch0079: 0079-docs-grub.texi-Invoking-grub-mount-New-section.patch
-Patch0080: 0080-docs-grub.texi-Invoking-grub-mkrelpath-New-section.patch
-Patch0081: 0081-grub-core-fs-iso9660.c-grub_iso9660_susp_iterate-Avo.patch
-Patch0082: 0082-configure.ac-Extend-Wno-trampolines-to-host.patch
-Patch0083: 0083-util-grub.d-10_kfreebsd.in-Fix-improper-references-t.patch
-Patch0084: 0084-util-grub.d-10_kfreebsd.in-Correct-the-patch-to-zpoo.patch
-Patch0085: 0085-grub-core-disk-diskfilter.c-grub_diskfilter_write-Ca.patch
-Patch0086: 0086-grub-core-fs-nilfs2.c-grub_nilfs2_palloc_groups_per_.patch
-Patch0087: 0087-grub-core-fs-ntfs.c-Eliminate-useless-divisions-in-f.patch
-Patch0088: 0088-grub-core-fs-ext2.c-grub_ext2_read_block-Use-shifts-.patch
-Patch0089: 0089-grub-core-fs-minix.c-grub_minix_read_file-Simplify-a.patch
-Patch0090: 0090-docs-grub.texi-grub_cpu-New-subsection.patch
-Patch0091: 0091-grub-core-io-bufio.c-grub_bufio_open-Use-grub_zalloc.patch
-Patch0092: 0092-grub-core-kern-disk.c-grub_disk_write-Fix-sector-num.patch
-Patch0093: 0093-Support-Apple-FAT-binaries-on-non-Apple-platforms.patch
-Patch0094: 0094-grub-core-fs-ntfs.c-Ue-more-appropriate-types.patch
-Patch0095: 0095-Import-gcrypt-public-key-cryptography-and-implement-.patch
-Patch0096: 0096-Clean-up-dangling-references-to-grub-setup.patch
-Patch0097: 0097-autogen.sh-Do-not-try-to-delete-nonexistant-files.patch
-Patch0098: 0098-Remove-autogenerated-files-from-VCS.patch
-Patch0099: 0099-grub-core-lib-libgcrypt_wrap-mem.c-_gcry_log_bug-Mak.patch
-Patch0100: 0100-grub-core-lib-libgcrypt_wrap-mem.c-gcry_x-alloc-Make.patch
-Patch0101: 0101-grub-core-commands-verify.c-Mark-messages-for-transl.patch
-Patch0102: 0102-Remove-nested-functions-from-PCI-iterators.patch
-Patch0103: 0103-util-grub-mkimage.c-generate_image-Fix-size-of-publi.patch
-Patch0104: 0104-New-command-list_trusted.patch
-Patch0105: 0105-Fix-compilation-with-older-compilers.patch
-Patch0106: 0106-grub-core-kern-emu-hostdisk.c-read_device_map-Explic.patch
-Patch0107: 0107-Remove-nested-functions-from-memory-map-iterators.patch
-Patch0108: 0108-Remove-nested-functions-from-script-reading-and-pars.patch
-Patch0109: 0109-grub-core-script-lexer.c-grub_script_lexer_init-Rena.patch
-Patch0110: 0110-Improve-bidi-handling-in-entry-editor.patch
-Patch0111: 0111-New-terminal-outputs-using-serial-morse-and-spkmodem.patch
-Patch0112: 0112-Add-new-command-pcidump.patch
-Patch0113: 0113-Rewrite-spkmodem-to-use-PIT-for-timing.-Double-the-s.patch
-Patch0114: 0114-Add-license-header-to-spkmodem-recv.c.patch
-Patch0115: 0115-Fix-typos-for-developer-and-development.patch
-Patch0116: 0116-Remove-nested-functions-from-device-iterators.patch
-Patch0117: 0117-Remove-nested-functions-from-ELF-iterators.patch
-Patch0118: 0118-util-grub-script-check.c-main-Uniform-the-error-mess.patch
-Patch0119: 0119-docs-grub.texi-Simple-configuration-Clarify-GRUB_HID.patch
-Patch0120: 0120-Split-long-USB-transfers-into-short-ones.patch
-Patch0121: 0121-include-grub-elf.h-Update-ARM-definitions-based-on-b.patch
-Patch0122: 0122-conf-Makefile.common-Fix-autogen-rules-to-pass-defin.patch
-Patch0123: 0123-grub-core-loader-i386-linux.c-grub_cmd_initrd-Don-t-.patch
-Patch0124: 0124-util-grub-mkimage.c-main-Postpone-freeing-arguments..patch
-Patch0125: 0125-docs-grub.texi-Multi-boot-manual-config-Fix-typo-for.patch
-Patch0126: 0126-Remove-nested-functions-from-filesystem-directory-it.patch
-Patch0127: 0127-grub-core-partmap-msdos.c-embed_signatures-Add-the-s.patch
-Patch0128: 0128-Improve-spkmomdem-reliability-by-adding-a-separator-.patch
-Patch0129: 0129-grub-core-commands-lsmmap.c-Fix-unused-variable-on-e.patch
-Patch0130: 0130-grub-core-disk-arc-arcdisk.c-grub_arcdisk_iterate-Fi.patch
-Patch0131: 0131-Fix-powerpc-and-sparc64-build-failures-caused-by-un-.patch
-Patch0132: 0132-grub-core-commands-ls.c-grub_ls_print_devices-Add-mi.patch
-Patch0133: 0133-Make-color-variables-global-instead-of-it-being-per-.patch
-Patch0134: 0134-Improve-spkmomdem-reliability-by-adding-a-separator-.patch
-Patch0135: 0135-grub-core-normal-term.c-print_ucs4_terminal-Don-t-ou.patch
-Patch0136: 0136-Improve-spkmodem-reliability-by-adding-a-separator-b.patch
-Patch0137: 0137-Remove-nested-functions-from-USB-iterators.patch
-Patch0138: 0138-grub-core-font-font.c-blit_comb-do_blit-Make-static-.patch
-Patch0139: 0139-include-grub-kernel.h-FOR_MODULES-Adjust-to-preserve.patch
-Patch0140: 0140-grub-core-lib-libgcrypt_wrap-cipher_wrap.h-Include-s.patch
-Patch0141: 0141-util-grub-reboot.in-usage-Document-the-need-for.patch
-Patch0142: 0142-Improve-FreeDOS-direct-loading-support-compatibility.patch
-Patch0143: 0143-grub-core-normal-menu_text.c-grub_menu_init_page-Fix.patch
-Patch0144: 0144-util-grub-install.in-change-misleading-comment-about.patch
-Patch0145: 0145-grub-core-fs-xfs.c-grub_xfs_read_block-Fix-computati.patch
-Patch0146: 0146-grub-core-bus-usb-serial-common.c-grub_usbserial_att.patch
-Patch0147: 0147-grub-core-bus-usb-usb.c-grub_usb_device_attach-Add-m.patch
-Patch0148: 0148-grub-core-commands-lsacpi.c-Show-more-info.-Hide-som.patch
-Patch0149: 0149-Missing-part-of-last-commit.patch
-Patch0150: 0150-Implement-USBDebug-full-USB-stack-variant.patch
-Patch0151: 0151-grub-core-fs-fshelp.c-find_file-Set-oldnode-to-zero-.patch
-Patch0152: 0152-grub-core-disk-cryptodisk.c-grub_cryptodisk_scan_dev.patch
-Patch0153: 0153-grub-core-commands-lsacpi.c-Fix-types-on-64-bit-plat.patch
-Patch0154: 0154-Support-Openfirmware-disks-with-non-512B-sectors.patch
-Patch0155: 0155-Implement-new-command-cmosdump.patch
-Patch0156: 0156-grub-core-normal-misc.c-grub_normal_print_device_inf.patch
-Patch0157: 0157-Makefile.util.def-Add-partmap-msdos.c-to-common-libr.patch
-Patch0158: 0158-grub-core-normal-menu_entry.c-insert_string-fix-off-.patch
-Patch0159: 0159-grub-core-normal-menu_entry.c-update_screen-remove.patch
-Patch0160: 0160-grub-core-disk-efi-efidisk.c-grub_efidisk_get_device.patch
-Patch0161: 0161-grub-core-partmap-msdos.c-grub_partition_msdos_itera.patch
-Patch0162: 0162-Remove-nested-functions-from-disk-and-file-read-hook.patch
-Patch0163: 0163-grub-core-loader-machoXX.c-Remove-nested-functions.patch
-Patch0164: 0164-util-grub-fstest.c-Remove-nested-functions.patch
-Patch0165: 0165-grub-core-commands-parttool.c-grub_cmd_parttool-Move.patch
-Patch0166: 0166-grub-core-fs-iso9660.c-Remove-nested-functions.patch
-Patch0167: 0167-grub-core-fs-minix.c-Remove-nested-functions.patch
-Patch0168: 0168-grub-core-fs-jfs.c-Remove-nested-functions.patch
-Patch0169: 0169-grub-core-lib-arg.c-grub_arg_show_help-Move-showargs.patch
-Patch0170: 0170-grub-core-kern-i386-coreboot-mmap.c-grub_linuxbios_t.patch
-Patch0171: 0171-Enable-linux16-on-non-BIOS-systems-for-i.a.-memtest.patch
-Patch0172: 0172-grub-core-kern-main.c-grub_set_prefix_and_root-Strip.patch
-Patch0173: 0173-grub-core-disk-efi-efidisk.c-Transform-iterate_child.patch
-Patch0174: 0174-grub-core-loader-i386-pc-linux.c-grub_cmd_linux-Fix-.patch
-Patch0175: 0175-Remove-nested-functions-from-videoinfo-iterators.patch
-Patch0176: 0176-grub-core-gentrigtables.c-Make-tables-const.patch
-Patch0177: 0177-grub-core-kern-emu-hostdisk.c-read_device_map-Remove.patch
-Patch0178: 0178-util-grub-editenv.c-list_variables-Move-print_var-ou.patch
-Patch0179: 0179-grub-core-fs-hfsplus.c-grub_hfsplus_btree_iterate_no.patch
-Patch0180: 0180-grub-core-fs-hfs.c-Remove-nested-functions.patch
-Patch0181: 0181-grub-core-commands-loadenv.c-grub_cmd_list_env-Move-.patch
-Patch0182: 0182-grub-core-normal-charset.c-grub_bidi_logical_to_visu.patch
-Patch0183: 0183-grub-core-script-execute.c-gettext_append-Remove-nes.patch
-Patch0184: 0184-grub-core-lib-ia64-longjmp.S-Fix-the-name-of-longjmp.patch
-Patch0185: 0185-Make-elfload-not-use-hooks.-Opt-for-flags-and-iterat.patch
-Patch0186: 0186-grub-core-kern-term.c-grub_term_normal_color.patch
-Patch0187: 0187-Move-to-more-hookless-approach-in-IEEE1275-devices-h.patch
-Patch0188: 0188-include-grub-mips-loongson-cmos.h-Fix-high-CMOS-addr.patch
-Patch0189: 0189-include-grub-cmos.h-Handle-high-CMOS-addresses-on-sp.patch
-Patch0190: 0190-grub-core-disk-ieee1275-nand.c-Fix-compilation-on.patch
-Patch0191: 0191-grub-core-kern-env.c-include-grub-env.h-Change-itera.patch
-Patch0192: 0192-grub-core-commands-regexp.c-set_matches-Move-setvar-.patch
-Patch0193: 0193-grub-core-script-execute.c-grub_script_arglist_to_ar.patch
-Patch0194: 0194-Remove-all-trampoline-support.-Add-Wtrampolines-when.patch
-Patch0195: 0195-grub-core-term-terminfo.c-grub_terminfo_cls-Issue-an.patch
-Patch0196: 0196-Lift-up-core-size-limits-on-some-platforms.-Fix-pote.patch
-Patch0197: 0197-grub-core-normal-crypto.c-read_crypto_list-Fix-incor.patch
-Patch0198: 0198-grub-core-commands-acpi.c-grub_acpi_create_ebda-Don-.patch
-Patch0199: 0199-grub-core-fs-iso9660.c-add_part-Remove-always_inline.patch
-Patch0200: 0200-grub-core-fs-fshelp.c-grub_fshelp_log2blksize-Remove.patch
-Patch0201: 0201-Avoid-costly-64-bit-division-in-grub_get_time_ms-on-.patch
-Patch0202: 0202-grub-core-fs-hfs.c-grub_hfs_read_file-Avoid-divmod64.patch
-Patch0203: 0203-Adjust-types-in-gdb-module-to-have-intended-unsigned.patch
-Patch0204: 0204-grub-core-video-i386-pc-vbe.c.patch
-Patch0205: 0205-include-grub-datetime.h-grub_datetime2unixtime-Fix-u.patch
-Patch0206: 0206-grub-core-loader-i386-pc-plan9.c-fill_disk-Fix-types.patch
-Patch0207: 0207-grub-core-commands-verify.c-grub_verify_signature-Us.patch
-Patch0208: 0208-grub-core-lib-arg.c-grub_arg_list_alloc-Use-shifts-r.patch
-Patch0209: 0209-grub-core-loader-i386-bsdXX.c-grub_openbsd_find_ramd.patch
-Patch0210: 0210-Resend-a-packet-if-we-got-the-wrong-buffer-in-status.patch
-Patch0211: 0211-Better-estimate-the-maximum-USB-transfer-size.patch
-Patch0212: 0212-remove-get_endpoint_descriptor-and-change-all-functi.patch
-Patch0213: 0213-Implement-boot-time-analysis-framework.patch
-Patch0214: 0214-Fix-USB-devices-not-being-detected-when-requested.patch
-Patch0215: 0215-Initialize-USB-ports-in-parallel-to-speed-up-boot.patch
-Patch0216: 0216-include-grub-boottime.h-Add-missing-file.patch
-Patch0217: 0217-Fix-a-conflict-between-ports-structures-with-2-contr.patch
-Patch0218: 0218-New-commands-cbmemc-lscoreboot-coreboot_boottime-to-.patch
-Patch0219: 0219-grub-core-commands-boottime.c-Fix-copyright-header.patch
-Patch0220: 0220-Slight-improve-in-USB-related-boot-time-checkpoints.patch
-Patch0221: 0221-grub-core-commands-verify.c-hashes-Add-several-hashe.patch
-Patch0222: 0222-po-POTFILES.in-Regenerate.patch
-Patch0223: 0223-grub-core-commands-i386-coreboot-cbls.c-Fix-typos-an.patch
-Patch0224: 0224-Add-ability-to-generate-newc-additions-on-runtime.patch
-Patch0225: 0225-grub-core-fs-zfs-zfs.c-Fix-incorrect-handling-of-spe.patch
-Patch0226: 0226-grub-core-term-at_keyboard.c-Increase-robustness-on-.patch
-Patch0227: 0227-Add-new-proc-filesystem-framework-and-put-luks_scrip.patch
-Patch0228: 0228-grub-core-Makefile.core.def-vbe-Disable-on-coreboot-.patch
-Patch0229: 0229-util-grub-mkconfig_lib.in-prepare_grub_to_access_dev.patch
-Patch0230: 0230-grub-core-Makefile.core.def-vga-Disable-on-coreboot-.patch
-Patch0231: 0231-util-grub.d-20_linux_xen.in-Automatically-add-no-rea.patch
-Patch0232: 0232-Replace-the-region-at-0-from-coreboot-tables-to-avai.patch
-Patch0233: 0233-grub-core-normal-menu.c-Wait-if-there-were-errors-sh.patch
-Patch0234: 0234-grub-core-disk-ahci.c-Give-more-time-for-AHCI-reques.patch
-Patch0235: 0235-grub-core-gfxmenu-font.c-grub_font_get_string_width-.patch
-Patch0236: 0236-grub-core-commands-acpihalt.c-skip_ext_op-Add-suppor.patch
-Patch0237: 0237-grub-core-kern-efi-mm.c-grub_efi_finish_boot_service.patch
-Patch0238: 0238-grub-core-commands-verify.c-Fix-hash-algorithms-valu.patch
-Patch0239: 0239-INSTALL-Mention-xorriso-requirement.patch
-Patch0240: 0240-grub-core-partmap-apple.c-apple_partition_map_iterat.patch
-Patch0241: 0241-grub-core-gfxmenu-gui_circular_progress.c-Fix-off-by.patch
-Patch0242: 0242-grub-core-gfxmenu-view.c-Fix-off-by-one-error.patch
-Patch0243: 0243-grub-core-gfxmenu-gui_circular_progress.c-Take-both-.patch
-Patch0244: 0244-grub-core-gfxmenu-gui_progress_bar.c-Handle-padding-.patch
-Patch0245: 0245-include-grub-elf.h-Add-missing-ARM-relocation-codes-.patch
-Patch0246: 0246-util-grub-mount.c-fuse_init-Return-error-if-fuse_mai.patch
-Patch0247: 0247-Fix-screen-corruption-in-menu-entry-editor-and-simpl.patch
-Patch0248: 0248-grub-core-term-i386-pc-console.c-grub_console_getwh-.patch
-Patch0249: 0249-grub-core-commands-verify.c-Save-verified-file-to-av.patch
-Patch0250: 0250-grub-core-lib-posix_wrap-locale.h-GRUB_UTIL-Include-.patch
-Patch0251: 0251-util-grub-setup.c-setup-Handle-some-corner-cases.patch
-Patch0252: 0252-grub-core-bus-usb-usbtrans.c-grub_usb_bulk_readwrite.patch
-Patch0253: 0253-Use-TSC-as-a-possible-time-source-on-i386-ieee1275.patch
-Patch0254: 0254-grub-core-disk-efi-efidisk.c-Handle-partitions-on-no.patch
-Patch0255: 0255-Unify-file-copying-setup-across-different-install-sc.patch
-Patch0256: 0256-util-grub-mkimage.c-Introduce-new-define-EFI32_HEADE.patch
-Patch0257: 0257-docs-grub.texi-Document-menuentry-id-option.patch
-Patch0258: 0258-docs-grub.texi-Document-more-user-commands.patch
-Patch0259: 0259-Move-GRUB_CHAR_BIT-to-types.h.patch
-Patch0260: 0260-include-grub-bsdlabel.h-Use-enums.patch
-Patch0261: 0261-grub-core-commands-verify.c-Use-GRUB_CHAR_BIT.patch
-Patch0262: 0262-Add-new-defines-GRUB_RSDP_SIGNATURE_SIZE-and-GRUB_RS.patch
-Patch0263: 0263-Replace-8-with-GRUB_CHAR_BIT-in-several-places-when-.patch
-Patch0264: 0264-grub-core-commands-acpi.c-Use-sizeof-rather-than-har.patch
-Patch0265: 0265-util-grub-mkfont.c-Prefer-enum-to-define.patch
-Patch0266: 0266-Use-GRUB_PROPERLY_ALIGNED_ARRAY-in-grub-core-disk-cr.patch
-Patch0267: 0267-util-grub.d-30_os-prober.in-Support-btrrfs-linux-pro.patch
-Patch0268: 0268-util-grub-install_header-Use-PACKAGE-.mo-in-message-.patch
-Patch0269: 0269-conf-Makefile.extra-dist-EXTRA_DIST-Add.patch
-Patch0270: 0270-grub-core-normal-term.c-Few-more-fixes-for-menu-entr.patch
-Patch0271: 0271-grub-core-normal-term.c-Few-more-fixes-for-menu-entr.patch
-Patch0272: 0272-docs-grub-dev.texi-Move-itemize-after-subsection-to-.patch
-Patch0273: 0273-grub-core-term-i386-pc-console.c-Fix-cursor-moving-a.patch
-Patch0274: 0274-grub-core-Makefile.core.def-Add-kern-elfXX.c-to-elf-.patch
-Patch0275: 0275-Fix-ia64-efi-image-generation-on-big-endian-machines.patch
-Patch0276: 0276-autogen.sh-Use-h-not-f-to-test-for-existence-of-symb.patch
-Patch0277: 0277-Fix-missing-PVs-if-they-don-t-contain-interesting-LV.patch
-Patch0278: 0278-util-grub.d-30_os-prober.in-Add-onstr-to-entries-for.patch
-Patch0279: 0279-Use-ACPI-shutdown-intests-as-traditional-port-was-re.patch
-Patch0280: 0280-Import-new-gnulib.patch
-Patch0281: 0281-docs-grub.texi-Fix-description-of-GRUB_CMDLINE_XEN-a.patch
-Patch0282: 0282-Merge-powerpc-grub-mkrescue-flavour-with-common.-Use.patch
-Patch0283: 0283-Support-i386-ieee1275-grub-mkrescue-and-make-check-o.patch
-Patch0284: 0284-tests-partmap_test.in-Fix-missing-qemudisk-setting.patch
-Patch0285: 0285-tests-grub_cmd_date.in-New-test-for-datetime.patch
-Patch0286: 0286-docs-grub.texi-Update-coreboot-status-info.patch
-Patch0287: 0287-Turn-off-QEMU-ACPI-way-since-new-releases-don-t-have.patch
-Patch0288: 0288-tests-util-grub-shell.in-Fix-it-on-powerpc.patch
-Patch0289: 0289-Disable-partmap-check-on-i386-ieee1275-due-to-openfi.patch
-Patch0290: 0290-grub-core-net-drivers-ieee1275-ofnet.c-Don-t-attempt.patch
-Patch0291: 0291-grub-core-net-http.c-Fix-bad-free.patch
-Patch0292: 0292-Fix-handling-of-split-transfers.patch
-Patch0293: 0293-grub-core-bus-usb-ehci.c-grub_ehci_fini_hw-Ignore-er.patch
-Patch0294: 0294-util-grub-mkimage.c-Document-memdisk-implying-prefix.patch
-Patch0295: 0295-Handle-Japanese-special-keys.patch
-Patch0296: 0296-Replace-stpcpy-with-grub_stpcpy-in-tools.patch
-Patch0297: 0297-Better-support-Apple-Intel-Macs-on-CD.patch
-Patch0298: 0298-util-grub-mkrescue.in-Fix-wrong-architecture-for-ppc.patch
-Patch0299: 0299-docs-man-grub-glue-efi.h2m-Add-missing-file.patch
-Patch0300: 0300-Fix-memory-leaks-in-ofnet.patch
-Patch0301: 0301-grub-core-kern-ieee1275-cmain.c-grub_ieee1275_find_o.patch
-Patch0302: 0302-grub-core-disk-ieee1275-ofdisk.c-Iterate-over-bootpa.patch
-Patch0303: 0303-Allow-IEEE1275-ports-on-path-even-if-it-wasn-t-detec.patch
-Patch0304: 0304-Support-mkrescue-on-sparc64.patch
-Patch0305: 0305-Support-grub-shell-on-sparc64.patch
-Patch0306: 0306-tests-partmap_test.in-Skip-on-sparc64.patch
-Patch0307: 0307-tests-grub_cmd_date.in-Add-missing-exit-1.patch
-Patch0308: 0308-Move-GRUB-out-of-system-area-when-using-xorriso-1.2..patch
-Patch0309: 0309-grub-core-loader-i386-linux.c-Remove-useless-leftove.patch
-Patch0310: 0310-docs-grub-dev.texi-Rearrange-menu-to-match-the-secti.patch
-Patch0311: 0311-Add-option-to-compress-files-on-install-image-creati.patch
-Patch0312: 0312-grub-core-lib-posix_wrap-sys-types.h-Make-WORDS_BIGE.patch
-Patch0313: 0313-grub-core-disk-ieee1275-ofdisk.c-Fix-CD-ROM-and-boot.patch
-Patch0314: 0314-grub-core-kern-ieee1275-openfw.c-grub_ieee1275_deval.patch
-Patch0315: 0315-tests-grub_script_expansion.in-Use-fixed-string-grep.patch
-Patch0316: 0316-tests-grub_cmd_date.in-Skip-on-sparc64.patch
-Patch0317: 0317-Fix-DMRAID-partition-handling.patch
-Patch0318: 0318-grub-core-disk-efi-efidisk.c-Limit-disk-read-or-writ.patch
-Patch0319: 0319-autogen.sh-Use-f-in-addition-for-h-when-checking-fil.patch
-Patch0320: 0320-grub-core-disk-efi-efidisk.c-Really-limit-transfer-c.patch
-Patch0321: 0321-build-aux-snippet-Add-missing-gnulib-files.patch
-Patch0322: 0322-grub-core-disk-efi-efidisk.c-Detect-floppies-by-ACPI.patch
-Patch0323: 0323-util-grub-mkrescue.in-Add-GPT-for-EFI-boot.patch
-Patch0324: 0324-Add-support-for-pseries-and-other-bootinfo-machines-.patch
-Patch0325: 0325-util-grub.d-30_os-prober.in-Add-onstr-to-linux-entri.patch
-Patch0326: 0326-grub-core-kern-elfXX.c-grub_elfXX_load-Handle.patch
-Patch0327: 0327-grub-core-commands-videotest.c-grub_cmd_videotest-Fi.patch
-Patch0328: 0328-grub-core-kern-ieee1275-cmain.c-grub_ieee1275_find_o.patch
-Patch0329: 0329-grub-core-kern-ieee1275-init.c-grub_claim_heap-Impro.patch
-Patch0330: 0330-grub-core-lib-efi-relocator.c-grub_relocator_firmwar.patch
-Patch0331: 0331-grub-core-Makefile.core.def-legacycfg-Enable-on-EFI.patch
-Patch0332: 0332-grub-core-kern-mm.c-grub_mm_init_region-Fix-conditio.patch
-Patch0333: 0333-Support-coreboot-framebuffer.patch
-Patch0334: 0334-grub-core-disk-arc-arcdisk.c-grub_arcdisk_iterate_it.patch
-Patch0335: 0335-Move-mips-arc-link-address.-Previous-link-address-wa.patch
-Patch0336: 0336-grub-core-kern-dl.c-grub_dl_resolve_symbols-Handle-m.patch
-Patch0337: 0337-util-grub-mkrescue.in-Add-mips-arc-support.patch
-Patch0338: 0338-Add-missing-video-ids-to-coreboot-and-ieee1275-video.patch
-Patch0339: 0339-grub-core-disk-ata.c-grub_ata_real_open-Use-grub_err.patch
-Patch0340: 0340-grub-core-loader-i386-linux.c-grub_linux_boot-Defaul.patch
-Patch0341: 0341-grub-core-normal-menu_text.c-print_entry-Put-an-aste.patch
-Patch0342: 0342-util-grub-install.in-Fix-target-fo-qemu_mips.patch
-Patch0343: 0343-grub-core-term-arc-console.c-Assume-that-console-is-.patch
-Patch0344: 0344-util-grub-mkrescue.in-Alias-sashARCS-as-sash.patch
-Patch0345: 0345-Make-check-work-on-mips-arc.patch
-Patch0346: 0346-grub-core-term-ieee1275-console.c-grub_console_dimen.patch
-Patch0347: 0347-util-grub-mkrescue.in-Move-all-files-that-don-t-have.patch
-Patch0348: 0348-util-grub-mkrescue.in-Fix-loongson-filename.patch
-Patch0349: 0349-tests-partmap_test.in-Add-missing-double-semicolon.patch
-Patch0350: 0350-grub-core-boot-powerpc-bootinfo.txt.in-Missing-updat.patch
-Patch0351: 0351-Add-serial-on-ARC-platform.patch
-Patch0352: 0352-Enable-mipsel-arc.patch
-Patch0353: 0353-configure.ac-Fix-loongson-conditional.patch
-Patch0354: 0354-util-grub-mkrescue.in-Rename-i386-ieee1275-core-imag.patch
-Patch0355: 0355-Add-test-to-check-that-different-boot-mediums-work.patch
-Patch0356: 0356-tests-pseries_test.in-New-test.patch
-Patch0357: 0357-util-getroot.c-exec_pipe-Put-proper-if-s-so-that-its.patch
-Patch0358: 0358-grub-core-Makefile.core.def-Fix-grub-emu-and-grub-em.patch
-Patch0359: 0359-Replace-libcurses-with-our-own-vt100-handling-for-th.patch
-Patch0360: 0360-Make-make-check-work-on-emu.patch
-Patch0361: 0361-Fix-pseries-test.patch
-Patch0362: 0362-Improve-AHCI-detection-and-command-issuing.patch
-Patch0363: 0363-Implement-grub_machine_get_bootlocation-for-ARC.patch
-Patch0364: 0364-Core-compression-test.patch
-Patch0365: 0365-grub-core-loader-multiboot_mbi2.c-grub_multiboot_loa.patch
-Patch0366: 0366-grub-core-disk-ahci.c-grub_ahci_pciinit-Fix-handling.patch
-Patch0367: 0367-util-ieee1275-ofpath.c-of_path_of_scsi-Fix-path-outp.patch
-Patch0368: 0368-grub-core-term-ns8250.c-Systematically-probe-ports-b.patch
-Patch0369: 0369-missing-file.patch
-Patch0370: 0370-include-grub-macho.h-Set-GRUB_MACHO_FAT_EFI_MAGIC-as.patch
-Patch0371: 0371-grub-core-term-morse.c-Macroify-dih-and-dah.patch
-Patch0372: 0372-Move-directory-override-directorry-to-grub-install_h.patch
-Patch0373: 0373-Remove-POTFILES.in-and-regenerate-it-in-autogen.sh.patch
-Patch0374: 0374-INSTALL-Document-linguas.sh.patch
-Patch0375: 0375-grub-core-commands-probe.c-Add-missing-grub_device_c.patch
-Patch0376: 0376-grub-core-kern-file.c-Use-const-char-rather-than-cas.patch
-Patch0377: 0377-include-grub-efi-api.h-GRUB_EFI_DEVICE_PATH_LENGTH-U.patch
-Patch0378: 0378-grub-core-disk-ahci.c-Fix-compilation-for-amd64-form.patch
-Patch0379: 0379-grub-core-io-lzopio.c-Use-GRUB_PROPERLY_ALIGNED_ARRA.patch
-Patch0380: 0380-New-command-nativedisk.patch
-Patch0381: 0381-grub-core-commands-nativedisk.c-Ignore-unknown-files.patch
-Patch0382: 0382-docs-grub.texi-Add-a-comment-about-usefullness-of-na.patch
-Patch0383: 0383-grub-core-lib-arg.c-grub_arg_show_help-Fix-a-NULL-po.patch
-Patch0384: 0384-grub-core-kern-mips-arc-init.c-Fix-prefix-detection.patch
-Patch0385: 0385-include-grub-list.h-FOR_LIST_ELEMENTS_SAFE-Fix-a-NUL.patch
-Patch0386: 0386-grub-core-script-execute.c-grub_script_arglist_to_ar.patch
-Patch0387: 0387-grub-core-bus-usb-uhci.c-Fix-DMA-handling-and-enable.patch
-Patch0388: 0388-grub-core-commands-nativedisk.c-Customize-the-list-o.patch
-Patch0389: 0389-Enforce-disabling-of-firmware-disk-drivers-when-nati.patch
-Patch0390: 0390-Add-few-new-tests.patch
-Patch0391: 0391-Unify-more-code-in-grub-install_header.patch
-Patch0392: 0392-grub-core-gfxmenu-gui_list.c-Refresh-first_shown_ent.patch
-Patch0393: 0393-Make-PCI-init-in-i386-qemu-port-more-robust.patch
-Patch0394: 0394-grub-core-gfxmenu-circular_progress.c-Set-start_angl.patch
-Patch0395: 0395-configure.ac-Use-mcmodel-large-on-x86_64-emu-as-well.patch
-Patch0396: 0396-grub-core-partmap-amiga.c-Fix-size-of-checksummed-bl.patch
-Patch0397: 0397-grub-core-kern-mips-loongson-init.c-Support-halt-for.patch
-Patch0398: 0398-include-grub-arc-arc.h-Account-for-missing-other-per.patch
-Patch0399: 0399-Add-few-more-tests.patch
-Patch0400: 0400-grub-core-commands-videotest.c-Reduce-flickering-and.patch
-Patch0401: 0401-First-automated-video-test-running-videotest-and-com.patch
-Patch0402: 0402-grub-core-loader-i386-linux.c-grub_linux_setup_video.patch
-Patch0403: 0403-grub-core-tests-videotest_checksum.c-videotest_check.patch
-Patch0404: 0404-Add-missing-exports-on-mips.patch
-Patch0405: 0405-Several-fixes-to-ieee1275-and-big-endian-video.patch
-Patch0406: 0406-grub-core-normal-term.c-print_ucs4_real-Fix-startwid.patch
-Patch0407: 0407-grub-core-gfxmenu-view.c-grub_gfxmenu_view_new-Clear.patch
-Patch0408: 0408-include-grub-gui.h-grub_gfxmenu_timeout_unregister-F.patch
-Patch0409: 0409-grub-core-video-fb-fbblit.c-grub_video_fbblit_blend_.patch
-Patch0410: 0410-grub-core-gfxmenu-gfxmenu.c-grub_gfxmenu_try-Allow-s.patch
-Patch0411: 0411-New-series-of-tests-for-gfxterm-and-gfxmenu.patch
-Patch0412: 0412-grub-core-tests-video_checksum.c-Don-t-set-GENERATE_.patch
-Patch0413: 0413-Rename-grub-core-tests-checksums.c-into-grub-core-te.patch
-Patch0414: 0414-grub-core-font-font.c-grub_font_construct_glyph-Fix-.patch
-Patch0415: 0415-Fix-test-a-and-o-precedence.patch
-Patch0416: 0416-grub-core-gettext-gettext.c-Try-lang.gmo-as-well.patch
-Patch0417: 0417-grub-core-normal-menu.c-run_menu-Fix-timeout-referen.patch
-Patch0418: 0418-Fix-several-memory-leaks.patch
-Patch0419: 0419-grub-core-normal-main.c-Fix-freed-memory-dereference.patch
-Patch0420: 0420-grub-core-normal-menu_text.c-menu_clear_timeout-Clea.patch
-Patch0421: 0421-grub-core-tests-lib-functional_test.c-Don-t-stop-on-.patch
-Patch0422: 0422-Speed-up-gfxterm-by-saving-intermediate-results-in-i.patch
-Patch0423: 0423-More-video-checks.patch
-Patch0424: 0424-Speed-up-gfxterm-by-slightly-agglomerating-mallocs.patch
-Patch0425: 0425-Agglomerate-more-mallocs-to-speed-up-gfxterm.patch
-Patch0426: 0426-Factor-out-human-size-printing.patch
-Patch0427: 0427-grub-core-commands-testspeed.c-New-command-testspeed.patch
-Patch0428: 0428-Reimplement-grub-reboot-to-not-depend-on-saved_entry.patch
-Patch0429: 0429-grub-core-font-font.c-Use-grub_dprintf-for-debug-sta.patch
-Patch0430: 0430-tests-priority_queue_unit_test.cc-New-test.patch
-Patch0431: 0431-grub-core-video-readers-jpeg.c-Use-grub_dprintf-for-.patch
-Patch0432: 0432-grub-core-loader-linux.c-Use-grub_dprintf-for-debug-.patch
-Patch0433: 0433-Mark-few-forgotten-strings-for-translation.patch
-Patch0434: 0434-Simplify-few-strings.patch
-Patch0435: 0435-autogen.sh-Exclude-unused-libgcrypt-files-from-trans.patch
-Patch0436: 0436-tests-gettext_strings_test.in-A-test-to-check-for-st.patch
-Patch0437: 0437-New-variables-net_default_-to-determine-MAC-IP-of-de.patch
-Patch0438: 0438-grub-core-tests-setjmp_test.c-New-test.patch
-Patch0439: 0439-Menu-color-test.patch
-Patch0440: 0440-grub-core-commands-videoinfo.c-Use-paletted-rather-t.patch
-Patch0441: 0441-Compressed-HFS-support.patch
-Patch0442: 0442-Don-t-say-GNU-Linux-in-generated-menus.patch
-Patch0443: 0443-Migrate-PPC-from-Yaboot-to-Grub2.patch
-Patch0444: 0444-Add-fw_path-variable-revised.patch
-Patch0445: 0445-Don-t-set-boot-device-on-ppc-ieee1275.patch
-Patch0446: 0446-Add-support-for-linuxefi.patch
-Patch0447: 0447-Add-support-for-crappy-cd-craparino.patch
-Patch0448: 0448-Use-linuxefi-and-initrdefi-where-appropriate.patch
-Patch0449: 0449-Don-t-allow-insmod-when-secure-boot-is-enabled.patch
-Patch0450: 0450-Pass-x-hex-hex-straight-through-unmolested.patch
-Patch0451: 0451-Fix-crash-on-http.patch
-Patch0452: 0452-Issue-separate-DNS-queries-for-ipv4-and-ipv6.patch
-Patch0453: 0453-IBM-client-architecture-CAS-reboot-support.patch
-Patch0454: 0454-Add-vlan-tag-support.patch
-Patch0455: 0455-Add-X-option-to-printf-functions.patch
-Patch0456: 0456-DHCP-client-ID-and-UUID-options-added.patch
-Patch0457: 0457-Search-for-specific-config-file-for-netboot.patch
-Patch0458: 0458-Add-bootpath-device-to-the-list.patch
-Patch0459: 0459-add-GRUB_DISABLE_SUBMENU-option.patch
-Patch0460: 0460-blscfg-add-blscfg-module-to-parse-Boot-Loader-Specif.patch
-Patch0461: 0461-Move-bash-completion-script-922997.patch
-Patch0462: 0462-for-ppc-reset-console-display-attr-when-clear-screen.patch
-Patch0463: 0463-grub-core-term-efi-console.c-Fix-compile-error.patch
-Patch0464: 0464-configure.ac-Don-t-use-extended-registers-on-x86_64.patch
-Patch0465: 0465-configure.ac-Don-t-disable-extended-registers-on-emu.patch
-Patch0466: 0466-conf-Makefile.common-Poison-float-and-double-on-non-.patch
-Patch0467: 0467-Progressively-skip-menu-elements-on-small-terminals-.patch
-Patch0468: 0468-Don-t-write-messages-to-the-screen.patch
-Patch0469: 0469-Don-t-print-GNU-GRUB-header.patch
-Patch0470: 0470-Don-t-draw-a-border-around-the-menu.patch
-Patch0471: 0471-Don-t-add-to-highlighted-row.patch
-Patch0472: 0472-Don-t-add-to-highlighted-row.patch
-Patch0473: 0473-Use-the-standard-margin-for-the-timeout-string.patch
-Patch0474: 0474-Message-string-cleanups.patch
-Patch0475: 0475-Fix-border-spacing-now-that-we-aren-t-displaying-it.patch
-Patch0476: 0476-Use-the-correct-indentation-for-the-term-help-text.patch
-Patch0477: 0477-Indent-menu-entries.patch
-Patch0478: 0478-Fix-margins.patch
-Patch0479: 0479-Add-support-for-UEFI-operating-systems-returned-by-o.patch
-Patch0480: 0480-Disable-GRUB-video-support-for-IBM-power-machines.patch
-Patch0481: 0481-Revert-Add-bootpath-device-to-the-list-967862.patch
-Patch0482: 0482-Fix-net_bootp-cmd-crash-when-there-isn-t-network-car.patch
-Patch0483: 0483-Initialize-grub_file_filters_-all-enabled.patch
-Patch0484: 0484-Use-2-instead-of-1-for-our-right-hand-margin-so-line.patch
+
+Patch0001: 0001-fix-EFI-detection-on-Windows.patch
+Patch0002: 0002-grub-core-kern-arm-cache_armv6.S-Remove-.arch-direct.patch
+Patch0003: 0003-NEWS-First-draft-of-2.02-entry.patch
+Patch0004: 0004-remove-unused-error.h-from-kern-emu-misc.c.patch
+Patch0005: 0005-Don-t-abort-on-unavailable-coreboot-tables-if-not-ru.patch
+Patch0006: 0006-NEWS-Add-few-missing-entries.-Correct-existing-ones.patch
+Patch0007: 0007-strip-.eh_frame-section-from-arm64-efi-kernel.patch
+Patch0008: 0008-use-grub-boot-aa64.efi-for-boot-images-on-AArch64.patch
+Patch0009: 0009-fix-32-bit-compilation-on-MinGW-w64.patch
+Patch0010: 0010-Change-grub-mkrescue-to-use-bootaa64.efi-too.patch
+Patch0011: 0011-arm64-set-correct-length-of-device-path-end-entry.patch
+Patch0012: 0012-Makefile.util.def-grub-macbless-Change-mansection-to.patch
+Patch0013: 0013-add-part_apple-to-EFI-rescue-image-to-fix-missing-pr.patch
+Patch0014: 0014-freebsd-hostdisk.c-is-only-ever-compiled-on-FreeBSD.patch
+Patch0015: 0015-Prefer-more-portable-test-1-constructs.patch
+Patch0016: 0016-NEWS-Add-few-missing-entries.patch
+Patch0017: 0017-grub-core-kern-efi-efi.c-Ensure-that-the-result-star.patch
+Patch0018: 0018-util-grub-mount.c-Extend-GCC-warning-workaround-to-g.patch
+Patch0019: 0019-reintroduce-BUILD_LDFLAGS-for-the-cross-compile-case.patch
+Patch0020: 0020-grub-core-term-terminfo.c-Recognize-keys-F1-F12.patch
+Patch0021: 0021-Fix-ChangeLog-date.patch
+Patch0022: 0022-Use-_W64-to-detect-MinGW-W64-32-instead-of-_FILE_OFF.patch
+Patch0023: 0023-add-BUILD_EXEEXT-support-to-fix-make-clean-on-Window.patch
+Patch0024: 0024-fix-include-loop-on-MinGW-due-to-libintl.h-pulling-s.patch
+Patch0025: 0025-grub-core-commands-macbless.c-Rename-FILE-and-DIR-to.patch
+Patch0026: 0026-Makefile.util.def-Link-grub-ofpathname-with-zfs-libs.patch
+Patch0027: 0027-Makefile.am-default_payload.elf-Add-modules.patch
+Patch0028: 0028-fix-removal-of-cpu-machine-links-on-mingw-msys.patch
+Patch0029: 0029-grub-core-normal-main.c-read_config_file-Buffer-conf.patch
+Patch0030: 0030-util-grub-install.c-Fix-a-typo.patch
+Patch0031: 0031-use-MODULE_FILES-for-genemuinit-instead-of-MOD_FILES.patch
+Patch0032: 0032-Ignore-EPERM-when-modifying-kern.geom.debugflags.patch
+Patch0033: 0033-change-stop-condition-to-avoid-infinite-loops.patch
+Patch0034: 0034-increase-network-try-interval-gradually.patch
+Patch0035: 0035-look-for-DejaVu-also-in-usr-share-fonts-truetype.patch
+Patch0036: 0036-Show-detected-path-to-DejaVuSans-in-configure-summar.patch
+Patch0037: 0037-add-GRUB_WINDOWS_EXTRA_DIST-to-allow-shipping-runtim.patch
+Patch0038: 0038-util-grub-install.c-write_to_disk-Add-an-info-messag.patch
+Patch0039: 0039-util-grub-install.c-List-available-targets.patch
+Patch0040: 0040-Fix-several-translatable-strings.patch
+Patch0041: 0041-do-not-set-default-prefix-in-grub-mkimage.patch
+Patch0042: 0042-fix-Mingw-W64-32-cross-compile-failure-due-to-printf.patch
+Patch0043: 0043-grub-core-term-serial.c-grub_serial_register-Fix-inv.patch
+Patch0044: 0044-grub-install-support-for-partitioned-partx-loop-devi.patch
+Patch0045: 0045-grub-core-term-at_keyboard.c-Tolerate-missing-keyboa.patch
+Patch0046: 0046-grub-core-disk-ahci.c-Do-not-enable-I-O-decoding-and.patch
+Patch0047: 0047-grub-core-disk-ahci.c-Allocate-and-clean-space-for-a.patch
+Patch0048: 0048-grub-core-disk-ahci.c-Add-safety-cleanups.patch
+Patch0049: 0049-grub-core-disk-ahci.c-Properly-handle-transactions-w.patch
+Patch0050: 0050-grub-core-disk-ahci.c-Increase-timeout.-Some-SSDs-ta.patch
+Patch0051: 0051-util-grub-mkfont.c-Build-fix-for-argp.h-with-older-g.patch
+Patch0052: 0052-util-grub-mkrescue.c-Build-fix-for-argp.h-with-older.patch
+Patch0053: 0053-add-grub_env_set_net_property-function.patch
+Patch0054: 0054-add-bootpath-parser-for-open-firmware.patch
+Patch0055: 0055-grub-core-disk-ahci.c-Ignore-NPORTS-field-and-rely-o.patch
+Patch0056: 0056-grub-core-kern-i386-coreboot-mmap.c-Filter-out-0xa00.patch
+Patch0057: 0057-grub-core-loader-i386-multiboot_mbi.c-grub_multiboot.patch
+Patch0058: 0058-grub-core-mmap-i386-uppermem.c-lower_hook-COREBOOT-I.patch
+Patch0059: 0059-grub-core-kern-i386-pc-mmap.c-Fallback-to-EISA-memor.patch
+Patch0060: 0060-include-grub-i386-openbsd_bootarg.h-Add-addr-and-fre.patch
+Patch0061: 0061-Migrate-PPC-from-Yaboot-to-Grub2.patch
+Patch0062: 0062-Add-fw_path-variable-revised.patch
+Patch0063: 0063-Add-support-for-linuxefi.patch
+Patch0064: 0064-Use-linuxefi-and-initrdefi-where-appropriate.patch
+Patch0065: 0065-Don-t-allow-insmod-when-secure-boot-is-enabled.patch
+Patch0066: 0066-Pass-x-hex-hex-straight-through-unmolested.patch
+Patch0067: 0067-Fix-crash-on-http.patch
+Patch0068: 0068-IBM-client-architecture-CAS-reboot-support.patch
+Patch0069: 0069-Add-vlan-tag-support.patch
+Patch0070: 0070-Add-X-option-to-printf-functions.patch
+Patch0071: 0071-DHCP-client-ID-and-UUID-options-added.patch
+Patch0072: 0072-Search-for-specific-config-file-for-netboot.patch
+Patch0073: 0073-blscfg-add-blscfg-module-to-parse-Boot-Loader-Specif.patch
+Patch0074: 0074-Move-bash-completion-script-922997.patch
+Patch0075: 0075-for-ppc-reset-console-display-attr-when-clear-screen.patch
+Patch0076: 0076-Don-t-write-messages-to-the-screen.patch
+Patch0077: 0077-Don-t-print-GNU-GRUB-header.patch
+Patch0078: 0078-Don-t-add-to-highlighted-row.patch
+Patch0079: 0079-Don-t-add-to-highlighted-row.patch
+Patch0080: 0080-Message-string-cleanups.patch
+Patch0081: 0081-Fix-border-spacing-now-that-we-aren-t-displaying-it.patch
+Patch0082: 0082-Use-the-correct-indentation-for-the-term-help-text.patch
+Patch0083: 0083-Indent-menu-entries.patch
+Patch0084: 0084-Fix-margins.patch
+Patch0085: 0085-Add-support-for-UEFI-operating-systems-returned-by-o.patch
+Patch0086: 0086-Disable-GRUB-video-support-for-IBM-power-machines.patch
+Patch0087: 0087-Use-2-instead-of-1-for-our-right-hand-margin-so-line.patch
+Patch0088: 0088-Use-linux16-when-appropriate-880840.patch
+Patch0089: 0089-Enable-pager-by-default.-985860.patch
+Patch0090: 0090-F10-doesn-t-work-on-serial-so-don-t-tell-the-user-to.patch
+Patch0091: 0091-Don-t-say-GNU-Linux-in-generated-menus.patch
+Patch0092: 0092-Don-t-draw-a-border-around-the-menu.patch
+Patch0093: 0093-Use-the-standard-margin-for-the-timeout-string.patch
+Patch0094: 0094-Fix-grub_script_execute_sourcecode-usage-on-ppc.patch
+Patch0095: 0095-Add-.eh_frame-to-list-of-relocations-stripped.patch
+Patch0096: 0096-Make-10_linux-work-with-our-changes-for-linux16-and-.patch
+Patch0097: 0097-Don-t-print-during-fdt-loading-method.patch
+Patch0098: 0098-Honor-a-symlink-when-generating-configuration-by-gru.patch
+Patch0099: 0099-Don-t-require-a-password-to-boot-entries-generated-b.patch
+Patch0100: 0100-Don-t-emit-Booting-.-message.patch
+Patch0101: 0101-Make-CTRL-and-ALT-keys-work-as-expected-on-EFI-syste.patch
+Patch0102: 0102-May-as-well-try-it.patch
+Patch0103: 0103-use-fw_path-prefix-when-fallback-searching-for-grub-.patch
+Patch0104: 0104-Try-mac-guid-etc-before-grub.cfg-on-tftp-config-file.patch
+Patch0105: 0105-trim-arp-packets-with-abnormal-size.patch
+Patch0106: 0106-Fix-convert-function-to-support-NVMe-devices.patch
+Patch0107: 0107-Fix-bad-test-on-GRUB_DISABLE_SUBMENU.patch
+Patch0108: 0108-Switch-to-use-APM-Mustang-device-tree-for-hardware-t.patch
+Patch0109: 0109-Use-the-default-device-tree-from-the-grub-default-fi.patch
+Patch0110: 0110-reopen-SNP-protocol-for-exclusive-use-by-grub.patch
+Patch0111: 0111-Reduce-timer-event-frequency-by-10.patch
+Patch0112: 0112-always-return-error-to-UEFI.patch
 
 BuildRequires:  flex bison binutils python
-BuildRequires:  ncurses-devel xz-devel
+BuildRequires:  ncurses-devel xz-devel bzip2-devel
 BuildRequires:  freetype-devel libusb-devel
-%ifarch %{sparc} x86_64
+%ifarch %{sparc} x86_64 aarch64
 # sparc builds need 64 bit glibc-devel - also for 32 bit userland
 BuildRequires:  /usr/lib64/crt1.o glibc-static
 %else
@@ -555,7 +189,9 @@ BuildRequires:	texinfo
 BuildRequires:	dejavu-sans-fonts
 BuildRequires:	help2man
 %ifarch %{efiarchs}
+%ifnarch aarch64
 BuildRequires:	pesign >= 0.99-8
+%endif
 %endif
 
 Requires:	gettext os-prober which file
@@ -584,6 +220,18 @@ The GRand Unified Bootloader (GRUB) is a highly configurable and customizable
 bootloader with modular architecture.  It support rich varietyof kernel formats,
 file systems, computer architectures and hardware devices.  This subpackage
 provides support for EFI systems.
+
+%package efi-modules
+Summary:	Modules used to build custom grub.efi images
+Group:		System Environment/Base
+Requires:	%{name}-tools = %{epoch}:%{version}-%{release}
+Obsoletes:	grub2-efi <= 1:2.00-20%{?dist}
+
+%description efi-modules
+The GRand Unified Bootloader (GRUB) is a highly configurable and customizable
+bootloader with modular architecture.  It support rich varietyof kernel formats,
+file systems, computer architectures and hardware devices.  This subpackage
+provides support for rebuilding your own grub.efi on EFI systems.
 %endif
 
 %package tools
@@ -615,7 +263,6 @@ provides an example theme for the grub screen.
 %ifarch %{efiarchs}
 %setup -D -q -T -a 0 -n grub-%{tarversion}
 cd grub-%{tarversion}
-cp %{SOURCE3} .
 # place unifont in the '.' from which configure is run
 cp %{SOURCE4} unifont.pcf.gz
 git init
@@ -627,9 +274,12 @@ git am %{patches}
 cd ..
 mv grub-%{tarversion} grub-efi-%{tarversion}
 %endif
+
+%ifarch %{efi_only}
+ln -s grub-efi-%{tarversion} grub-%{tarversion}
+%else
 %setup -D -q -T -a 0 -n grub-%{tarversion}
 cd grub-%{tarversion}
-cp %{SOURCE3} .
 # place unifont in the '.' from which configure is run
 cp %{SOURCE4} unifont.pcf.gz
 git init
@@ -638,6 +288,7 @@ git config user.name "Fedora Ninjas"
 git add .
 git commit -a -q -m "%{tarversion} baseline."
 git am %{patches}
+%endif
 
 %build
 %ifarch %{efiarchs}
@@ -646,35 +297,46 @@ cd grub-efi-%{tarversion}
 %configure							\
 	CFLAGS="$(echo $RPM_OPT_FLAGS | sed			\
 		-e 's/-O.//g'					\
-		-e 's/-fstack-protector\(-[[:alnum:]]\+\)*//g'	\
-		-e 's/-Wp,-D_FORTIFY_SOURCE=[[:digit:]]//g'	\
+		-e 's/-fstack-protector[[:alpha:]-]\+//g'	\
 		-e 's/--param=ssp-buffer-size=4//g'		\
 		-e 's/-mregparm=3/-mregparm=4/g'		\
 		-e 's/-fexceptions//g'				\
-		-e 's/-fasynchronous-unwind-tables//g' )"	\
+		-e 's/-fasynchronous-unwind-tables//g'		\
+		-e 's/^/ -fno-strict-aliasing /' )"		\
 	TARGET_LDFLAGS=-static					\
         --with-platform=efi					\
 	--with-grubdir=%{name}					\
         --program-transform-name=s,grub,%{name},		\
 	--disable-grub-mount					\
 	--disable-werror
+
 make %{?_smp_mflags}
 GRUB_MODULES="	all_video boot btrfs cat chain configfile echo efifwsetup \
 		efinet ext2 fat font gfxmenu gfxterm gzio halt hfsplus iso9660 \
-		jpeg linuxefi lvm minicmd normal part_apple part_msdos \
-		part_gpt password_pbkdf2 png reboot search search_fs_uuid \
-		search_fs_file search_label sleep test video xfs \
-		mdraid09 mdraid1x blscfg multiboot2 multiboot"
+		jpeg lvm mdraid09 mdraid1x minicmd normal part_apple \
+		part_msdos part_gpt password_pbkdf2 png reboot search \
+		search_fs_uuid search_fs_file search_label sleep test tftp \
+		video xfs mdraid09 mdraid1x"
+%ifarch aarch64
+GRUB_MODULES="${GRUB_MODULES} linux"
+%else
+GRUB_MODULES+="${GRUB_MODULES} linuxefi multiboot2 multiboot"
+%endif
+./grub-mkimage -O %{grubefiarch} -o %{grubefiname}.orig -p /EFI/%{efidir} \
+		-d grub-core ${GRUB_MODULES}
+%ifarch aarch64
+mv %{grubefiname}.orig %{grubefiname}
+%else
 ./grub-mkimage -O %{grubefiarch} -o %{grubeficdname}.orig -p /EFI/BOOT \
 		-d grub-core ${GRUB_MODULES}
 %pesign -s -i %{grubeficdname}.orig -o %{grubeficdname}
-./grub-mkimage -O %{grubefiarch} -o %{grubefiname}.orig -p /EFI/%{efidir} \
-		-d grub-core ${GRUB_MODULES}
 %pesign -s -i %{grubefiname}.orig -o %{grubefiname}
+%endif
 cd ..
 %endif
 
 cd grub-%{tarversion}
+%ifnarch %{efi_only}
 ./autogen.sh
 # -static is needed so that autoconf script is able to link
 # test that looks for _start symbol on 64 bit platforms
@@ -686,13 +348,14 @@ cd grub-%{tarversion}
 %configure							\
 	CFLAGS="$(echo $RPM_OPT_FLAGS | sed			\
 		-e 's/-O.//g'					\
-		-e 's/-fstack-protector\(-[[:alnum:]]\+\)*//g'	\
-		-e 's/-Wp,-D_FORTIFY_SOURCE=[[:digit:]]//g'	\
+		-e 's/-fstack-protector[[:alpha:]-]\+//g'	\
 		-e 's/--param=ssp-buffer-size=4//g'		\
 		-e 's/-mregparm=3/-mregparm=4/g'		\
 		-e 's/-fexceptions//g'				\
 		-e 's/-m64//g'					\
-		-e 's/-fasynchronous-unwind-tables//g' )"	\
+		-e 's/-fasynchronous-unwind-tables//g'		\
+		-e 's/-mcpu=power7/-mcpu=power6/g'		\
+		-e 's/^/ -fno-strict-aliasing /' )"		\
 	TARGET_LDFLAGS=-static					\
         --with-platform=%{platform}				\
 	--with-grubdir=%{name}					\
@@ -701,6 +364,7 @@ cd grub-%{tarversion}
 	--disable-werror
 
 make %{?_smp_mflags}
+%endif
 
 sed -i -e 's,(grub),(%{name}),g' \
 	-e 's,grub.info,%{name}.info,g' \
@@ -744,18 +408,22 @@ do
 #        install -m 755 -D $BASE$EXT $TGT
 done
 install -m 755 %{grubefiname} $RPM_BUILD_ROOT/boot/efi/EFI/%{efidir}/%{grubefiname}
+%ifnarch aarch64
 install -m 755 %{grubeficdname} $RPM_BUILD_ROOT/boot/efi/EFI/%{efidir}/%{grubeficdname}
+%endif
 install -D -m 644 unicode.pf2 $RPM_BUILD_ROOT/boot/efi/EFI/%{efidir}/fonts/unicode.pf2
 cd ..
 %endif
 
 cd grub-%{tarversion}
+%ifnarch %{efi_only}
 make DESTDIR=$RPM_BUILD_ROOT install
 
 # Ghost config file
 install -d $RPM_BUILD_ROOT/boot/%{name}
 touch $RPM_BUILD_ROOT/boot/%{name}/grub.cfg
 ln -s ../boot/%{name}/grub.cfg $RPM_BUILD_ROOT%{_sysconfdir}/%{name}.cfg
+%endif
 
 cp -a $RPM_BUILD_ROOT%{_datarootdir}/locale/en\@quot $RPM_BUILD_ROOT%{_datarootdir}/locale/en
 
@@ -846,22 +514,27 @@ if [ "$1" = 0 ]; then
 	/sbin/install-info --delete --info-dir=%{_infodir} %{_infodir}/%{name}-dev.info.gz || :
 fi
 
+%ifnarch %{efi_only}
 %files -f grub.lang
 %defattr(-,root,root,-)
 %{_libdir}/grub/*-%{platform}/
 %config(noreplace) %{_sysconfdir}/%{name}.cfg
 %ghost %config(noreplace) /boot/%{name}/grub.cfg
 %doc grub-%{tarversion}/COPYING
+%endif
 
 %ifarch %{efiarchs}
 %files efi
 %defattr(-,root,root,-)
-%{_libdir}/grub/%{grubefiarch}
 %config(noreplace) %{_sysconfdir}/%{name}-efi.cfg
 %attr(0755,root,root)/boot/efi/EFI/%{efidir}
 %attr(0755,root,root)/boot/efi/EFI/%{efidir}/fonts
 %ghost %config(noreplace) /boot/efi/EFI/%{efidir}/grub.cfg
 %doc grub-%{tarversion}/COPYING
+
+%files efi-modules
+%defattr(-,root,root,-)
+%{_libdir}/grub/%{grubefiarch}
 %endif
 
 %files tools -f grub.lang
@@ -870,31 +543,34 @@ fi
 %dir %{_datarootdir}/grub/
 %dir %{_datarootdir}/grub/themes
 %{_datarootdir}/grub/*
-%{_sbindir}/%{name}-mkconfig
+%{_sbindir}/%{name}-bios-setup
 %{_sbindir}/%{name}-install
+%{_sbindir}/%{name}-macbless
+%{_sbindir}/%{name}-mkconfig
+%{_sbindir}/%{name}-ofpathname
 %{_sbindir}/%{name}-probe
 %{_sbindir}/%{name}-reboot
 %{_sbindir}/%{name}-set-default
-%{_sbindir}/%{name}-bios-setup
-%{_sbindir}/%{name}-ofpathname
 %{_sbindir}/%{name}-sparc64-setup
-%{_bindir}/%{name}-mknetdir
-%{_bindir}/%{name}-mkstandalone
 %{_bindir}/%{name}-editenv
+%{_bindir}/%{name}-file
 %{_bindir}/%{name}-fstest
+%{_bindir}/%{name}-glue-efi
 %{_bindir}/%{name}-kbdcomp
 %{_bindir}/%{name}-menulst2cfg
 %{_bindir}/%{name}-mkfont
-%{_bindir}/%{name}-mklayout
 %{_bindir}/%{name}-mkimage
+%{_bindir}/%{name}-mklayout
+%{_bindir}/%{name}-mknetdir
 %{_bindir}/%{name}-mkpasswd-pbkdf2
 %{_bindir}/%{name}-mkrelpath
-%{_bindir}/%{name}-glue-efi
-%{_bindir}/%{name}-render-label
 %ifnarch %{sparc}
 %{_bindir}/%{name}-mkrescue
 %endif
+%{_bindir}/%{name}-mkstandalone
+%{_bindir}/%{name}-render-label
 %{_bindir}/%{name}-script-check
+%{_bindir}/%{name}-syslinux2cfg
 %{_datarootdir}/bash-completion/completions/grub
 %{_sysconfdir}/prelink.conf.d/grub2.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/grub.d
@@ -912,7 +588,6 @@ fi
 %doc grub-%{tarversion}/COPYING grub-%{tarversion}/INSTALL
 %doc grub-%{tarversion}/NEWS grub-%{tarversion}/README
 %doc grub-%{tarversion}/THANKS grub-%{tarversion}/TODO
-%doc grub-%{tarversion}/ChangeLog grub-%{tarversion}/README.Fedora
 %doc grub-%{tarversion}/grub.html
 %doc grub-%{tarversion}/grub-dev.html grub-%{tarversion}/docs/font_char_metrics.png
 %doc grub-%{tarversion}/themes/starfield/COPYING.CC-BY-SA-3.0
@@ -925,26 +600,38 @@ fi
 %{_datarootdir}/grub/themes/
 
 %changelog
-* Sat Aug 10 2013 Peter Jones <pjones@redhat.com> - 2.00-25.R
+* Wed Mar 19 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.02-0.3.R
+- read rfremix-release first if it is available
+
+* Thu Mar 13 2014 Peter Jones <pjones@redhat.com> - 2.02-0.3
+- Merge in RHEL 7 changes and ARM works in progress.
+
+* Mon Jan 06 2014 Peter Jones <pjones@redhat.com> - 2.02-0.2
+- Update to grub-2.02~beta2
+
+* Sat Aug 10 2013 Peter Jones <pjones@redhat.com> - 2.00-25
 - Last build failed because of a hardware error on the builder.
 
-* Mon Aug 05 2013 Peter Jones <pjones@redhat.com> - 2.00-24.R
+* Mon Aug 05 2013 Peter Jones <pjones@redhat.com> - 2.00-24
 - Fix compiler flags to deal with -fstack-protector-strong
 
-* Tue Jul 02 2013 Dennis Gilmore <dennis@ausil.us> - 2.00-23.R
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:2.00-24
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Tue Jul 02 2013 Dennis Gilmore <dennis@ausil.us> - 2.00-23
 - add epoch to obsoletes
 
-* Fri Jun 21 2013 Peter Jones <pjones@redhat.com> - 2.00-22.R
+* Fri Jun 21 2013 Peter Jones <pjones@redhat.com> - 2.00-22
 - Fix linewrapping in edit menu.
   Resolves: rhbz #976643
 
-* Thu Jun 20 2013 Peter Jones <pjones@redhat.com> - 2.00-21.R
+* Thu Jun 20 2013 Peter Jones <pjones@redhat.com> - 2.00-21
 - Fix obsoletes to pull in -starfield-theme subpackage when it should.
 
-* Fri Jun 14 2013 Peter Jones <pjones@redhat.com> - 2.00-20.R
+* Fri Jun 14 2013 Peter Jones <pjones@redhat.com> - 2.00-20
 - Put the theme entirely ento the subpackage where it belongs (#974667)
 
-* Wed Jun 12 2013 Peter Jones <pjones@redhat.com> - 2.00-19.R
+* Wed Jun 12 2013 Peter Jones <pjones@redhat.com> - 2.00-19
 - Rebase to upstream snapshot.
 - Fix PPC build error (#967862)
 - Fix crash on net_bootp command (#960624)
@@ -954,9 +641,6 @@ fi
 - Add support for UEFI OSes returned by os-prober
 - Disable "video" mode on PPC for now (#973205)
 - Make grub fit better into the boot sequence, visually (#966719)
-
-* Mon Jun 10 2013 Arkady L. Shane <ashejn@russianfedora.ru> 2.00-18.R
-- read OS from rfremix-release first
 
 * Fri May 10 2013 Matthias Clasen <mclasen@redhat.com> - 2.00-18
 - Move the starfield theme to a subpackage (#962004)
