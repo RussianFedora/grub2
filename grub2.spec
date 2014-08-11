@@ -41,7 +41,7 @@
 Name:           grub2
 Epoch:          1
 Version:        2.00
-Release:        25%{?dist}
+Release:        26%{?dist}
 Summary:        Bootloader with support for Linux, Multiboot and more
 
 Group:          System Environment/Base
@@ -538,6 +538,7 @@ Patch0481: 0481-Revert-Add-bootpath-device-to-the-list-967862.patch
 Patch0482: 0482-Fix-net_bootp-cmd-crash-when-there-isn-t-network-car.patch
 Patch0483: 0483-Initialize-grub_file_filters_-all-enabled.patch
 Patch0484: 0484-Use-2-instead-of-1-for-our-right-hand-margin-so-line.patch
+Patch0485: 0485-Don-t-require-a-password-to-boot-entries-generated-b.patch
 
 BuildRequires:  flex bison binutils python
 BuildRequires:  ncurses-devel xz-devel
@@ -925,6 +926,9 @@ fi
 %{_datarootdir}/grub/themes/
 
 %changelog
+* Mon Jun 23 2014 Adam Williamson <awilliam@redhat.com> - 2.00-26.R
+- Don't require password to boot normally - #840204
+
 * Sat Aug 10 2013 Peter Jones <pjones@redhat.com> - 2.00-25.R
 - Last build failed because of a hardware error on the builder.
 
