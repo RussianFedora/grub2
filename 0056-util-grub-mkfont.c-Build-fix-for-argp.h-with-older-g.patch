@@ -1,7 +1,7 @@
 From 767cf43a2e5c738df50155cc8729ad0f57d6ab47 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Mon, 3 Feb 2014 14:34:27 +0100
-Subject: [PATCH 056/125] 	* util/grub-mkfont.c: Build fix for argp.h
+Subject: [PATCH 056/143] 	* util/grub-mkfont.c: Build fix for argp.h
  with older gcc.
 
 ---
@@ -38,5 +38,5 @@ index 3de07ee..e6485b4 100644
  #include <assert.h>
  
 -- 
-1.9.0
+1.9.3
 

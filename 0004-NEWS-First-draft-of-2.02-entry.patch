@@ -1,7 +1,7 @@
 From c0e2febef52139e0e580e52f553bf3aa521e390c Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Fri, 27 Dec 2013 03:05:38 +0000
-Subject: [PATCH 004/125] * NEWS: First draft of 2.02 entry.
+Subject: [PATCH 004/143] * NEWS: First draft of 2.02 entry.
 
 ---
  ChangeLog |   4 +++
@@ -150,5 +150,5 @@ index 4bb5f98..577d9fd 100644
  
  * Appearance:
 -- 
-1.9.0
+1.9.3
 

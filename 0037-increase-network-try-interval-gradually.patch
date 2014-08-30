@@ -1,7 +1,7 @@
 From d3652ff33623d842fc4422ffd98e4303795e9519 Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
 Date: Tue, 21 Jan 2014 11:03:51 -0200
-Subject: [PATCH 037/125] increase network try interval gradually
+Subject: [PATCH 037/143] increase network try interval gradually
 
 * grub-core/net/arp.c (grub_net_arp_send_request): Increase network try
 interval gradually.
@@ -107,5 +107,5 @@ index de6259e..0e0a605 100644
  
  #endif /* ! GRUB_NET_HEADER */
 -- 
-1.9.0
+1.9.3
 

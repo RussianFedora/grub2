@@ -1,7 +1,7 @@
 From cb2cfc87fad111a539e9645f6a96d0a89a28c8ab Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 4 Apr 2014 07:58:42 +0200
-Subject: [PATCH 073/125] Replace few instances of memcmp/memcpy in the code
+Subject: [PATCH 073/143] Replace few instances of memcmp/memcpy in the code
  that should be grub_memcmp/grub_memcpy.
 
 ---
@@ -98,5 +98,5 @@ index 19985f0..41ef910 100644
      else
        {
 -- 
-1.9.0
+1.9.3
 

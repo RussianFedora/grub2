@@ -1,7 +1,7 @@
 From 1a768cc5a65094e19c216caf92dd190317df25fc Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
 Date: Tue, 4 Feb 2014 19:00:55 -0200
-Subject: [PATCH 059/125] add bootpath parser for open firmware
+Subject: [PATCH 059/143] add bootpath parser for open firmware
 
 It enables net boot even when there is no bootp/dhcp server.
 
@@ -207,5 +207,5 @@ index dc54bea..8e42513 100644
  /* Maps a device alias to a pathname.  */
  extern grub_ieee1275_phandle_t EXPORT_VAR(grub_ieee1275_chosen);
 -- 
-1.9.0
+1.9.3
 

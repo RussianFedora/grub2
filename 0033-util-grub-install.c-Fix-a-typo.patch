@@ -1,7 +1,7 @@
 From d353b169aa6b2a9cd03d0c2987da7da059aa6f99 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sat, 18 Jan 2014 20:02:51 +0100
-Subject: [PATCH 033/125] 	* util/grub-install.c: Fix a typo.
+Subject: [PATCH 033/143] 	* util/grub-install.c: Fix a typo.
 
 ---
  ChangeLog           | 4 ++++
@@ -36,5 +36,5 @@ index 4608b80..5903f34 100644
  
    if (disk_module && grub_strcmp (disk_module, "ata") == 0)
 -- 
-1.9.0
+1.9.3
 

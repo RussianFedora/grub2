@@ -1,7 +1,7 @@
 From bd2125649cbeae60a5caff05d5a39c88a4e6eff6 Mon Sep 17 00:00:00 2001
 From: Thomas Falcon <tlfalcon@linux.vnet.ibm.com>
 Date: Mon, 31 Mar 2014 15:32:30 +0100
-Subject: [PATCH 071/125] btrfs: fix get_root key comparison failures due to
+Subject: [PATCH 071/143] btrfs: fix get_root key comparison failures due to
  endianness
 
 * grub-core/fs/btrfs.c (get_root): Convert
@@ -40,5 +40,5 @@ index 89666b6..f7b6c15 100644
    key_in.type = GRUB_BTRFS_ITEM_TYPE_ROOT_ITEM;
    err = lower_bound (data, &key_in, &key_out,
 -- 
-1.9.0
+1.9.3
 

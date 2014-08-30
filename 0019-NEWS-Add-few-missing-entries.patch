@@ -1,7 +1,7 @@
 From e18da008f74a3c5f27a191e4f7be80c02a49f2fe Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sat, 18 Jan 2014 16:31:10 +0100
-Subject: [PATCH 019/125] 	* NEWS: Add few missing entries.
+Subject: [PATCH 019/143] 	* NEWS: Add few missing entries.
 
 ---
  ChangeLog |  4 ++++
@@ -96,5 +96,5 @@ index 49a2459..a61df94 100644
      improvements to the build system.
    * Remove variable length arrays.
 -- 
-1.9.0
+1.9.3
 

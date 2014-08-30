@@ -1,7 +1,7 @@
 From 8ebe593c564edc8ae62086df8a1448e898ef259b Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Fri, 27 Dec 2013 03:03:32 +0000
-Subject: [PATCH 003/125] * INSTALL (Cross-compiling the GRUB): Fix some
+Subject: [PATCH 003/143] * INSTALL (Cross-compiling the GRUB): Fix some
  spelling mistakes. * docs/grub.texi (Getting the source code): Likewise.
 
 ---
@@ -84,5 +84,5 @@ index c796850..7c6244c 100644
  
  Once you have used @kbd{git clone} to fetch an initial copy of a branch, you
 -- 
-1.9.0
+1.9.3
 

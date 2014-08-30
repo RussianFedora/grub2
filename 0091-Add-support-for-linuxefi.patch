@@ -1,7 +1,7 @@
 From 70e7bfb2caa9d0f52187b4f6e84762c6459c5903 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Tue, 10 Jul 2012 11:58:52 -0400
-Subject: [PATCH 091/125] Add support for linuxefi
+Subject: [PATCH 091/143] Add support for linuxefi
 
 ---
  grub-core/Makefile.core.def       |   8 +
@@ -478,5 +478,5 @@ index da0ca3b..fc36bda 100644
  
  /* Boot parameters for Linux based on 2.6.12. This is used by the setup
 -- 
-1.9.0
+1.9.3
 

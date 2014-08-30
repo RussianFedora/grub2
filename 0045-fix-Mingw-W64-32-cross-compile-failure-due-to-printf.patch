@@ -1,7 +1,7 @@
 From 90efd351fa4f81df97473e1bb8c8234a801f8ebe Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Sat, 25 Jan 2014 21:49:41 +0400
-Subject: [PATCH 045/125] fix Mingw W64-32 cross compile failure due to printf
+Subject: [PATCH 045/143] fix Mingw W64-32 cross compile failure due to printf
  redefinition in libintl.h
 
 In file included from util/misc.c:36:0:
@@ -104,5 +104,5 @@ index 63ebb90..2b3322d 100644
      f.close ()
      fw.close ()
 -- 
-1.9.0
+1.9.3
 

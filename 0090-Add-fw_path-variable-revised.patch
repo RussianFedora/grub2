@@ -1,7 +1,7 @@
 From 5bd3e1f888eeddc2575608516220ffa7b8270c7a Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
 Date: Wed, 19 Sep 2012 21:22:55 -0300
-Subject: [PATCH 090/125] Add fw_path variable (revised)
+Subject: [PATCH 090/143] Add fw_path variable (revised)
 
 This patch makes grub look for its config file on efi where the app was
 found. It was originally written by Matthew Garrett, and adapted to fix the
@@ -77,5 +77,5 @@ index 3a926fc..6f4970f 100644
        prefix = grub_env_get ("prefix");
        if (prefix)
 -- 
-1.9.0
+1.9.3
 

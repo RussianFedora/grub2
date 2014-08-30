@@ -1,7 +1,7 @@
 From afda7f47601f36a98074d8d21ffb640256f02267 Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Tue, 7 Jan 2014 18:43:02 +0400
-Subject: [PATCH 012/125] fix 32 bit compilation on MinGW-w64
+Subject: [PATCH 012/143] fix 32 bit compilation on MinGW-w64
 
 Use _FILE_OFFSET_BITS macro to distinguish between native MinGW and
 32 bit under MinGW-64. The latter does not require fseeko/ftello
@@ -41,5 +41,5 @@ index 36615b2..79efcfa 100644
  #endif
  
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From 37e3b5e42930e8cd4e801e4203dc2fde335b4b10 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 28 Feb 2014 10:07:11 +0100
-Subject: [PATCH 064/125] 	* grub-core/kern/i386/pc/mmap.c: Fallback to
+Subject: [PATCH 064/143] 	* grub-core/kern/i386/pc/mmap.c: Fallback to
  EISA memory map 	if E820 failed to return any regions.
 
 ---
@@ -84,5 +84,5 @@ index 8009e83..f1375f3 100644
        grub_uint32_t eisa_mmap = grub_get_eisa_mmap ();
  
 -- 
-1.9.0
+1.9.3
 

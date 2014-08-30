@@ -1,7 +1,7 @@
 From 29c96f00677e1dd2a9df4de645a7f5fab7b736a1 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sat, 18 Jan 2014 16:41:47 +0100
-Subject: [PATCH 020/125] 	* grub-core/kern/efi/efi.c: Ensure that the
+Subject: [PATCH 020/143] 	* grub-core/kern/efi/efi.c: Ensure that the
  result starts with / 	and has no //.
 
 ---
@@ -86,5 +86,5 @@ index b253141..b9eb1ab 100644
    return name;
  }
 -- 
-1.9.0
+1.9.3
 

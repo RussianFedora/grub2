@@ -1,7 +1,7 @@
 From 533058df7c164a4d3498dfaa626923904597f162 Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
 Date: Tue, 4 Feb 2014 18:41:38 -0200
-Subject: [PATCH 058/125] add grub_env_set_net_property function
+Subject: [PATCH 058/143] add grub_env_set_net_property function
 
 * grub-core/net/bootp.c: Remove set_env_limn_ro.
 * grub-core/net/net.c: Add grub_env_set_net_property.
@@ -195,5 +195,5 @@ index 0e0a605..538baa3 100644
  grub_net_poll_cards (unsigned time, int *stop_condition);
  
 -- 
-1.9.0
+1.9.3
 

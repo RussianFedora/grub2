@@ -1,7 +1,7 @@
 From c3d9e64a61d17e57ef941a6a46e5a148c51c8519 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Thu, 3 Apr 2014 21:31:12 +0200
-Subject: [PATCH 072/125] * grub-core/osdep/linux/getroot.c
+Subject: [PATCH 072/143] * grub-core/osdep/linux/getroot.c
  (grub_util_part_to_disk): Support NVMe device names.
 
 ---
@@ -51,5 +51,5 @@ index 19581d3..7007193 100644
  
    return path;
 -- 
-1.9.0
+1.9.3
 

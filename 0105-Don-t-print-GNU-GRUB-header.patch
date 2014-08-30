@@ -1,7 +1,7 @@
 From e3cabcd95237fadbad8e6a0e36222d97d16b5365 Mon Sep 17 00:00:00 2001
 From: William Jon McCann <william.jon.mccann@gmail.com>
 Date: Wed, 15 May 2013 13:53:48 -0400
-Subject: [PATCH 105/125] Don't print GNU GRUB header
+Subject: [PATCH 105/143] Don't print GNU GRUB header
 
 No one cares.
 ---
@@ -29,5 +29,5 @@ index 85d2a28..3777cd2 100644
  
  static void
 -- 
-1.9.0
+1.9.3
 

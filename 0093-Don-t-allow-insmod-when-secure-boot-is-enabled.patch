@@ -1,7 +1,7 @@
 From fe7b32ab9e58470fdf930d8efc7c9ebcd69e6ef3 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Tue, 23 Oct 2012 10:40:49 -0400
-Subject: [PATCH 093/125] Don't allow insmod when secure boot is enabled.
+Subject: [PATCH 093/143] Don't allow insmod when secure boot is enabled.
 
 Hi,
 
@@ -113,5 +113,5 @@ index 9370fd5..a000c38 100644
  EXPORT_FUNC (grub_efi_compare_device_paths) (const grub_efi_device_path_t *dp1,
  					     const grub_efi_device_path_t *dp2);
 -- 
-1.9.0
+1.9.3
 

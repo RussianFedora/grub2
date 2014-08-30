@@ -1,7 +1,7 @@
 From 9d1411ffa7290c1cbdc9ee95bb5fcc5506e63e0f Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
 Date: Thu, 20 Sep 2012 18:07:39 -0300
-Subject: [PATCH 096/125] IBM client architecture (CAS) reboot support
+Subject: [PATCH 096/143] IBM client architecture (CAS) reboot support
 
 This is an implementation of IBM client architecture (CAS) reboot for GRUB.
 
@@ -170,5 +170,5 @@ index 8e42513..9f26c69 100644
  #define FOR_IEEE1275_DEVALIASES(alias) for (grub_ieee1275_devalias_init_iterator (&(alias)); grub_ieee1275_devalias_next (&(alias));)
  
 -- 
-1.9.0
+1.9.3
 

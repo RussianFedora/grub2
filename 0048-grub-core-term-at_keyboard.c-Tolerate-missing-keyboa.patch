@@ -1,7 +1,7 @@
 From 379cbd6233fe227544ff3073b60b295fe841b654 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sun, 26 Jan 2014 03:31:10 +0100
-Subject: [PATCH 048/125] 	* grub-core/term/at_keyboard.c: Tolerate
+Subject: [PATCH 048/143] 	* grub-core/term/at_keyboard.c: Tolerate
  missing keyboard.
 
 ---
@@ -36,5 +36,5 @@ index f5071ce..b4257e8 100644
      {
        e0_received = 1;
 -- 
-1.9.0
+1.9.3
 

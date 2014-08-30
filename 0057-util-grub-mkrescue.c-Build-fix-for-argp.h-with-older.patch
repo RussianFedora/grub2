@@ -1,7 +1,7 @@
 From 3365d3eb4062cee9581f3560ec3e93f8c8ababb2 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Mon, 3 Feb 2014 14:35:51 +0100
-Subject: [PATCH 057/125] 	* util/grub-mkrescue.c: Build fix for argp.h
+Subject: [PATCH 057/143] 	* util/grub-mkrescue.c: Build fix for argp.h
  with older gcc.
 
 ---
@@ -40,5 +40,5 @@ index 34e0b7a..e719839 100644
  #include <sys/types.h>
  #include <sys/wait.h>
 -- 
-1.9.0
+1.9.3
 

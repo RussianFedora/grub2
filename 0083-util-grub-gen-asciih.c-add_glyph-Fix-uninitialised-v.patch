@@ -1,7 +1,7 @@
 From 473348e663de53939fc077a1e1ef262405712dd8 Mon Sep 17 00:00:00 2001
 From: Trevor Woerner <trevor.woerner@linaro.org>
 Date: Sat, 21 Jun 2014 20:26:47 +0200
-Subject: [PATCH 083/125] 	* util/grub-gen-asciih.c (add_glyph): Fix
+Subject: [PATCH 083/143] 	* util/grub-gen-asciih.c (add_glyph): Fix
  uninitialised variable.
 
 ---
@@ -69,5 +69,5 @@ index e01447a..e35dcb7 100644
  
        if (glyph.width == 8 && glyph.height == 16
 -- 
-1.9.0
+1.9.3
 

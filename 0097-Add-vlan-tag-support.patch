@@ -1,7 +1,7 @@
 From c987623113e2d03e80f0ba1e108bf0a800628f85 Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
 Date: Tue, 30 Oct 2012 15:19:39 -0200
-Subject: [PATCH 097/125] Add vlan-tag support
+Subject: [PATCH 097/143] Add vlan-tag support
 
 This patch adds support for virtual LAN (VLAN) tagging. VLAN tagging allows
 multiple VLANs in a bridged network to share the same physical network link but
@@ -182,5 +182,5 @@ index 538baa3..a799e6b 100644
 +
  #endif /* ! GRUB_NET_HEADER */
 -- 
-1.9.0
+1.9.3
 

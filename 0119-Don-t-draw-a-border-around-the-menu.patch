@@ -1,7 +1,7 @@
 From 6bf4deb61df3ecb1e2d108195efa5ac980baa961 Mon Sep 17 00:00:00 2001
 From: William Jon McCann <william.jon.mccann@gmail.com>
 Date: Wed, 15 May 2013 16:47:33 -0400
-Subject: [PATCH 119/125] Don't draw a border around the menu
+Subject: [PATCH 119/143] Don't draw a border around the menu
 
 It looks cleaner without it.
 ---
@@ -70,5 +70,5 @@ index 6202c2a..beddd7f 100644
    grub_term_highlight_color = old_color_highlight;
    geo->timeout_y = geo->first_entry_y + geo->num_entries
 -- 
-1.9.0
+1.9.3
 

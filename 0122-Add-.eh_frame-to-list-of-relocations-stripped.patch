@@ -1,7 +1,7 @@
 From 9120cc5592d26a945ead586b71820fb9708f5062 Mon Sep 17 00:00:00 2001
 From: Fedora Ninjas <grub2-owner@fedoraproject.org>
 Date: Mon, 13 Jan 2014 21:50:59 -0500
-Subject: [PATCH 122/125] Add .eh_frame to list of relocations stripped
+Subject: [PATCH 122/143] Add .eh_frame to list of relocations stripped
 
 ---
  conf/Makefile.common | 2 +-
@@ -21,5 +21,5 @@ index e4c301f..6f836d8 100644
  CFLAGS_MODULE = $(CFLAGS_CPU) $(CFLAGS_PLATFORM) -ffreestanding
  LDFLAGS_MODULE = $(LDFLAGS_CPU) $(LDFLAGS_PLATFORM) -nostdlib $(TARGET_LDFLAGS_OLDMAGIC) -Wl,-r,-d
 -- 
-1.9.0
+1.9.3
 

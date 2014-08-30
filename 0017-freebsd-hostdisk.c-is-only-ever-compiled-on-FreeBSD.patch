@@ -1,7 +1,7 @@
 From a433d177585c8355c6ede67469a521d05cf1e9d7 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Fri, 17 Jan 2014 02:30:52 +0000
-Subject: [PATCH 017/125] freebsd/hostdisk.c is only ever compiled on FreeBSD
+Subject: [PATCH 017/143] freebsd/hostdisk.c is only ever compiled on FreeBSD
 
 * grub-core/osdep/freebsd/hostdisk.c (grub_util_fd_open): Remove
 redundant preprocessor conditional.
@@ -44,5 +44,5 @@ index bd5fddb..eb202dc 100644
    return ret;
  }
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From 42c1756fd0ff7d94dcc8e9be2e429a2a976f6d41 Mon Sep 17 00:00:00 2001
 From: Piotr Krysiuk <piotras@gmail.com>
 Date: Sun, 20 Apr 2014 15:58:45 +0200
-Subject: [PATCH 079/125] Allow loading old kernels by placing GDT in
+Subject: [PATCH 079/143] Allow loading old kernels by placing GDT in
  conventional memory.
 
 ---
@@ -45,5 +45,5 @@ index d2a1b27..ffaf25f 100644
    if (err)
      return err;
 -- 
-1.9.0
+1.9.3
 

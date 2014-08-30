@@ -1,7 +1,7 @@
 From 4530afc725782bbb92d4681fc338acebc4604b45 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 28 Feb 2014 09:48:57 +0100
-Subject: [PATCH 062/125] 	* grub-core/loader/i386/multiboot_mbi.c
+Subject: [PATCH 062/143] 	* grub-core/loader/i386/multiboot_mbi.c
  (grub_multiboot_make_mbi): Limit 	location to 640K.
 
 ---
@@ -38,5 +38,5 @@ index 7431aa4..f10c087 100644
  					  GRUB_RELOCATOR_PREFERENCE_NONE, 0);
    if (err)
 -- 
-1.9.0
+1.9.3
 

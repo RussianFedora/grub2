@@ -1,7 +1,7 @@
 From a3e6964bd3242bd042489bb510e63fc0224fede4 Mon Sep 17 00:00:00 2001
 From: William Jon McCann <william.jon.mccann@gmail.com>
 Date: Fri, 7 Jun 2013 10:52:32 -0400
-Subject: [PATCH 120/125] Use the standard margin for the timeout string
+Subject: [PATCH 120/143] Use the standard margin for the timeout string
 
 So that it aligns with the other messages
 ---
@@ -39,5 +39,5 @@ index beddd7f..33b208b 100644
      }
  
 -- 
-1.9.0
+1.9.3
 

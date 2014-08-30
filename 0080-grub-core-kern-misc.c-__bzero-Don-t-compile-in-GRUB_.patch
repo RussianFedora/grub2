@@ -1,7 +1,7 @@
 From ec4609b70a7deebf6381297aae95dd4bf05bd008 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sun, 20 Apr 2014 16:12:41 +0200
-Subject: [PATCH 080/125] 	* grub-core/kern/misc.c (__bzero): Don't
+Subject: [PATCH 080/143] 	* grub-core/kern/misc.c (__bzero): Don't
  compile in GRUB_UTIL.
 
 	Reported by: Yves Blusseau <blusseau@zetam.org>.
@@ -39,5 +39,5 @@ index 54db2e1..c5c815d 100644
  __bzero (void *s, grub_size_t n)
  {
 -- 
-1.9.0
+1.9.3
 

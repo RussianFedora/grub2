@@ -1,7 +1,7 @@
 From 9ee79da5bf54babe11178ced48470b5f09d3dda3 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 27 Dec 2013 11:20:37 +0100
-Subject: [PATCH 005/125] Merge branch 'master' of git.sv.gnu.org:/srv/git/grub
+Subject: [PATCH 005/143] Merge branch 'master' of git.sv.gnu.org:/srv/git/grub
 
 Conflicts:
     ChangeLog
@@ -39,5 +39,5 @@ index 82dc61d..da3c2df 100644
  
  	* grub-core/osdep/windows/platform.c (get_platform): Fix EFI
 -- 
-1.9.0
+1.9.3
 

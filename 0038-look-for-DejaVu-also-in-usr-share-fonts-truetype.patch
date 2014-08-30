@@ -1,7 +1,7 @@
 From 90d83cda679fef485f7bb1a318bd682c4eb86cb4 Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Tue, 21 Jan 2014 19:29:33 +0400
-Subject: [PATCH 038/125] look for DejaVu also in /usr/share/fonts/truetype
+Subject: [PATCH 038/143] look for DejaVu also in /usr/share/fonts/truetype
 
 It is installed in this path on openSUSE.
 ---
@@ -35,5 +35,5 @@ index cf3de3b..120263e 100644
            DJVU_FONT_SOURCE="$dir/DejaVuSans.$ext"
            break 2
 -- 
-1.9.0
+1.9.3
 

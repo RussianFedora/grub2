@@ -1,7 +1,7 @@
 From 3f00de9c207fb4b3f9e45fd775650404ce087aac Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Wed, 29 Jan 2014 23:46:17 +0100
-Subject: [PATCH 053/125] 	* grub-core/disk/ahci.c: Add safety cleanups.
+Subject: [PATCH 053/143] 	* grub-core/disk/ahci.c: Add safety cleanups.
 
 ---
  ChangeLog             |  4 ++++
@@ -58,5 +58,5 @@ index d63fd09..643e691 100644
        while ((dev->hba->ports[dev->port].command & GRUB_AHCI_HBA_PORT_CMD_CR))
  	if (grub_get_time_ms () > endtime)
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From fdf24f98bc9e4632bfe7f280872cbbf40942ae7b Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 31 Mar 2014 13:51:17 +0100
-Subject: [PATCH 069/125] Fix grub-probe -0 option
+Subject: [PATCH 069/143] Fix grub-probe -0 option
 
 * util/grub-probe,c (options): Make -0 work again (broken by
 conversion to argp).
@@ -51,5 +51,5 @@ index 1f3b59f..80509be 100644
  
    /* Free resources.  */
 -- 
-1.9.0
+1.9.3
 

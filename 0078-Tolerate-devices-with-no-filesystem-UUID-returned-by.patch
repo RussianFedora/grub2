@@ -1,7 +1,7 @@
 From 0942ce33c5b88d85a6b81f4b3dd75c32fdf21978 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Thu, 10 Apr 2014 16:54:33 +0100
-Subject: [PATCH 078/125] Tolerate devices with no filesystem UUID returned by
+Subject: [PATCH 078/143] Tolerate devices with no filesystem UUID returned by
  os-prober
 
 * util/grub.d/30_os-prober.in: Tolerate devices with no filesystem
@@ -79,5 +79,5 @@ index 7cf8487..6f38c82 100644
      hurd)
        onstr="$(gettext_printf "(on %s)" "${DEVICE}")"
 -- 
-1.9.0
+1.9.3
 

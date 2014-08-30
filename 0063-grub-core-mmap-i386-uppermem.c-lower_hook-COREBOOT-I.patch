@@ -1,7 +1,7 @@
 From e85cc7078e669509d3a22c4e76f94cdd53335fff Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 28 Feb 2014 09:50:47 +0100
-Subject: [PATCH 063/125] 	* grub-core/mmap/i386/uppermem.c (lower_hook)
+Subject: [PATCH 063/143] 	* grub-core/mmap/i386/uppermem.c (lower_hook)
  [COREBOOT]: Ignore low 	tables for low memory calculations.
 
 ---
@@ -43,5 +43,5 @@ index bd8b429..a6be989 100644
  }
  
 -- 
-1.9.0
+1.9.3
 

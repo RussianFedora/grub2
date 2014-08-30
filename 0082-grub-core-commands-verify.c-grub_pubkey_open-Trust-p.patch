@@ -1,7 +1,7 @@
 From 61fdf8bebdeaed4b601f0eca847282780380191f Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Thu, 15 May 2014 14:36:48 +0200
-Subject: [PATCH 082/125] 	* grub-core/commands/verify.c
+Subject: [PATCH 082/143] 	* grub-core/commands/verify.c
  (grub_pubkey_open): Trust procfs.
 
 ---
@@ -39,5 +39,5 @@ index 6349ccf..525bdd1 100644
    fsuf = grub_malloc (grub_strlen (filename) + sizeof (".sig"));
    if (!fsuf)
 -- 
-1.9.0
+1.9.3
 

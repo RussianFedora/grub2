@@ -1,7 +1,7 @@
 From f01392a68f7f20bcc064a7d28e10805509701c4d Mon Sep 17 00:00:00 2001
 From: Mark Hamzy <hamzy@us.ibm.com>
 Date: Wed, 28 Mar 2012 14:46:41 -0500
-Subject: [PATCH 089/125] Migrate PPC from Yaboot to Grub2
+Subject: [PATCH 089/143] Migrate PPC from Yaboot to Grub2
 
 Add configuration support for serial terminal consoles.  This will set the
 maximum screen size so that text is not overwritten.
@@ -150,5 +150,5 @@ index 0000000..10d6658
 +  terminfo -g ${X}x${Y} ${TERMINAL}
 +EOF
 -- 
-1.9.0
+1.9.3
 

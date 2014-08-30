@@ -1,7 +1,7 @@
 From c65d7e05498edecd560753768114b574f7c3543d Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 28 Feb 2014 09:47:57 +0100
-Subject: [PATCH 061/125] 	* grub-core/kern/i386/coreboot/mmap.c: Filter
+Subject: [PATCH 061/143] 	* grub-core/kern/i386/coreboot/mmap.c: Filter
  out 0xa0000-0x100000 	region.
 
 ---
@@ -78,5 +78,5 @@ index 1197975..4d29f6b 100644
  
    return 0;
 -- 
-1.9.0
+1.9.3
 

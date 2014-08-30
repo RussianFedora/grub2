@@ -1,7 +1,7 @@
 From 9cc9edb600ad1acc1598910ed95a8482ff3de6e2 Mon Sep 17 00:00:00 2001
 From: William Jon McCann <william.jon.mccann@gmail.com>
 Date: Fri, 7 Jun 2013 14:08:49 -0400
-Subject: [PATCH 109/125] Use the correct indentation for the term help text
+Subject: [PATCH 109/143] Use the correct indentation for the term help text
 
 That is consistent with the menu help text
 ---
@@ -24,5 +24,5 @@ index 3777cd2..0da2a52 100644
        grub_print_message_indented (msg_formatted, 0, 0, term);
      grub_putcode ('\n', term);
 -- 
-1.9.0
+1.9.3
 

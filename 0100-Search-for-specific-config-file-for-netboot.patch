@@ -1,7 +1,7 @@
 From bf19a1e123fd09552165bd0d2b19ccf438c0a46c Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
 Date: Tue, 27 Nov 2012 17:22:07 -0200
-Subject: [PATCH 100/125] Search for specific config file for netboot
+Subject: [PATCH 100/143] Search for specific config file for netboot
 
 This patch implements a search for a specific configuration when the config
 file is on a remoteserver. It uses the following order:
@@ -199,5 +199,5 @@ index 59e5975..88fc71c 100644
 +
  #endif /* ! GRUB_NET_HEADER */
 -- 
-1.9.0
+1.9.3
 

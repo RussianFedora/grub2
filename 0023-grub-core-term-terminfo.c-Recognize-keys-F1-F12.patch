@@ -1,7 +1,7 @@
 From ac660e42875162e599f50c085cb646c633cf376d Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sat, 18 Jan 2014 16:57:35 +0100
-Subject: [PATCH 023/125] 	* grub-core/term/terminfo.c: Recognize keys
+Subject: [PATCH 023/143] 	* grub-core/term/terminfo.c: Recognize keys
  F1-F12.
 
 ---
@@ -151,5 +151,5 @@ index 3d48b19..f0d3e3d 100644
    }
  #undef CONTINUE_READ
 -- 
-1.9.0
+1.9.3
 

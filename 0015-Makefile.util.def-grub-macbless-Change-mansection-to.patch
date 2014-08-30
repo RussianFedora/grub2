@@ -1,7 +1,7 @@
 From 1c0db34a9597ecccb3ad4899892fb6ff6e22304d Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Wed, 8 Jan 2014 11:05:20 +0000
-Subject: [PATCH 015/125] * Makefile.util.def (grub-macbless): Change
+Subject: [PATCH 015/143] * Makefile.util.def (grub-macbless): Change
  mansection to 8.
 
 ---
@@ -35,5 +35,5 @@ index 985e76c..3c99be2 100644
    common = grub-core/osdep/init.c;
    common = grub-core/kern/emu/argp_common.c;
 -- 
-1.9.0
+1.9.3
 

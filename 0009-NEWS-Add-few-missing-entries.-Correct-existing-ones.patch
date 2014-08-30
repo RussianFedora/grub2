@@ -1,7 +1,7 @@
 From 3eff91e86e4df2cf8a5e1b26f98e96bf4731f526 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Mon, 30 Dec 2013 06:49:15 +0100
-Subject: [PATCH 009/125] 	* NEWS: Add few missing entries. Correct
+Subject: [PATCH 009/143] 	* NEWS: Add few missing entries. Correct
  existing ones.
 
 ---
@@ -117,5 +117,5 @@ index b74c05f..49a2459 100644
    * HFS string is now treated like mac-roman and not UTF-8
    * HFS mtime support.
 -- 
-1.9.0
+1.9.3
 

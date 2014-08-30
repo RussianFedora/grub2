@@ -1,7 +1,7 @@
 From 3be166827cecb977ad47ac4d3d89ec92688307a4 Mon Sep 17 00:00:00 2001
 From: Stephane Rochoy <sheda>
 Date: Sun, 22 Jun 2014 01:35:52 +0200
-Subject: [PATCH 085/125] 	* grub-core/loader/i386/bsd.c
+Subject: [PATCH 085/143] 	* grub-core/loader/i386/bsd.c
  (grub_netbsd_boot): Pass pointer to 	EFI system table.
 
 ---
@@ -68,5 +68,5 @@ index e48c19b..9b4f460 100644
 +
  #endif
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From 23cd074c57ee6f35776fd5122a050bcef6c9eef5 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sat, 28 Dec 2013 17:25:14 +0100
-Subject: [PATCH 008/125] 	Don't abort() on unavailable coreboot tables
+Subject: [PATCH 008/143] 	Don't abort() on unavailable coreboot tables
  if not running on coreboot.
 
 ---
@@ -66,5 +66,5 @@ index 6b150b4..3314f02 100644
    grub_video_coreboot_fb_late_init ();
  
 -- 
-1.9.0
+1.9.3
 

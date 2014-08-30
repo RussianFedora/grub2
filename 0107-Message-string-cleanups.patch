@@ -1,7 +1,7 @@
 From 6c33a9b3a96a5e8c782a8eef97f5d95a3a542921 Mon Sep 17 00:00:00 2001
 From: William Jon McCann <william.jon.mccann@gmail.com>
 Date: Fri, 7 Jun 2013 11:09:04 -0400
-Subject: [PATCH 107/125] Message string cleanups
+Subject: [PATCH 107/143] Message string cleanups
 
 Make use of terminology consistent. Remove jargon.
 ---
@@ -67,5 +67,5 @@ index 2f84fcc..9d20c6b 100644
      {
        grub_print_error ();
 -- 
-1.9.0
+1.9.3
 

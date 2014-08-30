@@ -47,7 +47,7 @@
 Name:           grub2
 Epoch:          1
 Version:        2.02
-Release:        0.4%{?dist}
+Release:        0.8%{?dist}
 Summary:        Bootloader with support for Linux, Multiboot and more
 
 Group:          System Environment/Base
@@ -58,6 +58,7 @@ Source0:        ftp://alpha.gnu.org/gnu/grub/grub-%{tarversion}.tar.xz
 #Source0:	ftp://ftp.gnu.org/gnu/grub/grub-%{tarversion}.tar.xz
 Source4:	http://unifoundry.com/unifont-5.1.20080820.pcf.gz
 Source5:	theme.tar.bz2
+Source6:	gitignore
 #Source6:	grub-cd.cfg
 
 Patch0001: 0001-fix-EFI-detection-on-Windows.patch
@@ -185,11 +186,29 @@ Patch0122: 0122-Add-.eh_frame-to-list-of-relocations-stripped.patch
 Patch0123: 0123-Make-10_linux-work-with-our-changes-for-linux16-and-.patch
 Patch0124: 0124-Don-t-print-during-fdt-loading-method.patch
 Patch0125: 0125-Honor-a-symlink-when-generating-configuration-by-gru.patch
+Patch0126: 0126-Don-t-munge-raw-spaces-when-we-re-doing-our-cmdline-.patch
+Patch0127: 0127-Don-t-require-a-password-to-boot-entries-generated-b.patch
+Patch0128: 0128-Don-t-emit-Booting-.-message.patch
+Patch0129: 0129-Make-CTRL-and-ALT-keys-work-as-expected-on-EFI-syste.patch
+Patch0130: 0130-May-as-well-try-it.patch
+Patch0131: 0131-use-fw_path-prefix-when-fallback-searching-for-grub-.patch
+Patch0132: 0132-Try-mac-guid-etc-before-grub.cfg-on-tftp-config-file.patch
+Patch0133: 0133-trim-arp-packets-with-abnormal-size.patch
+Patch0134: 0134-Fix-convert-function-to-support-NVMe-devices.patch
+Patch0135: 0135-Fix-bad-test-on-GRUB_DISABLE_SUBMENU.patch
+Patch0136: 0136-Switch-to-use-APM-Mustang-device-tree-for-hardware-t.patch
+Patch0137: 0137-Use-the-default-device-tree-from-the-grub-default-fi.patch
+Patch0138: 0138-reopen-SNP-protocol-for-exclusive-use-by-grub.patch
+Patch0139: 0139-Reduce-timer-event-frequency-by-10.patch
+Patch0140: 0140-always-return-error-to-UEFI.patch
+Patch0141: 0141-Add-powerpc-little-endian-ppc64le-flags.patch
+Patch0142: 0142-Files-reorganization-and-include-some-libgcc-fuction.patch
+Patch0143: 0143-Suport-for-bi-endianess-in-elf-file.patch
 
 BuildRequires:  flex bison binutils python
 BuildRequires:  ncurses-devel xz-devel bzip2-devel
 BuildRequires:  freetype-devel libusb-devel
-%ifarch %{sparc} x86_64 aarch64
+%ifarch %{sparc} x86_64 aarch64 ppc64le
 # sparc builds need 64 bit glibc-devel - also for 32 bit userland
 BuildRequires:  /usr/lib64/crt1.o glibc-static
 %else
@@ -278,6 +297,7 @@ provides an example theme for the grub screen.
 cd grub-%{tarversion}
 # place unifont in the '.' from which configure is run
 cp %{SOURCE4} unifont.pcf.gz
+cp %{SOURCE6} .gitignore
 git init
 git config user.email "grub2-owner@fedoraproject.org"
 git config user.name "Fedora Ninjas"
@@ -295,6 +315,7 @@ ln -s grub-efi-%{tarversion} grub-%{tarversion}
 cd grub-%{tarversion}
 # place unifont in the '.' from which configure is run
 cp %{SOURCE4} unifont.pcf.gz
+cp %{SOURCE6} .gitignore
 git init
 git config user.email "grub2-owner@fedoraproject.org"
 git config user.name "Fedora Ninjas"
@@ -322,14 +343,14 @@ cd grub-efi-%{tarversion}
         --program-transform-name=s,grub,%{name},		\
 	--disable-grub-mount					\
 	--disable-werror
-
 make %{?_smp_mflags}
+
 GRUB_MODULES="	all_video boot btrfs cat chain configfile echo efifwsetup \
 		efinet ext2 fat font gfxmenu gfxterm gzio halt hfsplus iso9660 \
 		jpeg lvm mdraid09 mdraid1x minicmd normal part_apple \
 		part_msdos part_gpt password_pbkdf2 png reboot search \
-		search_fs_uuid search_fs_file search_label sleep test tftp \
-		video xfs mdraid09 mdraid1x"
+		search_fs_uuid search_fs_file search_label sleep syslinuxcfg \
+		test tftp video xfs"
 %ifarch aarch64
 GRUB_MODULES="${GRUB_MODULES} linux"
 %else
@@ -353,7 +374,7 @@ cd grub-%{tarversion}
 ./autogen.sh
 # -static is needed so that autoconf script is able to link
 # test that looks for _start symbol on 64 bit platforms
-%ifarch %{sparc} ppc ppc64
+%ifarch %{sparc} ppc ppc64 ppc64le
 %define platform ieee1275
 %else
 %define platform pc
@@ -613,8 +634,22 @@ fi
 %{_datarootdir}/grub/themes/
 
 %changelog
-* Thu Jun 26 2014 Arkady L. Shane <ashejn@russianfedora.pro> - 2.02-0.4.R
-- read branding from rfremix-release first
+* Sat Aug 30 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.02-0.8.R
+- read rfremix-release first
+
+* Tue Aug 19 2014 Peter Jones <pjones@redhat.com> - 2.02-0.8
+- Add ppc64le support.
+  Resolves: rhbz#1125540
+
+* Thu Jul 24 2014 Peter Jones <pjones@redhat.com> - 2.02-0.7
+- Enabled syslinuxcfg module.
+
+* Wed Jul 02 2014 Peter Jones <pjones@redhat.com> - 2.02-0.6
+- Re-merge RHEL 7 changes and ARM works in progress.
+
+* Mon Jun 30 2014 Peter Jones <pjones@redhat.com> - 2.02-0.5
+- Avoid munging raw spaces when we're escaping command line arguments.
+  Resolves: rhbz#923374
 
 * Tue Jun 24 2014 Peter Jones <pjones@redhat.com> - 2.02-0.4
 - Update to latest upstream.

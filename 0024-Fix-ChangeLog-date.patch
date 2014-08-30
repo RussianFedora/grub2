@@ -1,7 +1,7 @@
 From 6e5cf6b00fa82e5a02135ea5e21230ee44c72087 Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Sat, 18 Jan 2014 20:01:16 +0400
-Subject: [PATCH 024/125] Fix ChangeLog date
+Subject: [PATCH 024/143] Fix ChangeLog date
 
 ---
  ChangeLog | 2 +-
@@ -21,5 +21,5 @@ index bdfbf44..fcbf220 100644
  	* configure.ac: Add support for BUILD_LDFLAGS.
  	* Makefile.am: Use BUILD_LDFLAGS for build time programs here ...
 -- 
-1.9.0
+1.9.3
 

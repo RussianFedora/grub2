@@ -1,7 +1,7 @@
 From d576e05a7bfe25413f70b54f671f305397bacf5e Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Thu, 10 Apr 2014 14:42:41 +0100
-Subject: [PATCH 077/125] Improve LVM "logical_volumes" string matching
+Subject: [PATCH 077/143] Improve LVM "logical_volumes" string matching
 
 * grub-core/disk/lvm.c (grub_lvm_detect): Search for
 "logical_volumes" block a little more accurately.
@@ -41,5 +41,5 @@ index 483c17e..862a966 100644
  	  /* And add all the lvs to the volume group. */
  	  while (1)
 -- 
-1.9.0
+1.9.3
 

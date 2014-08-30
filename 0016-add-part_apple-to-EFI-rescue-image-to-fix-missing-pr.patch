@@ -1,7 +1,7 @@
 From 3aea6cc46177a90056ba60381e6387377fe40c99 Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Sun, 12 Jan 2014 15:29:21 +0400
-Subject: [PATCH 016/125] add part_apple to EFI rescue image to fix missing
+Subject: [PATCH 016/143] add part_apple to EFI rescue image to fix missing
  prefix
 
 On Mac rescue image is booted from HFS+ partition, so bootpath looks like
@@ -44,5 +44,5 @@ index 0d03e55..34e0b7a 100644
    if (source_dirs[GRUB_INSTALL_PLATFORM_POWERPC_IEEE1275])
      {
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From e4ecf3a1f8eef683feae27ed84c85eb8aeb79e11 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Sat, 28 Dec 2013 02:20:27 +0000
-Subject: [PATCH 088/125] * NEWS: The cmosclean command in fact dates back to
+Subject: [PATCH 088/143] * NEWS: The cmosclean command in fact dates back to
  1.99.  Remove mention of it from 2.02.
 
 ---
@@ -22,5 +22,5 @@ index a61df94..f621c65 100644
    * Use the TSC as a possible time source on i386-ieee1275.
    * Merge PowerPC grub-mkrescue implementation with the common one.
 -- 
-1.9.0
+1.9.3
 

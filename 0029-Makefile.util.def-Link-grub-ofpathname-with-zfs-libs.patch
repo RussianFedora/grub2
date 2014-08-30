@@ -1,7 +1,7 @@
 From 6c3fa2da4fd22c3ebda0c6cf69f97d578c04e704 Mon Sep 17 00:00:00 2001
 From: Mike Gilbert <floppym@gentoo.org>
 Date: Sat, 18 Jan 2014 19:41:15 +0100
-Subject: [PATCH 029/125] 	* Makefile.util.def: Link grub-ofpathname with
+Subject: [PATCH 029/143] 	* Makefile.util.def: Link grub-ofpathname with
  zfs libs.
 
 ---
@@ -35,5 +35,5 @@ index 83df212..a286a89 100644
  
  program = {
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From 50cb0018044359180aa57e6aa7ec944def83bbcc Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Wed, 29 Jan 2014 23:45:18 +0100
-Subject: [PATCH 052/125] 	* grub-core/disk/ahci.c: Allocate and clean
+Subject: [PATCH 052/143] 	* grub-core/disk/ahci.c: Allocate and clean
  space for all possible 32 	slots to avoid pointing to uninited area.
 
 ---
@@ -51,5 +51,5 @@ index 18c1327..d63fd09 100644
  	  = grub_dma_get_phys (adevs[i]->command_table_chunk);
  
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From 7f4e3839c9b872f0981e1ecdecfa2bd91065f99c Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Thu, 20 Feb 2014 10:11:43 +0100
-Subject: [PATCH 060/125] 	* grub-core/disk/ahci.c: Ignore NPORTS field
+Subject: [PATCH 060/143] 	* grub-core/disk/ahci.c: Ignore NPORTS field
  and rely on PI 	exclusively.
 
 ---
@@ -36,5 +36,5 @@ index 5e4a639..89365cd 100644
    grub_dprintf ("ahci", "%d AHCI ports, PI = 0x%x\n", nports,
  		hba->ports_implemented);
 -- 
-1.9.0
+1.9.3
 

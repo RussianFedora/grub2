@@ -1,7 +1,7 @@
 From 2cd73ec6b2efeaff2bdcd40cce0cd3145d9e07d0 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 24 Jan 2014 18:20:27 +0100
-Subject: [PATCH 043/125] 	Fix several translatable strings.
+Subject: [PATCH 043/143] 	Fix several translatable strings.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -74,5 +74,5 @@ index 5e944c2..f4fda6d 100644
    {"output",  'o', N_("FILE"), 0, N_("write output to FILE [default=stdout]."), 0},
    {"isolinux",     'i', 0,      0, N_("assume input is an isolinux configuration file."), 0},
 -- 
-1.9.0
+1.9.3
 

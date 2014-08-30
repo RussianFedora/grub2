@@ -1,7 +1,7 @@
 From 91152c6e2944e9ad3583482140f8991b972fec08 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 4 Apr 2014 08:02:38 +0200
-Subject: [PATCH 074/125] * include/grub/libgcc.h: Remove ctzsi2 and ctzdi2.
+Subject: [PATCH 074/143] * include/grub/libgcc.h: Remove ctzsi2 and ctzdi2.
  They're no longer pulled from libgcc.
 
 ---
@@ -43,5 +43,5 @@ index fdc6611..97233d7 100644
  #ifdef HAVE__RESTGPR_14_X
  void EXPORT_FUNC (_restgpr_14_x) (void);
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From c889057e089d69bd187c8ba134c9669247744628 Mon Sep 17 00:00:00 2001
 From: Mike Gilbert <floppym@gentoo.org>
 Date: Sun, 26 Jan 2014 02:56:04 +0100
-Subject: [PATCH 047/125] 	grub-install: support for partitioned partx
+Subject: [PATCH 047/143] 	grub-install: support for partitioned partx
  loop devices.
 
 	* grub-core/osdep/linux/getroot.c (grub_util_part_to_disk): Detect
@@ -51,5 +51,5 @@ index 772de0a..19581d3 100644
  
    return path;
 -- 
-1.9.0
+1.9.3
 

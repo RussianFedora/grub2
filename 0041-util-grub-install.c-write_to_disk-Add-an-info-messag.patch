@@ -1,7 +1,7 @@
 From 100e7015f7dcf2cee0c4ddbbd7498a67bac695d0 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Thu, 23 Jan 2014 12:05:36 +0000
-Subject: [PATCH 041/125] * util/grub-install.c (write_to_disk): Add an info
+Subject: [PATCH 041/143] * util/grub-install.c (write_to_disk): Add an info
  message.
 
 ---
@@ -34,5 +34,5 @@ index 5903f34..787dc90 100644
  			 core_size, core_img);
    free (core_img);
 -- 
-1.9.0
+1.9.3
 

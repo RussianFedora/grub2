@@ -1,7 +1,7 @@
 From 4ec08b960f6de1190dea9fe7e6ab3b4b249840e5 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Fri, 17 Jan 2014 15:24:50 +0000
-Subject: [PATCH 018/125] Prefer more portable test(1) constructs
+Subject: [PATCH 018/143] Prefer more portable test(1) constructs
 
 * util/grub.d/00_header.in (make_timeout): Use && rather than test
 -a.
@@ -105,5 +105,5 @@ index 0470e66..7cf8487 100644
      continue
    fi
 -- 
-1.9.0
+1.9.3
 

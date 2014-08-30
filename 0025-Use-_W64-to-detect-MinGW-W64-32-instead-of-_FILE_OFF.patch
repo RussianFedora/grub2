@@ -1,7 +1,7 @@
 From bb3e1a1e8448f3ea9489b5ebfcec799196bc862f Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Sat, 18 Jan 2014 20:04:11 +0400
-Subject: [PATCH 025/125] Use _W64 to detect MinGW W64-32 instead of
+Subject: [PATCH 025/143] Use _W64 to detect MinGW W64-32 instead of
  _FILE_OFFSET_BITS
 
 In 94cee4a4c201bb506377b2c26e072eee8cb19d6f I overlooked that config.h
@@ -43,5 +43,5 @@ index 79efcfa..bf6451b 100644
  #define ftello ftello64
  #endif
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From f60046d87e55646d36c21520c5f6391c184ec8ad Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Wed, 3 Apr 2013 14:35:34 -0400
-Subject: [PATCH 102/125] Move bash completion script (#922997)
+Subject: [PATCH 102/143] Move bash completion script (#922997)
 
 Apparently these go in a new place now.
 ---
@@ -22,5 +22,5 @@ index 136287c..0bcdb06 100644
  
  $(bash_completion_script): $(bash_completion_source) $(top_builddir)/config.status
 -- 
-1.9.0
+1.9.3
 

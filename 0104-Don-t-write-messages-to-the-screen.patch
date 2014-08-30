@@ -1,7 +1,7 @@
 From 0ee337319fc8c21da04bca1cabb51b3445dba3fd Mon Sep 17 00:00:00 2001
 From: William Jon McCann <william.jon.mccann@gmail.com>
 Date: Wed, 15 May 2013 13:30:20 -0400
-Subject: [PATCH 104/125] Don't write messages to the screen
+Subject: [PATCH 104/143] Don't write messages to the screen
 
 Writing messages to the screen before the menus or boot splash
 happens so quickly it looks like something is wrong and isn't
@@ -154,5 +154,5 @@ index ad34cc0..e762e1f 100644
  EOF
      fi
 -- 
-1.9.0
+1.9.3
 

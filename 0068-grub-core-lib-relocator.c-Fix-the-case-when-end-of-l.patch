@@ -1,7 +1,7 @@
 From 5d1749ea5730be5c9c32228461b784317a500f4b Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Wed, 26 Mar 2014 08:48:30 +0100
-Subject: [PATCH 068/125] 	* grub-core/lib/relocator.c: Fix the case when
+Subject: [PATCH 068/143] 	* grub-core/lib/relocator.c: Fix the case when
  end of leftover is used.
 
 ---
@@ -35,5 +35,5 @@ index 9f9770b..cb11ea5 100644
  			&= ((1 << (8 - (start % 8))) - 1);
  		      grub_memset (lo->freebytes + (offstart + 7) / 8, 0,
 -- 
-1.9.0
+1.9.3
 

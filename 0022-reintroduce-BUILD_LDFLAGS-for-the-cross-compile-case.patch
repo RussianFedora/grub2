@@ -1,7 +1,7 @@
 From 3bea802b45b9c98f70753370522fa6e47ba8966b Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Sat, 18 Jan 2014 19:50:54 +0400
-Subject: [PATCH 022/125] reintroduce BUILD_LDFLAGS for the cross-compile case
+Subject: [PATCH 022/143] reintroduce BUILD_LDFLAGS for the cross-compile case
 
 This allows providing separate LDFLAGS for build and host environments, which
 are not necessary the same for cross-compile case. In particular, it allows
@@ -149,5 +149,5 @@ index 1b3142d..13b7979 100644
  
  # trigtables.c
 -- 
-1.9.0
+1.9.3
 

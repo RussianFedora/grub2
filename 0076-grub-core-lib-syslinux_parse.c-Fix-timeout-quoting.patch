@@ -1,7 +1,7 @@
 From fb62186fefaca6b302eb61081bb6281042ff7283 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sun, 6 Apr 2014 00:44:44 +0200
-Subject: [PATCH 076/125] 	* grub-core/lib/syslinux_parse.c: Fix timeout
+Subject: [PATCH 076/143] 	* grub-core/lib/syslinux_parse.c: Fix timeout
  quoting.
 
 ---
@@ -35,5 +35,5 @@ index 21fa175..6bc504b 100644
        if (err)
  	return err;
 -- 
-1.9.0
+1.9.3
 

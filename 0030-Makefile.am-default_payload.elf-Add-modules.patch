@@ -1,7 +1,7 @@
 From 3f6bd432acbf2244e6f4b83dd3a259392b10afb6 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Sat, 18 Jan 2014 19:43:19 +0100
-Subject: [PATCH 030/125] 	* Makefile.am (default_payload.elf): Add
+Subject: [PATCH 030/143] 	* Makefile.am (default_payload.elf): Add
  modules 	multiboot cbmemc linux16 gzio echo help.
 
 ---
@@ -38,5 +38,5 @@ index aa526f5..97c062d 100644
  
  windowsdir=$(top_builddir)/$(PACKAGE)-$(VERSION)-for-windows
 -- 
-1.9.0
+1.9.3
 

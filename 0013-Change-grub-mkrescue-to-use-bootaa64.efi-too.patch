@@ -1,7 +1,7 @@
 From 9981c4e3f366b4795655368a78baa058b18711c6 Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Tue, 7 Jan 2014 20:34:25 +0400
-Subject: [PATCH 013/125] Change grub-mkrescue to use bootaa64.efi too
+Subject: [PATCH 013/143] Change grub-mkrescue to use bootaa64.efi too
 
 Also add ChangeLog entry for previous change.
 ---
@@ -40,5 +40,5 @@ index 317879d..0d03e55 100644
  			     imgname);
        free (imgname);
 -- 
-1.9.0
+1.9.3
 

@@ -1,7 +1,7 @@
 From d7aaf1651f4b36721f73331753d017d33d7879b4 Mon Sep 17 00:00:00 2001
 From: Paulo Flabiano Smorigo <pfsmorigo@br.ibm.com>
 Date: Tue, 27 Nov 2012 16:58:39 -0200
-Subject: [PATCH 098/125] Add %X option to printf functions.
+Subject: [PATCH 098/143] Add %X option to printf functions.
 
 ---
  grub-core/kern/misc.c | 7 +++++--
@@ -54,5 +54,5 @@ index c5c815d..a56cfe7 100644
  	case 'd':
  	  {
 -- 
-1.9.0
+1.9.3
 

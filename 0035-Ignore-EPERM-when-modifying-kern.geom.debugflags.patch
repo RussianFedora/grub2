@@ -1,7 +1,7 @@
 From 97fca4331e317b0491912c3cf3d02a9fac96c419 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Fri, 17 Jan 2014 02:28:46 +0000
-Subject: [PATCH 035/125] Ignore EPERM when modifying kern.geom.debugflags
+Subject: [PATCH 035/143] Ignore EPERM when modifying kern.geom.debugflags
 
 Many tests fail when run as a non-root user on FreeBSD.  The failures
 all amount to an inability to open files using grub_util_fd_open,
@@ -54,5 +54,5 @@ index eb202dc..6145d07 100644
  
    ret = open (os_dev, flags, S_IROTH | S_IRGRP | S_IRUSR | S_IWUSR);
 -- 
-1.9.0
+1.9.3
 

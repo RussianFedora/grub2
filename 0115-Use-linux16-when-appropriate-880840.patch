@@ -1,7 +1,7 @@
 From ba749818b7a53df63d887cb17497f82c78ca934c Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Mon, 28 Oct 2013 10:05:07 -0400
-Subject: [PATCH 115/125] Use linux16 when appropriate (#880840)
+Subject: [PATCH 115/143] Use linux16 when appropriate (#880840)
 
 The kernel group really would prefer that we use the 16 bit entry point
 on x86 bios machines.
@@ -48,5 +48,5 @@ index e762e1f..600bfd2 100644
      fi
    fi
 -- 
-1.9.0
+1.9.3
 

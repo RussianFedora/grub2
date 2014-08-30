@@ -1,7 +1,7 @@
 From 5980cac9e0320a3eb65e7fb73487a565d21361da Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <matthew.garrett@nebula.com>
 Date: Wed, 12 Jun 2013 11:51:49 -0400
-Subject: [PATCH 112/125] Add support for UEFI operating systems returned by
+Subject: [PATCH 112/143] Add support for UEFI operating systems returned by
  os-prober
 
 os-prober returns UEFI operating systems in the form:
@@ -47,5 +47,5 @@ index 6f38c82..9f955ab 100644
    esac
  done
 -- 
-1.9.0
+1.9.3
 

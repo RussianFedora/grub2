@@ -1,7 +1,7 @@
 From 5795341bb64a4e101d7c067d688b19a41dd50662 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Wed, 29 Jan 2014 23:43:25 +0100
-Subject: [PATCH 051/125] 	* grub-core/disk/ahci.c: Do not enable I/O
+Subject: [PATCH 051/143] 	* grub-core/disk/ahci.c: Do not enable I/O
  decoding and keep 	enabling busmaster for the end.
 
 ---
@@ -53,5 +53,5 @@ index 0b13fb8..18c1327 100644
      if (adevs[i])
        {
 -- 
-1.9.0
+1.9.3
 

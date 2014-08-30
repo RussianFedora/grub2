@@ -1,7 +1,7 @@
 From 2b2a550c14e70d17af4140e64d08022ed170f0c8 Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Sat, 25 Jan 2014 19:54:51 +0400
-Subject: [PATCH 044/125] do not set default prefix in grub-mkimage
+Subject: [PATCH 044/143] do not set default prefix in grub-mkimage
 
 Default prefix is likely wrong on Unix and completely wrong on Windows.
 Let caller set it explicitly to avoid any ambiguity.
@@ -71,5 +71,5 @@ index a2bd4c1..1e0bcf1 100644
  			       arguments.memdisk, arguments.pubkeys,
  			       arguments.npubkeys, arguments.config,
 -- 
-1.9.0
+1.9.3
 

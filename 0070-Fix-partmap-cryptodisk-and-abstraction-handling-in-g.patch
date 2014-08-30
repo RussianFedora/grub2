@@ -1,7 +1,7 @@
 From 0a65563c2b355c0eb7412b46f015556691f1b5d1 Mon Sep 17 00:00:00 2001
 From: Colin Watson <cjwatson@ubuntu.com>
 Date: Mon, 31 Mar 2014 14:48:33 +0100
-Subject: [PATCH 070/125] Fix partmap, cryptodisk, and abstraction handling in
+Subject: [PATCH 070/143] Fix partmap, cryptodisk, and abstraction handling in
  grub-mkconfig.
 
 Commit 588744d0dc655177d5883bdcb8f72ff5160109ed caused grub-mkconfig
@@ -362,5 +362,5 @@ index 80509be..ecb7b6b 100644
  	  continue;
  	}
 -- 
-1.9.0
+1.9.3
 

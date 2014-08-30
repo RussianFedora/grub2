@@ -1,7 +1,7 @@
 From f21c40f33c95d908cee32a5063f285d22574a507 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Wed, 29 Jan 2014 23:41:48 +0100
-Subject: [PATCH 050/125] 	* util/grub-mkfont.c: Downgrade warnings about
+Subject: [PATCH 050/143] 	* util/grub-mkfont.c: Downgrade warnings about
  unhandled features 	to debug.
 
 ---
@@ -73,5 +73,5 @@ index 3cb02ad..3de07ee 100644
  	    }
  	}
 -- 
-1.9.0
+1.9.3
 

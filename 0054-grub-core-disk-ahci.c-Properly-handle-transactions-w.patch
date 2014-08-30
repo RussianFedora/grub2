@@ -1,7 +1,7 @@
 From 5e8c619b17cdf70b30d37412738b149d80874c28 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Wed, 29 Jan 2014 23:49:51 +0100
-Subject: [PATCH 054/125] 	* grub-core/disk/ahci.c: Properly handle
+Subject: [PATCH 054/143] 	* grub-core/disk/ahci.c: Properly handle
  transactions with no 	transferred data.
 
 ---
@@ -50,5 +50,5 @@ index 643e691..fdd40c6 100644
      | (parms->write ? GRUB_AHCI_CONFIG_WRITE : GRUB_AHCI_CONFIG_READ)
      | (parms->taskfile.cmd == 8 ? (1 << 8) : 0);
 -- 
-1.9.0
+1.9.3
 

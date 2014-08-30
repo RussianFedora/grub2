@@ -1,7 +1,7 @@
 From 3e02e2fbd2089645ac2c482dad59318394b62252 Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Tue, 21 Jan 2014 19:41:11 +0400
-Subject: [PATCH 039/125] Show detected path to DejaVuSans in configure summary
+Subject: [PATCH 039/143] Show detected path to DejaVuSans in configure summary
 
 ---
  ChangeLog    | 1 +
@@ -33,5 +33,5 @@ index 120263e..8888c2f 100644
  echo starfield theme: No "($starfield_excuse)"
  fi
 -- 
-1.9.0
+1.9.3
 

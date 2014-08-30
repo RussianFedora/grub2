@@ -1,7 +1,7 @@
 From d25ddbcafa537525f606938df0e500c50a5e93e1 Mon Sep 17 00:00:00 2001
 From: Vladimir Serbinenko <phcoder@gmail.com>
 Date: Fri, 24 Jan 2014 18:09:25 +0100
-Subject: [PATCH 042/125] 	* util/grub-install.c: List available targets.
+Subject: [PATCH 042/143] 	* util/grub-install.c: List available targets.
 
 ---
  ChangeLog                   |  4 ++++
@@ -105,5 +105,5 @@ index 787dc90..2e6226a 100644
        return xasprintf (text, program_name, GRUB_BOOT_DIR_NAME "/" GRUB_DIR_NAME);
      default:
 -- 
-1.9.0
+1.9.3
 

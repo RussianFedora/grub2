@@ -1,7 +1,7 @@
 From 09194ac15b3c348cbf147e8ea27b982b57a7a778 Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Sat, 18 Jan 2014 21:22:57 +0400
-Subject: [PATCH 027/125] fix include loop on MinGW due to libintl.h pulling
+Subject: [PATCH 027/143] fix include loop on MinGW due to libintl.h pulling
  stdio.h
 
 In file included from ./include/grub/dl.h:23:0,
@@ -277,5 +277,5 @@ index d393da7..8cc331d 100644
  struct grub_procfs_entry
  {
 -- 
-1.9.0
+1.9.3
 

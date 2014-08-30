@@ -1,7 +1,7 @@
 From 5ac7afd762d11b4c91d5756222c3abf5862203de Mon Sep 17 00:00:00 2001
 From: Andrey Borzenkov <arvidjaar@gmail.com>
 Date: Sat, 18 Jan 2014 20:41:24 +0400
-Subject: [PATCH 026/125] add BUILD_EXEEXT support to fix make clean on Windows
+Subject: [PATCH 026/143] add BUILD_EXEEXT support to fix make clean on Windows
 
 Add $(BUILD_EXEEXT) to ensure files are removed. Also add CLEANFILES where
 appropriate.
@@ -170,5 +170,5 @@ index 13b7979..826b3dd 100644
  
  # XXX Use Automake's LEX & YACC support
 -- 
-1.9.0
+1.9.3
 
