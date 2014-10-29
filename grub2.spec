@@ -47,7 +47,7 @@
 Name:           grub2
 Epoch:          1
 Version:        2.02
-Release:        0.8%{?dist}
+Release:        0.10%{?dist}
 Summary:        Bootloader with support for Linux, Multiboot and more
 
 Group:          System Environment/Base
@@ -59,7 +59,6 @@ Source0:        ftp://alpha.gnu.org/gnu/grub/grub-%{tarversion}.tar.xz
 Source4:	http://unifoundry.com/unifont-5.1.20080820.pcf.gz
 Source5:	theme.tar.bz2
 Source6:	gitignore
-#Source6:	grub-cd.cfg
 
 Patch0001: 0001-fix-EFI-detection-on-Windows.patch
 Patch0002: 0002-grub-core-kern-arm-cache_armv6.S-Remove-.arch-direct.patch
@@ -204,6 +203,17 @@ Patch0140: 0140-always-return-error-to-UEFI.patch
 Patch0141: 0141-Add-powerpc-little-endian-ppc64le-flags.patch
 Patch0142: 0142-Files-reorganization-and-include-some-libgcc-fuction.patch
 Patch0143: 0143-Suport-for-bi-endianess-in-elf-file.patch
+Patch0144: 0144-Add-grub_util_readlink.patch
+Patch0145: 0145-Make-editenv-chase-symlinks-including-those-across-d.patch
+Patch0146: 0146-Generate-OS-and-CLASS-in-10_linux-from-etc-os-releas.patch
+Patch0147: 0147-Fix-GRUB_DISABLE_SUBMENU-one-more-time.patch
+Patch0148: 0148-Minimize-the-sort-ordering-for-.debug-and-rescue-ker.patch
+Patch0149: 0149-Add-GRUB_DISABLE_UUID.patch
+Patch0150: 0150-Allow-fallback-to-include-entries-by-title-not-just-.patch
+Patch0151: 0151-Initialized-initrd_ctx-so-we-don-t-free-a-random-poi.patch
+Patch0152: 0152-Load-arm-with-SB-enabled.patch
+Patch0153: 0153-Try-prefix-if-fw_path-doesn-t-work.patch
+Patch0154: 0154-Try-to-emit-linux16-initrd16-and-linuxefi-initrdefi-.patch
 
 BuildRequires:  flex bison binutils python
 BuildRequires:  ncurses-devel xz-devel bzip2-devel
@@ -226,8 +236,9 @@ BuildRequires:	pesign >= 0.99-8
 %endif
 %endif
 
-Requires:	gettext os-prober which file
+Requires:	gettext which file
 Requires:	%{name}-tools = %{epoch}:%{version}-%{release}
+Requires:	os-prober >= 1.58-11
 Requires(pre):  dracut
 Requires(post): dracut
 
@@ -332,6 +343,7 @@ cd grub-efi-%{tarversion}
 	CFLAGS="$(echo $RPM_OPT_FLAGS | sed			\
 		-e 's/-O.//g'					\
 		-e 's/-fstack-protector[[:alpha:]-]\+//g'	\
+		-e 's/-Wp,-D_FORTIFY_SOURCE=[[:digit:]]\+//g'	\
 		-e 's/--param=ssp-buffer-size=4//g'		\
 		-e 's/-mregparm=3/-mregparm=4/g'		\
 		-e 's/-fexceptions//g'				\
@@ -345,12 +357,13 @@ cd grub-efi-%{tarversion}
 	--disable-werror
 make %{?_smp_mflags}
 
-GRUB_MODULES="	all_video boot btrfs cat chain configfile echo efifwsetup \
-		efinet ext2 fat font gfxmenu gfxterm gzio halt hfsplus iso9660 \
-		jpeg lvm mdraid09 mdraid1x minicmd normal part_apple \
-		part_msdos part_gpt password_pbkdf2 png reboot search \
-		search_fs_uuid search_fs_file search_label sleep syslinuxcfg \
-		test tftp video xfs"
+GRUB_MODULES="	all_video backtrace boot btrfs cat chain configfile echo \
+		efifwsetup efinet ext2 fat font gfxmenu gfxterm gzio halt \
+		hfsplus iso9660 jpeg loadenv lvm mdraid09 mdraid1x minicmd \
+		normal part_apple part_msdos part_gpt password_pbkdf2 png \
+		reboot search search_fs_uuid search_fs_file search_label \
+		serial sleep syslinuxcfg test tftp usb usbserial_common \
+		usbserial_pl2303 usbserial_ftdi usbserial_usbdebug video xfs"
 %ifarch aarch64
 GRUB_MODULES="${GRUB_MODULES} linux"
 %else
@@ -358,11 +371,12 @@ GRUB_MODULES+="${GRUB_MODULES} linuxefi multiboot2 multiboot"
 %endif
 ./grub-mkimage -O %{grubefiarch} -o %{grubefiname}.orig -p /EFI/%{efidir} \
 		-d grub-core ${GRUB_MODULES}
-%ifarch aarch64
-mv %{grubefiname}.orig %{grubefiname}
-%else
 ./grub-mkimage -O %{grubefiarch} -o %{grubeficdname}.orig -p /EFI/BOOT \
 		-d grub-core ${GRUB_MODULES}
+%ifarch aarch64
+mv %{grubefiname}.orig %{grubefiname}
+mv %{grubeficdname}.orig %{grubeficdname}
+%else
 %pesign -s -i %{grubeficdname}.orig -o %{grubeficdname}
 %pesign -s -i %{grubefiname}.orig -o %{grubefiname}
 %endif
@@ -383,6 +397,7 @@ cd grub-%{tarversion}
 	CFLAGS="$(echo $RPM_OPT_FLAGS | sed			\
 		-e 's/-O.//g'					\
 		-e 's/-fstack-protector[[:alpha:]-]\+//g'	\
+		-e 's/-Wp,-D_FORTIFY_SOURCE=[[:digit:]]\+//g'	\
 		-e 's/--param=ssp-buffer-size=4//g'		\
 		-e 's/-mregparm=3/-mregparm=4/g'		\
 		-e 's/-fexceptions//g'				\
@@ -428,19 +443,6 @@ install -m 755 -d $RPM_BUILD_ROOT/boot/efi/EFI/%{efidir}/
 touch $RPM_BUILD_ROOT/boot/efi/EFI/%{efidir}/grub.cfg
 ln -s ../boot/efi/EFI/%{efidir}/grub.cfg $RPM_BUILD_ROOT%{_sysconfdir}/%{name}-efi.cfg
 
-# Install ELF files modules and images were created from into
-# the shadow root, where debuginfo generator will grab them from
-find $RPM_BUILD_ROOT -name '*.mod' -o -name '*.img' |
-while read MODULE
-do
-        BASE=$(echo $MODULE |sed -r "s,.*/([^/]*)\.(mod|img),\1,")
-        # Symbols from .img files are in .exec files, while .mod
-        # modules store symbols in .elf. This is just because we
-        # have both boot.img and boot.mod ...
-        EXT=$(echo $MODULE |grep -q '.mod' && echo '.elf' || echo '.exec')
-        TGT=$(echo $MODULE |sed "s,$RPM_BUILD_ROOT,.debugroot,")
-#        install -m 755 -D $BASE$EXT $TGT
-done
 install -m 755 %{grubefiname} $RPM_BUILD_ROOT/boot/efi/EFI/%{efidir}/%{grubefiname}
 %ifnarch aarch64
 install -m 755 %{grubeficdname} $RPM_BUILD_ROOT/boot/efi/EFI/%{efidir}/%{grubeficdname}
@@ -460,20 +462,6 @@ ln -s ../boot/%{name}/grub.cfg $RPM_BUILD_ROOT%{_sysconfdir}/%{name}.cfg
 %endif
 
 cp -a $RPM_BUILD_ROOT%{_datarootdir}/locale/en\@quot $RPM_BUILD_ROOT%{_datarootdir}/locale/en
-
-# Install ELF files modules and images were created from into
-# the shadow root, where debuginfo generator will grab them from
-find $RPM_BUILD_ROOT -name '*.mod' -o -name '*.img' |
-while read MODULE
-do
-        BASE=$(echo $MODULE |sed -r "s,.*/([^/]*)\.(mod|img),\1,")
-        # Symbols from .img files are in .exec files, while .mod
-        # modules store symbols in .elf. This is just because we
-        # have both boot.img and boot.mod ...
-        EXT=$(echo $MODULE |grep -q '.mod' && echo '.elf' || echo '.exec')
-        TGT=$(echo $MODULE |sed "s,$RPM_BUILD_ROOT,.debugroot,")
-#        install -m 755 -D $BASE$EXT $TGT
-done
 
 mv $RPM_BUILD_ROOT%{_infodir}/grub.info $RPM_BUILD_ROOT%{_infodir}/%{name}.info
 mv $RPM_BUILD_ROOT%{_infodir}/grub-dev.info $RPM_BUILD_ROOT%{_infodir}/%{name}-dev.info
@@ -507,6 +495,26 @@ cat << EOF > ${RPM_BUILD_ROOT}%{_sysconfdir}/prelink.conf.d/grub2.conf
 -b /usr/sbin/grub2-probe
 -b /usr/sbin/grub2-sparc64-setup
 EOF
+
+%ifarch %{efiarchs}
+mkdir -p boot/efi/EFI/%{efidir}/
+ln -s /boot/efi/EFI/%{efidir}/grubenv boot/grub2/grubenv
+%endif
+
+# Don't run debuginfo on all the grub modules and whatnot; it just
+# rejects them, complains, and slows down extraction.
+%global finddebugroot "%{_builddir}/%{?buildsubdir}/debug"
+mkdir -p %{finddebugroot}/usr
+cp -a ${RPM_BUILD_ROOT}/usr/bin %{finddebugroot}/usr/bin
+cp -a ${RPM_BUILD_ROOT}/usr/sbin %{finddebugroot}/usr/sbin
+
+%global dip RPM_BUILD_ROOT=%{finddebugroot} %{__debug_install_post}
+%define __debug_install_post %{dip}					\
+	install -m 0755 -d %{buildroot}/usr/lib/ %{buildroot}/usr/src/	\
+	cp -al %{finddebugroot}/usr/lib/debug/				\\\
+		%{buildroot}/usr/lib/debug/				\
+	cp -al %{finddebugroot}/usr/src/debug/				\\\
+		%{buildroot}/usr/src/debug/
 
 %clean    
 rm -rf $RPM_BUILD_ROOT
@@ -555,6 +563,7 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}.cfg
 %ghost %config(noreplace) /boot/%{name}/grub.cfg
 %doc grub-%{tarversion}/COPYING
+%config(noreplace) %ghost /boot/grub2/grubenv
 %endif
 
 %ifarch %{efiarchs}
@@ -565,6 +574,10 @@ fi
 %attr(0755,root,root)/boot/efi/EFI/%{efidir}/fonts
 %ghost %config(noreplace) /boot/efi/EFI/%{efidir}/grub.cfg
 %doc grub-%{tarversion}/COPYING
+/boot/grub2/grubenv
+# I know 0700 seems strange, but it lives on FAT so that's what it'll
+# get no matter what we do.
+%config(noreplace) %ghost %attr(0700,root,root)/boot/efi/EFI/%{efidir}/grubenv
 
 %files efi-modules
 %defattr(-,root,root,-)
@@ -634,6 +647,25 @@ fi
 %{_datarootdir}/grub/themes/
 
 %changelog
+* Mon Oct 27 2014 Peter Jones <pjones@redhat.com> - 2.02-0.10.R
+- Try to emit linux16/initrd16 and linuxefi/initrdefi when appropriate
+  in 30_os-prober.
+  Resolves: rhbz#1108296
+- If $fw_path doesn't work to find the config file, try $prefix as well
+  Resolves: rhbz#1148652
+
+* Mon Sep 29 2014 Peter Jones <pjones@redhat.com> - 2.02-0.9.R
+- Clean up the build a bit to make it faster
+- Make grubenv work right on UEFI machines
+  Related: rhbz#1119943
+- Sort debug and rescue kernels later than normal ones
+  Related: rhbz#1065360
+- Allow "fallback" to include entries by title as well as number.
+  Related: rhbz#1026084
+- Fix a segfault on aarch64.
+- Load arm with SB enabled if available.
+- Add some serial port options to GRUB_MODULES.
+
 * Sat Aug 30 2014 Arkady L. Shane <ashejn@russianfedora.ru> - 2.02-0.8.R
 - read rfremix-release first
 
