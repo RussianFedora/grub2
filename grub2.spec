@@ -596,6 +596,9 @@ fi
 %{_datarootdir}/grub/themes/starfield
 
 %changelog
+* Tue Oct 20 2015 Arkady L. Shane <ashejn@russianfedora.pro> - 2.02-0.23.R
+- take name from PRETTY_NAME var
+
 * Sat Sep 05 2015 Kalev Lember <klember@redhat.com> - 2.02-0.23
 - Rebuilt for librpm soname bump
 

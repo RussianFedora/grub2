@@ -21,7 +21,7 @@ index 358dd67..1f5899f 100644
  
 +mktitle ()
 +{
-+  local OS_NAME="$(eval $(grep ^NAME= /etc/os-release) ; echo ${NAME})"
++  local OS_NAME="$(eval $(grep ^PRETTY_NAME= /etc/os-release) ; echo ${PRETTY_NAME} | awk '{ print $1 }')"
 +  local OS_VERS="$(eval $(grep ^VERSION= /etc/os-release) ; echo ${VERSION})"
 +
 +  local titlestr="${OS_NAME} (%s) ${OS_VERS}"
