@@ -1,6 +1,5 @@
 00_header
 10_*
-!10_*.in
 20_linux_xen
 30_os-prober
 40_custom
